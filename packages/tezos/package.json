@@ -1,0 +1,15 @@
+{
+  "name": "@atlasone/tezos-smart-contracts",
+  "version": "1.0.0",
+  "license": "MIT",
+  "devDependencies": {
+    "@taquito/signer": "^9.0.0",
+    "@taquito/taquito": "^9.0.0",
+    "ganache-cli": "^6.12.1-tezos.0",
+    "truffle": "^5.5.0-tezos.4"
+  },
+  "scripts": {
+    "build": "sh ./compile.sh && node ./scripts/post-compile.js",
+    "start:sandbox": "ganache-cli --flavor tezos --seed alice"
+  }
+}

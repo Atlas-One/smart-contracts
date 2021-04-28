@@ -1,0 +1,36 @@
+{
+  "name": "@atlasone/ethereum-smart-contracts",
+  "version": "1.0.0",
+  "license": "MIT",
+  "devDependencies": {
+    "@truffle/hdwallet-provider": "1.2.2",
+    "husky": "^6.0.0",
+    "lerna": "^4.0.0",
+    "truffle": "^5.3.4",
+    "truffle-contract-size": "^2.0.1"
+  },
+  "keywords": [
+    "ethereum",
+    "solidity",
+    "blockchain",
+    "truffle"
+  ],
+  "scripts": {
+    "build": "yarn truffle compile && node ./scripts/post-compile.js",
+    "truffle:contract-size": "yarn truffle:compile && truffle run contract-size",
+    "solidity:prettify": "prettier --write 'contracts/**/*.sol'"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^3.0.0",
+    "@openzeppelin/contracts-upgradeable": "^3.0.0",
+    "@openzeppelin/test-helpers": "^0.5.10",
+    "ganache-core": "^2.13.2",
+    "prettier": "^2.2.1",
+    "prettier-plugin-solidity": "^1.0.0-beta.10"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn solidity:prettify"
+    }
+  }
+}

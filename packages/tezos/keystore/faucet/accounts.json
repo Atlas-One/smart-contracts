@@ -1,0 +1,102 @@
+{
+  "alice": {
+    "mnemonic": [
+      "stool",
+      "legend",
+      "bring",
+      "annual",
+      "scorpion",
+      "gas",
+      "estate",
+      "silent",
+      "buyer",
+      "must",
+      "wear",
+      "dirt",
+      "excite",
+      "resist",
+      "custom"
+    ],
+    "secret": "b3f7c8f919402546c9364e75f5ce405495db064f",
+    "amount": "20358552200",
+    "pkh": "tz1f94UEHC1E991sxBxB7EApzcLzkZ3a6UAz",
+    "password": "odvLalBX1t",
+    "email": "jlrvkyvj.zohmejen@tezos.example.org",
+    "secretKey": "edskRcek4KkQRQWxuEpJ3x6b2rKUJnnss9V2hUYHpSK3LX3p7kBqKZTkDgkneV5yqNiviaHtnMsyTT8GiuVWdgUmeoCEgvYU5f"
+  },
+  "bob": {
+    "mnemonic": [
+      "lab",
+      "worth",
+      "rookie",
+      "initial",
+      "return",
+      "such",
+      "fortune",
+      "fence",
+      "unfold",
+      "express",
+      "act",
+      "hundred",
+      "walk",
+      "observe",
+      "setup"
+    ],
+    "secret": "5c315281a1c015cdeb79bcfca06063ddcb0d4f78",
+    "amount": "27734924345",
+    "pkh": "tz1bftHoNiUG79KyiqfyBexPgcA9Kj7gBScN",
+    "password": "4xxTG3tTKa",
+    "email": "osqwxlqa.ohuvihnk@tezos.example.org",
+    "secretKey": "edskRtGZrjf3g4bX1FfbHuFZqsinHnvSBwXspTkjGWnBGhispDQuFi6GU7sMqGx4bT5uZ4RfQSy73C3fwSpJjwcJjAny7vJFVZ"
+  },
+  "eve": {
+    "mnemonic": [
+      "grid",
+      "burger",
+      "tape",
+      "solution",
+      "canyon",
+      "flock",
+      "proof",
+      "goddess",
+      "area",
+      "size",
+      "liar",
+      "tattoo",
+      "celery",
+      "camera",
+      "toilet"
+    ],
+    "secret": "0e23b33674336589bb5469c5d8924111bc43d279",
+    "amount": "35898949858",
+    "pkh": "tz1fMeqtq37XUXaXAHUigkca8Mbg8fkSyCc2",
+    "password": "tfLLursSqM",
+    "email": "kyrnhcwe.vhlbiwvo@tezos.example.org",
+    "secretKey": "edskS4KXk3ng7qxtz7ecCZJ5hAJto3avQ7iSvvDri6qXUVhBcibh4nSEG5GwXFfH4PzbHZUb8sG254J3jQSV4bY6DczUTNRygu"
+  },
+  "mallory": {
+    "mnemonic": [
+      "defense",
+      "whip",
+      "motion",
+      "around",
+      "image",
+      "stand",
+      "render",
+      "flip",
+      "you",
+      "file",
+      "lock",
+      "fork",
+      "three",
+      "mind",
+      "addict"
+    ],
+    "secret": "3d0536ecdb4412734e7bdb1d87455dd98b1b7c9a",
+    "amount": "32111927631",
+    "pkh": "tz1Q4JUsgj96hwKeMPbRzEcFuuLttbRHxi5c",
+    "password": "JuJoxaxiBs",
+    "email": "insqacei.hmkavqct@tezos.example.org",
+    "secretKey": "edskRcaStWqXsNVACSF6yb54NQJU4kcUAU1o76ejoqqtrbdH4e4Y14WTC4aJPyuVkuXN9o5UATRKyz9df1fmkRfhjGQFJZaXah"
+  }
+}
