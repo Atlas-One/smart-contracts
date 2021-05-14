@@ -1,3 +1,5 @@
+<!-- @format -->
+
 # Atlas One Smart Contracts
 
 Atlas One Smart Contracts is a suite of smart contracts adopted by Atlas One to support the creation and issuance of a controlled and permissed asset i.e. Digital Security Offering (DSO). The token contracts are compatible with the ERC20 and FA1.2 standards. The suite of contracts allow minting/burning tokens, pausing transfer activities, and ability to extend/share transfer restrictions.
@@ -5,6 +7,8 @@ Atlas One Smart Contracts is a suite of smart contracts adopted by Atlas One to 
 ## Access Control / Roles
 
 Using [OpenZeppelin's Access Control](https://docs.openzeppelin.com/contracts/4.x/access-control) logic and design, the folowing roles are implemented for both Tezos and Ethereum. There can be multiple accounts per role using the Access Control.
+
+See Tezos access control design doc [here](/docs/tezos/access-control-design.md).
 
 | Role           | Description                                                                                                                                                              |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -58,11 +62,11 @@ The current stratergy is to make use of the controller role to perform a transfe
 
 Refrence Implementations:
 
-- EIP712 MetaTransaction https://github.com/bcnmy/metatx-standard/blob/master/src/contracts/EIP712MetaTransaction.sol
-- Gas Station Network (GSN) https://docs.openzeppelin.com/learn/sending-gasless-transactions
-- Smartpy Permits/TZIP-017 https://github.com/EGuenz/smartpy-permits
-- Ligo StableCoin Permits https://github.com/tqtezos/stablecoin
-- Smartpy StableCoin with Feeless Transactions https://gitlab.com/tezos-paris-hub/eurotz-euro-stable-coin
+- EIP712 MetaTransaction <https://github.com/bcnmy/metatx-standard/blob/master/src/contracts/EIP712MetaTransaction.sol>
+- Gas Station Network (GSN) <https://docs.openzeppelin.com/learn/sending-gasless-transactions>
+- Smartpy Permits/TZIP-017 <https://github.com/EGuenz/smartpy-permits>
+- Ligo StableCoin Permits <https://github.com/tqtezos/stablecoin>
+- Smartpy StableCoin with Feeless Transactions <https://gitlab.com/tezos-paris-hub/eurotz-euro-stable-coin>
 
 ## Upgrading
 

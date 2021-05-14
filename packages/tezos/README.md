@@ -1,8 +1,12 @@
+<!-- @format -->
+
 # Atlas One Tezos Smart contracts
 
 Tezos controlled and permissioned asset.
 
-## Access Control Roles
+## Access Control
+
+See the access control design doc [here](/docs/tezos/access-control-design.md) for explanation behind the access control.
 
 ### Token Roles
 
@@ -35,12 +39,12 @@ Tezos controlled and permissioned asset.
 ## Development
 
 You can use and explore the deployed smart ccontracts above on edonet.
-Explore the contracts using get request for the public date e.g. https://edonet.smartpy.io/explorer/contract/KT1AiM4qXoQG7f2oNrag1fL1zKaNz2hX3w8a. See the explorer documentations I found useful from https://api.tzkt.io/#tag/Contracts.
+Explore the contracts using get request for the public date e.g. <https://edonet.smartpy.io/explorer/contract/KT1AiM4qXoQG7f2oNrag1fL1zKaNz2hX3w8a>. See the explorer documentations I found useful from <https://api.tzkt.io/#tag/Contracts>.
 
 I found working on the smartpy web ide sufficient to test and write the logic.
 
-- https://smartpy.io/ide
-- https://smartpy.io/reference.html
+- <https://smartpy.io/ide>
+- <https://smartpy.io/reference.html>
 
 ### Compiling
 
@@ -49,8 +53,8 @@ If you add a new contract, be sure to add it to the compile.sh file.
 
 ### Faucets
 
-- Mainnet Faucet https://faucet.tezos.com/
-- Testnet Faucet https://faucet.tzalpha.net/
+- Mainnet Faucet <https://faucet.tezos.com/>
+- Testnet Faucet <https://faucet.tzalpha.net/>
 
 ### Faucet Accounts
 
