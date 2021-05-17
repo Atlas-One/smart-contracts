@@ -657,14 +657,12 @@ class FA2_core(Ledger):
         sp.if self.is_paused():
             sp.verify(self.is_controller(sp.sender))
         
-        # verify transfer if not controller
-        sp.if ~self.is_controller(sp.sender):
-            self.assertTransfer(
-                sp.record(
-                    from_=params.from_, 
-                    to_=params.to_
-                )
+        self.assertTransfer(
+            sp.record(
+                from_=params.from_, 
+                to_=params.to_
             )
+        )
         
         if self.config.single_asset:
             sp.verify(params.token_id == 0, "single-asset: token-id <> 0")

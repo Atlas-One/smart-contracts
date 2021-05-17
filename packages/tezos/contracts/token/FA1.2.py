@@ -391,9 +391,7 @@ class FA12_core(Ledger):
                 )
             )
 
-        # verify transfer if not controller
-        sp.if ~self.is_controller(sp.sender):
-            self.assertTransfer(sp.record(from_ = params.from_, to_ = params.to_))
+        self.assertTransfer(sp.record(from_ = params.from_, to_ = params.to_))
 
         self.add_address_if_necessary(params.to_)
 
