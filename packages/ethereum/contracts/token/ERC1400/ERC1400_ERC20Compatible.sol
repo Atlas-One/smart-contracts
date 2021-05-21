@@ -7,7 +7,7 @@ import "./ERC1400.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract ERC20Compatible is IERC20, ERC1400 {
+contract ERC1400_ERC20Compatible is IERC20, ERC1400 {
     using SafeMath for uint256;
 
     mapping(address => mapping(address => uint256)) internal _allowances;

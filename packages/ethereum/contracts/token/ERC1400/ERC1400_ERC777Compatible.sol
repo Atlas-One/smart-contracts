@@ -2,7 +2,7 @@
 
 pragma solidity >=0.6.0 <0.8.0;
 
-import "./ERC20Compatible.sol";
+import "./ERC1400_ERC20Compatible.sol";
 
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/introspection/IERC1820Registry.sol";
@@ -12,7 +12,7 @@ import "@openzeppelin/contracts/token/ERC777/IERC777Sender.sol";
 
 import "@openzeppelin/contracts/token/ERC777/IERC777.sol";
 
-contract ERC777Compatible is ERC20Compatible {
+contract ERC1400_ERC777Compatible is ERC1400_ERC20Compatible {
     event Sent(
         address indexed operator,
         address indexed from,
@@ -73,7 +73,7 @@ contract ERC777Compatible is ERC20Compatible {
         address[] memory validators
     )
         public
-        ERC20Compatible(
+        ERC1400_ERC20Compatible(
             name,
             symbol,
             granularity,
