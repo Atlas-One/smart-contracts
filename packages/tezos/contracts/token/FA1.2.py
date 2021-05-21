@@ -77,7 +77,33 @@ class Pausable(AccessControl):
         sp.verify(self.sender_has_role(PAUSER_ROLE) | self.sender_has_role(ADMIN_ROLE))
         self.data.paused = paused
 
-class Mintable(AccessControl):
+
+class Snapshots(sp.Contract):
+
+    def updateAccountSnapshot(self, params):
+        sp.set_type(params, sp.TRecord(account = sp.TAddress, amount = sp.TNat))
+        
+        sp.if ~self.data.snapshots.contains(sp.now):
+            self.data.snapshots[sp.now] = sp.record(
+                accounts = sp.big_map({}),
+                total_supply = sp.nat(0)
+            )
+        
+        self.data.snapshots[sp.now].accounts[params.account] = params.amount
+   
+    def updateTotalSupplySnapshot(self, amount):
+        sp.set_type(amount, sp.TNat)
+        
+        sp.if ~self.data.snapshots.contains(sp.now):
+            self.data.snapshots[sp.now] = sp.record(
+                accounts = sp.big_map({}),
+                total_supply = sp.nat(0)
+            )
+        
+        self.data.snapshots[sp.now].total_supply = amount
+
+
+class Mintable(AccessControl, Snapshots):
 
     def is_minter(self):
         return (self.sender_has_role(MINTER_ROLE) | self.sender_has_role(ADMIN_ROLE))
@@ -99,6 +125,9 @@ class Mintable(AccessControl):
         self.data.ledger[params.address].balance += params.amount
         self.data.total_supply += params.amount
 
+        self.updateTotalSupplySnapshot(self.data.total_supply)
+        self.updateAccountSnapshot(sp.record(account=params.address, amount=self.data.ledger[params.address].balance))
+
     # a.k.a issue / issueMultiple
     @sp.entry_point
     def mint(self, params):
@@ -114,7 +143,7 @@ class Mintable(AccessControl):
         self.data.issuable = False
 
 
-class Burnable(AccessControl):
+class Burnable(AccessControl, Snapshots):
                         
     def is_burner(self):
         return (self.sender_has_role(BURNER_ROLE) | self.sender_has_role(ADMIN_ROLE))
@@ -133,6 +162,9 @@ class Burnable(AccessControl):
         self.decrease_and_remove_balance_if_necessary(params.address, params.amount)
         
         self.data.total_supply = sp.as_nat(self.data.total_supply - params.amount)
+
+        self.updateTotalSupplySnapshot(self.data.total_supply)
+        self.updateAccountSnapshot(sp.record(account=params.address, amount=self.data.ledger[params.address].balance))
 
     # a.k.a redeem / redeemMultiple
     @sp.entry_point
@@ -401,6 +433,10 @@ class FA12_core(Ledger):
         self.decrease_and_remove_balance_if_necessary(params.from_, params.value)
         
         self.decrease_approval_if_necessary(params.from_, sp.sender, params.value)
+
+        self.updateTotalSupplySnapshot(self.data.total_supply)
+        self.updateAccountSnapshot(sp.record(account=params.to_, amount=self.data.ledger[params.to_].balance))
+        self.updateAccountSnapshot(sp.record(account=params.from_, amount=self.data.ledger[params.from_].balance))
     
     # (address :from, (address :to, nat :value))    %transfer
     @sp.entry_point
@@ -509,6 +545,17 @@ class ST12(
                 controllers=controllers,
                 burners=burners,
                 minters=burners,
+            ),
+            snapshots=sp.big_map(
+                {},
+                tkey=sp.TTimestamp, 
+                tvalue=sp.TRecord(
+                    total_supply = sp.TNat,
+                    accounts = sp.TBigMap(
+                        sp.TAddress, 
+                        sp.TNat
+                    )
+                )
             )
         )
     
