@@ -89,7 +89,7 @@ contract(
         partitions,
         [controller],
         [],
-        "0x0"
+        "0x0000000000000000000000000000000000000000"
       );
 
       await this.token.grantRoles(this.extension.address, [VALIDATOR_ROLE], {
@@ -98,7 +98,7 @@ contract(
     });
 
     // PAUSER
-    describe.only("pauser role", function () {
+    describe("pauser role", function () {
       describe("addPauser/removePauser", function () {
         describe("add/renounce a pauser", function () {
           describe("when caller is a pauser", function () {
@@ -256,7 +256,7 @@ contract(
             [controller],
             // transfer extensions
             [this.extension.address],
-            "0x0"
+            "0x0000000000000000000000000000000000000000"
           );
 
           await this.extension.addToAllowlist(tokenHolder, {
