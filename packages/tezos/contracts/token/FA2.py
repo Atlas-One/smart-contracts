@@ -98,7 +98,38 @@ class Controller(AccessControl):
         self.data.controllable = False
 
 
-class Mintable(AccessControl):
+class Snapshots(sp.Contract):
+
+    def updateAccountSnapshot(self, params):
+        sp.set_type(params, sp.TRecord(token_id=sp.TNat, account = sp.TAddress, amount = sp.TNat))
+        
+        sp.if ~self.data.snapshots.contains(params.token_id):
+            self.data.snapshots[params.token_id] = sp.big_map({})
+            
+        sp.if ~self.data.snapshots[params.token_id].contains(sp.now):
+            self.data.snapshots[params.token_id][sp.now] = sp.record(
+                accounts = sp.big_map({}),
+                total_supply = sp.nat(0)
+            )
+        
+        self.data.snapshots[params.token_id][sp.now].accounts[params.account] = params.amount
+   
+    def updateTotalSupplySnapshot(self, params):
+        sp.set_type(params, sp.TRecord(token_id = sp.TNat, amount = sp.TNat))
+        
+        sp.if ~self.data.snapshots.contains(params.token_id):
+            self.data.snapshots[params.token_id] = sp.big_map({})
+        
+        sp.if ~self.data.snapshots[params.token_id].contains(sp.now):
+            self.data.snapshots[params.token_id][sp.now] = sp.record(
+                accounts = sp.big_map({}),
+                total_supply = sp.nat(0)
+            )
+        
+        self.data.snapshots[params.token_id][sp.now].total_supply = params.amount
+
+
+class Mintable(AccessControl, Snapshots):
 
     def is_minter(self):
         return (self.sender_has_role(MINTER_ROLE) | self.sender_has_role(ADMIN_ROLE))
@@ -146,6 +177,9 @@ class Mintable(AccessControl):
                 metadata = params.metadata
             )
 
+        self.updateTotalSupplySnapshot(sp.record(token_id=params.token_id, amount=self.data.tokens[params.token_id].total_supply))
+        self.updateAccountSnapshot(sp.record(token_id=params.token_id, account=params.address, amount=self.data.ledger[user].balance))
+
     # a.k.a issue / issueMultiple
     @sp.entry_point
     def mint(self, params):
@@ -161,7 +195,7 @@ class Mintable(AccessControl):
         self.data.issuable = False
 
 
-class Burnable(AccessControl):
+class Burnable(AccessControl, Snapshots):
                         
     def is_burner(self):
         return (self.sender_has_role(BURNER_ROLE) | self.sender_has_role(ADMIN_ROLE))
@@ -201,6 +235,10 @@ class Burnable(AccessControl):
         self.data.ledger[user].balance = sp.as_nat(self.data.ledger[user].balance - params.amount)
         
         self.data.tokens[params.token_id].total_supply = sp.as_nat(self.data.tokens[params.token_id].total_supply - params.amount)
+        
+        self.updateTotalSupplySnapshot(sp.record(token_id=params.token_id, amount=self.data.tokens[params.token_id].total_supply))
+        
+        self.updateAccountSnapshot(sp.record(token_id=params.token_id, account=params.address, amount=self.data.ledger[user].balance))
 
     # a.k.a redeem / redeemMultiple
     @sp.entry_point
@@ -215,6 +253,15 @@ class Ledger_key:
     
     def __init__(self, config):
         self.config = config
+   
+    def get_type(self):
+        if self.config.single_asset:
+            return sp.TAddress
+        else:
+            if self.config.readable:
+                return sp.TPair
+            else:
+                return sp.TBytes
         
     def make(self, user, token):
         user = sp.set_type_expr(user, sp.TAddress)
@@ -701,6 +748,11 @@ class FA2_core(Ledger):
                 self.data.ledger[to_user].balance += params.amount
             sp.else:
                  self.data.ledger[to_user] = Ledger_value.make(params.amount)
+        
+            self.updateTotalSupplySnapshot(sp.record(token_id=params.token_id, amount=self.data.tokens[params.token_id].total_supply))
+            
+            self.updateAccountSnapshot(sp.record(token_id=params.token_id, account=params.from_, amount=self.data.ledger[from_user].balance))
+            self.updateAccountSnapshot(sp.record(token_id=params.token_id, account=params.to_, amount=self.data.ledger[to_user].balance))
         sp.else:
             pass
 
@@ -967,6 +1019,19 @@ class ST2(
                 administrators=administrators, 
                 validators=validators,
                 controllers=controllers
+            ),
+            snapshots=sp.big_map({},
+                tkey=sp.TNat,
+                tvalue=sp.TBigMap(
+                    sp.TTimestamp, 
+                    sp.TRecord(
+                        total_supply = sp.TNat,
+                        accounts = sp.TBigMap(
+                            sp.TAddress, 
+                            sp.TNat
+                        )
+                    )
+                )
             )
         )
     
