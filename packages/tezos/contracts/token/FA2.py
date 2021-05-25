@@ -231,7 +231,7 @@ class Burnable(AccessControl, Snapshots):
         # self.token_id_set.remove(self.data.all_tokens, params.token_id)
 
         sp.verify(self.data.ledger.contains(user))
-        sp.verify(self.data.ledger[user].balance > params.amount)
+        sp.verify(self.data.ledger[user].balance >= params.amount)
         self.data.ledger[user].balance = sp.as_nat(self.data.ledger[user].balance - params.amount)
         
         self.data.tokens[params.token_id].total_supply = sp.as_nat(self.data.tokens[params.token_id].total_supply - params.amount)
@@ -1502,6 +1502,55 @@ def add_test(config, is_default = True):
                 )
             ]
         ).run(sender = admin)
+        
+        
+        tok0_md = ST2.make_metadata(
+            name     = "The Token Zero",
+            symbol   = "TK0",
+            decimals = 2
+        )
+        scenario.h2("Snapshot")
+        token_id = 3
+        scenario += c1.mint(
+            [
+                sp.record(address=alice.address, amount=12, metadata = tok0_md, token_id=token_id)
+            ]
+        ).run(sender=admin, now=sp.timestamp(0))
+        scenario.verify(c1.data.snapshots[token_id][sp.timestamp(0)].accounts[alice.address] == 12)
+        
+        scenario += c1.burn(
+            [
+                sp.record(address=alice.address, amount=6, token_id = token_id)
+            ]
+        ).run(sender=admin, now=sp.timestamp(1))
+        scenario.verify(c1.data.snapshots[token_id][sp.timestamp(0)].accounts[alice.address] == 12)
+        scenario.verify(c1.data.snapshots[token_id][sp.timestamp(1)].accounts[alice.address] == 6)
+        
+        scenario += c1.transfer([
+            c1.batch_transfer.item(
+                from_ = alice.address,
+                txs = [
+                    sp.record(
+                        to_ = bob.address,
+                        amount = 6,
+                        token_id = token_id
+                    )
+                ]
+            )
+        ]).run(
+            sender=alice,
+            now=sp.timestamp(2)
+        )
+        scenario.verify(c1.data.snapshots[token_id][sp.timestamp(0)].accounts[alice.address] == 12)
+        scenario.verify(c1.data.snapshots[token_id][sp.timestamp(2)].accounts[alice.address] == 0)
+        scenario.verify(c1.data.snapshots[token_id][sp.timestamp(2)].accounts[bob.address] == 6)
+        
+        scenario += c1.burn(
+            [
+                sp.record(address=bob.address, amount=6, token_id = token_id)
+            ]
+        ).run(sender=admin, now=sp.timestamp(3))
+        
         scenario.table_of_contents()
 
 ##
