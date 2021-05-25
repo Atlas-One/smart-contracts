@@ -164,7 +164,10 @@ class Burnable(AccessControl, Snapshots):
         self.data.total_supply = sp.as_nat(self.data.total_supply - params.amount)
 
         self.updateTotalSupplySnapshot(self.data.total_supply)
-        self.updateAccountSnapshot(sp.record(account=params.address, amount=self.data.ledger[params.address].balance))
+        
+        # no need to store 0
+        sp.if self.data.ledger.contains(params.address):
+            self.updateAccountSnapshot(sp.record(account=params.address, amount=self.data.ledger[params.address].balance))
 
     # a.k.a redeem / redeemMultiple
     @sp.entry_point
@@ -436,7 +439,10 @@ class FA12_core(Ledger):
 
         self.updateTotalSupplySnapshot(self.data.total_supply)
         self.updateAccountSnapshot(sp.record(account=params.to_, amount=self.data.ledger[params.to_].balance))
-        self.updateAccountSnapshot(sp.record(account=params.from_, amount=self.data.ledger[params.from_].balance))
+        
+        # no need to store 0
+        sp.if self.data.ledger.contains(params.from_):
+            self.updateAccountSnapshot(sp.record(account=params.from_, amount=self.data.ledger[params.from_].balance))
     
     # (address :from, (address :to, nat :value))    %transfer
     @sp.entry_point
@@ -593,6 +599,21 @@ def add_test(config, is_default=True):
         )
 
         scenario += c1
+        
+        scenario.h2("Snapshot")
+        scenario += c1.mint(sp.list([sp.record(address=alice.address, amount=12)])).run(sender=admin, now=sp.timestamp(0))
+        scenario.verify(c1.data.snapshots[sp.timestamp(0)].accounts[alice.address] == 12)
+        scenario += c1.burn(sp.list([sp.record(address=alice.address, amount=6)])).run(sender=admin, now=sp.timestamp(1))
+        scenario.verify(c1.data.snapshots[sp.timestamp(0)].accounts[alice.address] == 12)
+        scenario.verify(c1.data.snapshots[sp.timestamp(1)].accounts[alice.address] == 6)
+        scenario += c1.transfer(from_=alice.address, to_=bob.address, value=6).run(
+            sender=alice,
+            now=sp.timestamp(2)
+        )
+        scenario.verify(c1.data.snapshots[sp.timestamp(0)].accounts[alice.address] == 12)
+        scenario.verify(~c1.data.snapshots[sp.timestamp(2)].accounts.contains(alice.address))
+        scenario.verify(c1.data.snapshots[sp.timestamp(2)].accounts[bob.address] == 6)
+        scenario += c1.burn(sp.list([sp.record(address=bob.address, amount=6)])).run(sender=admin, now=sp.timestamp(3))
             
         scenario.h2("Admin mints a few coins")
         scenario += c1.mint(sp.list([sp.record(address=alice.address, amount=12)])).run(sender=admin)
@@ -600,15 +621,18 @@ def add_test(config, is_default=True):
             sp.record(address=alice.address, amount=3),
             sp.record(address=alice.address, amount=3),
             ])).run(sender=admin)
+        
         scenario.h2("Alice transfers her own tokens to Bob")
         scenario += c1.transfer(from_=alice.address, to_=bob.address, value=4).run(
             sender=alice
         )
         scenario.verify(c1.data.ledger[alice.address].balance == 14)
+        
         scenario.h2("Bob tries to transfer from Alice but he doesn't have her approval")
         scenario += c1.transfer(from_=alice.address, to_=bob.address, value=4).run(
             sender=bob, valid=False
         )
+        
         scenario.h2("Alice approves Bob and Bob transfers")
         scenario += c1.approve(spender=alice.address, value=5).run(
             sender=alice
