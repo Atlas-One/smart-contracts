@@ -44,7 +44,8 @@ class AccessControl(sp.Contract):
     
     @sp.entry_point
     def assertRole(self, params):
-        sp.verify(self.has_role(params.role, params.account))
+        # admin has all roles
+        sp.verify(self.has_role(ADMIN_ROLE, params.account) | self.has_role(params.role, params.account))
     
     @sp.entry_point
     def grantRole(self, params):

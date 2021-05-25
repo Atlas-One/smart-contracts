@@ -13,6 +13,8 @@ ADMIN_ROLE = 0
 ALLOWLIST_ADMIN_ROLE = 1
 BLOCKLIST_ADMIN_ROLE = 2
 
+TOKEN_CONTROLLER_ROLE = 1
+
 def make_role(role_admin, members=sp.set([], t=sp.TAddress)):
     return sp.record(
         role_admin = role_admin,
@@ -123,7 +125,25 @@ class GeneralTransferManager(AccessControl):
         )
 
         sp.verify(self.data.allowlist.contains(params.from_))
-        sp.verify(~self.data.blocklist.contains(params.from_))
+        sp.if self.data.blocklist.contains(params.from_):
+            # controller should be able to move tokens out of a blocked address
+            c = sp.contract(
+                t = sp.TRecord(
+                    role=sp.TNat,
+                    account=sp.TAddress
+                ), 
+                address = sp.sender, 
+                entry_point = "assertRole"
+            ).open_some()
+                        
+            sp.transfer(
+                sp.record(
+                    role=TOKEN_CONTROLLER_ROLE,
+                    account=params.operator
+                ),
+                sp.mutez(0),
+                c
+            )
         sp.verify(self.data.allowlist.contains(params.to_))
         sp.verify(~self.data.blocklist.contains(params.to_))
 
