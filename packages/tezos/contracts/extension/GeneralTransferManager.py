@@ -13,6 +13,8 @@ ADMIN_ROLE = 0
 ALLOWLIST_ADMIN_ROLE = 1
 BLOCKLIST_ADMIN_ROLE = 2
 
+TOKEN_CONTROLLER_ROLE = 1
+
 def make_role(role_admin, members=sp.set([], t=sp.TAddress)):
     return sp.record(
         role_admin = role_admin,
@@ -42,14 +44,11 @@ class AccessControl(sp.Contract):
     
     def sender_has_role(self, role):
         return self.has_role(role, sp.sender)
-        
-    @sp.view(sp.TBool)
-    def hasRole(self, params):
-        sp.result(self.has_role(params.role, params.account))
     
     @sp.entry_point
     def assertRole(self, params):
-        sp.verify(self.has_role(params.role, params.account))
+        # admin has all roles
+        sp.verify(self.has_role(ADMIN_ROLE, params.account) | self.has_role(params.role, params.account))
     
     @sp.entry_point
     def grantRole(self, params):
@@ -122,16 +121,61 @@ class GeneralTransferManager(AccessControl):
             )
         )
 
-        sp.verify(self.data.allowlist.contains(params.from_))
-        sp.verify(~self.data.blocklist.contains(params.from_))
+        sp.if ~self.data.allowlist.contains(params.from_) | self.data.blocklist.contains(params.from_):
+            # controller should be able to move tokens out of a blocked address
+            c = sp.contract(
+                t = sp.TRecord(
+                    role=sp.TNat,
+                    account=sp.TAddress
+                ), 
+                address = sp.sender, 
+                entry_point = "assertRole"
+            ).open_some()
+                        
+            sp.transfer(
+                sp.record(
+                    role=TOKEN_CONTROLLER_ROLE,
+                    account=params.operator
+                ),
+                sp.mutez(0),
+                c
+            )
         sp.verify(self.data.allowlist.contains(params.to_))
         sp.verify(~self.data.blocklist.contains(params.to_))
 
 
-# # Standard “main”
-#
-# This specific main uses the relative new feature of non-default tests
-# sp.for the browser version.
+class TestToken(sp.Contract):
+    def __init__(self, gtm, controller):
+        self.init(gtm=gtm, controller=controller)
+    
+    @sp.entry_point
+    def assertRole(self, params):
+        sp.verify((sp.nat(TOKEN_CONTROLLER_ROLE) == params.role) & (params.account == self.data.controller))
+    
+    @sp.entry_point
+    def transfer(self, params):
+        # controller should be able to move tokens out of a blocked address
+        c = sp.contract(
+            t = sp.TRecord(
+                from_=sp.TAddress,
+                to_=sp.TAddress,
+                operator=sp.TAddress
+            ), 
+            address = self.data.gtm, 
+            entry_point = "assertTransfer"
+        ).open_some()
+                    
+        sp.transfer(
+            sp.record(
+                from_=params.from_,
+                to_=params.to_,
+                operator=sp.sender
+            ),
+            sp.mutez(0),
+            c
+        )
+        
+
 if "templates" not in __name__:
     @sp.add_test(name="GeneralTransferManager", is_default=True)
     def test():
@@ -149,6 +193,35 @@ if "templates" not in __name__:
         
         g = GeneralTransferManager(sp.set([admin.address]))
         scenario += g
+        
+        t = TestToken(gtm=g.address, controller=admin.address)
+        scenario += t
+        
+        scenario.h2("Not Controller Transfer")
+        
+        scenario.h3("Allowlisted from_ and to_")
+        scenario += g.addToAllowlist(sp.record(address=alice.address)).run(sender=admin.address)
+        scenario += g.addToAllowlist(sp.record(address=bob.address)).run(sender=admin.address)
+        scenario += t.transfer(sp.record(to_=alice.address, from_=bob.address)).run(sender=bob.address)
+        scenario.h3("Controller can move tokens")
+        scenario += t.transfer(sp.record(to_=alice.address, from_=bob.address)).run(sender=admin.address)
+        
+        scenario.h3("Blocklisted to_")
+        scenario += g.addToBlocklist(sp.record(address=alice.address)).run(sender=admin.address)
+        scenario += t.transfer(sp.record(to_=alice.address, from_=bob.address)).run(sender=bob.address, valid=False)
+        scenario.h3("Controller can't move tokens to a blocked address")
+        scenario += t.transfer(sp.record(to_=alice.address, from_=bob.address)).run(sender=admin.address, valid=False)
+        
+        scenario.h3("Blocklisted from_")
+        scenario += t.transfer(sp.record(to_=bob.address, from_=alice.address)).run(sender=alice.address, valid=False)
+        scenario.h3("Controller can move tokens out of a blocked address")
+        scenario += t.transfer(sp.record(to_=bob.address, from_=alice.address)).run(sender=admin.address)
+        
+        scenario.h3("Blocklisted to_")
+        scenario += g.addToBlocklist(sp.record(address=bob.address)).run(sender=admin.address)
+        scenario += t.transfer(sp.record(to_=alice.address, from_=bob.address)).run(sender=bob.address, valid=False)
+        scenario.h3("Controller should not move tokens to a blocked address")
+        scenario += t.transfer(sp.record(to_=alice.address, from_=bob.address)).run(sender=admin.address, valid=False)
 
     sp.add_compilation_target(
         "GeneralTransferManager_compiled", 
