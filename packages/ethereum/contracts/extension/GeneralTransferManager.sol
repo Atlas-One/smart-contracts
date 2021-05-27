@@ -45,7 +45,7 @@ contract GeneralTransferManager is
      * @return statusCode ESC (Ethereum Status Code) following the EIP-1066 standard
      * @return appCode Application specific reason codes with additional details
      */
-    function canTransferByPartition(
+    function validateTransfer(
         bytes calldata, /*  payload */
         bytes32 partition,
         address operator,

@@ -17,6 +17,7 @@
   ],
   "scripts": {
     "build": "yarn truffle compile && node ./scripts/post-compile.js",
+    "truffle:compile": "yarn truffle compile",
     "truffle:contract-size": "yarn truffle:compile && truffle run contract-size",
     "solidity:prettify": "prettier --write 'contracts/**/*.sol'"
   },
