@@ -77,7 +77,67 @@ class Pausable(AccessControl):
         sp.verify(self.sender_has_role(PAUSER_ROLE) | self.sender_has_role(ADMIN_ROLE))
         self.data.paused = paused
 
-class Mintable(AccessControl):
+
+class OwnershipSnapshots(sp.Contract):
+
+    def captureOwnership(self, params):
+        sp.set_type(params, sp.TRecord(account = sp.TAddress, amount = sp.TNat))
+        
+        sp.if ~self.data.ownerships.contains(params.account):
+            self.data.ownerships[params.account] = sp.map({})
+        
+        len = sp.len(self.data.ownerships[params.account])
+        self.data.ownerships[params.account][sp.as_nat((len + 1) - 1)] = sp.record(
+            timestamp = sp.now,
+            amount = params.amount
+        )
+
+    def burnOldestOwnership(self, params):
+        sp.set_type(params, sp.TRecord(account = sp.TAddress, amount = sp.TNat))
+        
+        sp.if self.data.ownerships.contains(params.account):
+            sp.verify(sp.len(self.data.ownerships[params.account]) > 0)
+            
+            remainingAmount = sp.local('remainingAmount', params.amount)
+            index = sp.local('index', sp.nat(0))
+            
+            sp.while remainingAmount.value > 0:
+                sp.if remainingAmount.value > self.data.ownerships[params.account][index.value].amount:
+                    remainingAmount.value = sp.as_nat(remainingAmount.value - self.data.ownerships[params.account][index.value].amount)
+                    self.data.ownerships[params.account][index.value].amount = sp.nat(0)
+                sp.else:
+                    self.data.ownerships[params.account][index.value].amount = sp.as_nat(self.data.ownerships[params.account][index.value].amount - remainingAmount.value)
+                    remainingAmount.value = 0
+                
+                index.value = index.value + sp.as_nat(1)
+                sp.if remainingAmount.value > 0:
+                    sp.verify(index.value < sp.len(self.data.ownerships[params.account]))
+
+
+    def burnLatestOwnership(self, params):
+        sp.set_type(params, sp.TRecord(account = sp.TAddress, amount = sp.TNat))
+        
+        sp.if self.data.ownerships.contains(params.account):
+            sp.verify(sp.len(self.data.ownerships[params.account]) > sp.as_nat(sp.len(self.data.ownerships[params.account]) - 1))
+            
+            remainingAmount = sp.local('remainingAmount', params.amount)
+            index = sp.local('index', sp.as_nat(sp.len(self.data.ownerships[params.account]) - 1))
+            
+            sp.while remainingAmount.value > 0:
+                sp.if remainingAmount.value > self.data.ownerships[params.account][index.value].amount:
+                    remainingAmount.value = sp.as_nat(remainingAmount.value - self.data.ownerships[params.account][index.value].amount)
+                    self.data.ownerships[params.account][index.value].amount = sp.nat(0)
+                sp.else:
+                    self.data.ownerships[params.account][index.value].amount = sp.as_nat(self.data.ownerships[params.account][index.value].amount - remainingAmount.value)
+                    remainingAmount.value = 0
+                
+                sp.if remainingAmount.value > 0:
+                    sp.verify(index.value > 0)
+                    
+                index.value = sp.as_nat(index.value - 1)
+
+
+class Mintable(AccessControl, OwnershipSnapshots):
 
     def is_minter(self):
         return (self.sender_has_role(MINTER_ROLE) | self.sender_has_role(ADMIN_ROLE))
@@ -106,6 +166,25 @@ class Mintable(AccessControl):
         
         sp.for p in params:
             self._mint(p)
+            self.captureOwnership(sp.record(account=p.address, amount=p.amount))
+
+    # mint and set the date when the amount was owned by address 
+    @sp.entry_point
+    def mintOwned(self, params):
+        sp.set_type(params, sp.TList(sp.TRecord(timestamp = sp.TTimestamp, address = sp.TAddress, amount = sp.TNat)))
+        
+        sp.for p in params:
+            self._mint(sp.record(address=p.address, amount=p.amount))
+
+            sp.if ~self.data.ownerships.contains(p.address):
+                self.data.ownerships[p.address] = sp.map({})
+            
+            len = sp.len(self.data.ownerships[p.address])
+            self.data.ownerships[p.address][sp.as_nat((len + 1) - 1)] = sp.record(
+                    timestamp = p.timestamp,
+                    amount = p.amount
+                )
+            
     
     @sp.entry_point
     def renounceIssuance(self):
@@ -114,7 +193,7 @@ class Mintable(AccessControl):
         self.data.issuable = False
 
 
-class Burnable(AccessControl):
+class Burnable(AccessControl, OwnershipSnapshots):
                         
     def is_burner(self):
         return (self.sender_has_role(BURNER_ROLE) | self.sender_has_role(ADMIN_ROLE))
@@ -141,6 +220,7 @@ class Burnable(AccessControl):
 
         sp.for p in params:
             self._burn(p)
+            self.burnOldestOwnership(sp.record(account=p.address, amount=p.amount))
 
 
 class Controller(AccessControl):
@@ -401,6 +481,9 @@ class FA12_core(Ledger):
         self.decrease_and_remove_balance_if_necessary(params.from_, params.value)
         
         self.decrease_approval_if_necessary(params.from_, sp.sender, params.value)
+
+        self.burnLatestOwnership(sp.record(account=params.from_, amount=params.value))
+        self.captureOwnership(sp.record(account=params.to_, amount=params.value))
     
     # (address :from, (address :to, nat :value))    %transfer
     @sp.entry_point
@@ -509,6 +592,17 @@ class ST12(
                 controllers=controllers,
                 burners=burners,
                 minters=burners,
+            ),
+            ownerships=sp.big_map(
+                {},
+                tkey=sp.TAddress, 
+                tvalue=sp.TMap(
+                    sp.TNat,
+                    sp.TRecord(
+                        timestamp = sp.TTimestamp,
+                        amount = sp.TNat
+                    )
+                )
             )
         )
     
@@ -546,6 +640,22 @@ def add_test(config, is_default=True):
         )
 
         scenario += c1
+        
+        scenario.h2("Ownerships")
+        scenario += c1.mint(sp.list([sp.record(address=alice.address, amount=12)])).run(sender=admin, now=sp.timestamp(0))
+        scenario.verify(c1.data.ownerships[alice.address][0].amount == 12)
+        scenario += c1.burn(sp.list([sp.record(address=alice.address, amount=6)])).run(sender=admin, now=sp.timestamp(1))
+        scenario.verify(c1.data.ownerships[alice.address][0].amount == 6)
+        scenario += c1.mint(sp.list([sp.record(address=alice.address, amount=12)])).run(sender=admin, now=sp.timestamp(2))
+        scenario += c1.transfer(from_=alice.address, to_=bob.address, value=6).run(
+            sender=alice,
+            now=sp.timestamp(2)
+        )
+        scenario.verify(c1.data.ownerships[alice.address][0].amount == 6)
+        scenario.verify(c1.data.ownerships[alice.address][1].amount == 6)
+        scenario.verify(c1.data.ownerships[bob.address][0].amount == 6)
+        scenario += c1.burn(sp.list([sp.record(address=bob.address, amount=6)])).run(sender=admin, now=sp.timestamp(3))
+        scenario += c1.burn(sp.list([sp.record(address=alice.address, amount=12)])).run(sender=admin, now=sp.timestamp(3))
             
         scenario.h2("Admin mints a few coins")
         scenario += c1.mint(sp.list([sp.record(address=alice.address, amount=12)])).run(sender=admin)
@@ -553,15 +663,18 @@ def add_test(config, is_default=True):
             sp.record(address=alice.address, amount=3),
             sp.record(address=alice.address, amount=3),
             ])).run(sender=admin)
+        
         scenario.h2("Alice transfers her own tokens to Bob")
         scenario += c1.transfer(from_=alice.address, to_=bob.address, value=4).run(
             sender=alice
         )
         scenario.verify(c1.data.ledger[alice.address].balance == 14)
+        
         scenario.h2("Bob tries to transfer from Alice but he doesn't have her approval")
         scenario += c1.transfer(from_=alice.address, to_=bob.address, value=4).run(
             sender=bob, valid=False
         )
+        
         scenario.h2("Alice approves Bob and Bob transfers")
         scenario += c1.approve(spender=alice.address, value=5).run(
             sender=alice
