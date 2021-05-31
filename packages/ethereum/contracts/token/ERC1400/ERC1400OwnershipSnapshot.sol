@@ -3,8 +3,7 @@
 pragma solidity >=0.6.0 <0.8.0;
 
 import "./ERC1400.sol";
-import "@openzeppelin/contracts/utils/Arrays.sol";
-import "@openzeppelin/contracts/utils/Arrays.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 
 abstract contract ERC1400OwnershipSnapshot is ERC1400 {
     using SafeMath for uint256;
@@ -44,16 +43,36 @@ abstract contract ERC1400OwnershipSnapshot is ERC1400 {
      */
     function describeOwnership(address account, uint256 amount)
         public
+        view
         returns (uint256[] memory durations, uint256[] memory amounts)
     {
-        amounts = new uint256[](ownerships[account].length);
-        durations = new uint256[](ownerships[account].length);
-
+        uint256 size = 0;
         uint256 _remainingAmount = amount;
         for (uint256 i = 0; i < ownerships[account].length; i++) {
             Ownership storage ownership = ownerships[account][i];
 
-            if (_remainingAmount > ownership.amount) {
+            if (_remainingAmount >= ownership.amount) {
+                _remainingAmount = _remainingAmount.sub(ownership.amount);
+            } else {
+                _remainingAmount = 0;
+            }
+
+            size++;
+
+            if (_remainingAmount == 0) {
+                break;
+            }
+        }
+        require(_remainingAmount == 0);
+
+        amounts = new uint256[](size);
+        durations = new uint256[](size);
+
+        _remainingAmount = amount;
+        for (uint256 i = 0; i < ownerships[account].length; i++) {
+            Ownership storage ownership = ownerships[account][i];
+
+            if (_remainingAmount >= ownership.amount) {
                 amounts[i] = ownership.amount;
                 _remainingAmount = _remainingAmount.sub(ownership.amount);
             } else {
@@ -72,7 +91,9 @@ abstract contract ERC1400OwnershipSnapshot is ERC1400 {
      * @notice Captures the time when the token amount was received
      */
     function _captureOwnernship(address account, uint256 amount) private {
-        ownerships[account].push({amount: amount, timestamp: block.timestamp});
+        ownerships[account].push(
+            Ownership({amount: amount, timestamp: block.timestamp})
+        );
     }
 
     /**
@@ -96,7 +117,10 @@ abstract contract ERC1400OwnershipSnapshot is ERC1400 {
     /**
      * @notice When transfering, we burn the ownership from the latest owned tokens.
      */
-    function _burnLatest(address account, uint256 amount) private {
+    function _burnLatest(address account, uint256 amount)
+        private
+        returns (uint256)
+    {
         uint256 _remainingAmount = amount;
         for (uint256 i = ownerships[account].length; i >= 0; i--) {
             _remainingAmount = _burnOwnership(
@@ -114,6 +138,7 @@ abstract contract ERC1400OwnershipSnapshot is ERC1400 {
 
     function _burnOwnership(Ownership storage ownership, uint256 amount)
         private
+        returns (uint256)
     {
         uint256 _ownedAmount = ownership.amount;
         if (amount > _ownedAmount) {
