@@ -15,7 +15,7 @@ abstract contract ERC1400OwnershipSnapshot is ERC1400 {
     mapping(address => Ownership[]) public ownerships;
 
     /**
-     * @notice Issue tokens from default partition.
+     * @notice Unsorted insertion of previously owned amount at specified timestamp.
      * @param partition Name of the partition.
      * @param timestamp Owned the issued token amount from date.
      * @param account Address for which we want to issue tokens.
@@ -102,10 +102,7 @@ abstract contract ERC1400OwnershipSnapshot is ERC1400 {
     function _burnOldest(address account, uint256 amount) private {
         uint256 _remainingAmount = amount;
         for (uint256 i = 0; i < ownerships[account].length; i++) {
-            _remainingAmount = _burnOwnership(
-                ownerships[account][i],
-                _remainingAmount
-            );
+            _remainingAmount = _burnOwnership(i, account, _remainingAmount);
             if (_remainingAmount == 0) {
                 break;
             }
@@ -122,12 +119,8 @@ abstract contract ERC1400OwnershipSnapshot is ERC1400 {
         returns (uint256)
     {
         uint256 _remainingAmount = amount;
-        for (uint256 i = ownerships[account].length; i >= 0; i--) {
-            _remainingAmount = _burnOwnership(
-                ownerships[account][i],
-                _remainingAmount
-            );
-
+        for (uint256 i = ownerships[account].length - 1; i >= 0; i--) {
+            _remainingAmount = _burnOwnership(i, account, _remainingAmount);
             if (_remainingAmount == 0) {
                 break;
             }
@@ -136,12 +129,14 @@ abstract contract ERC1400OwnershipSnapshot is ERC1400 {
         require(_remainingAmount == 0);
     }
 
-    function _burnOwnership(Ownership storage ownership, uint256 amount)
-        private
-        returns (uint256)
-    {
+    function _burnOwnership(
+        uint256 index,
+        address account,
+        uint256 amount
+    ) private returns (uint256) {
+        Ownership storage ownership = ownerships[account][index];
         uint256 _ownedAmount = ownership.amount;
-        if (amount > _ownedAmount) {
+        if (amount >= _ownedAmount) {
             ownership.amount = 0;
 
             return amount.sub(_ownedAmount);
