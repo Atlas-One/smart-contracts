@@ -1,4 +1,5 @@
-const { BN } = require("@openzeppelin/test-helpers");
+const { BN, time } = require("@openzeppelin/test-helpers");
+
 const ERC1400OwnershipSnapshotMock = artifacts.require(
   "ERC1400OwnershipSnapshotMock"
 );
@@ -28,7 +29,10 @@ contract("ERC1400OwnershipSnapshot", function ([deployer, holder]) {
 
   describe("issue", () => {
     it("should have created an ownership timestamp for the holder", async () => {
-      const { amount } = await token.ownerships(holder, 0);
+      const { amount } = await token.ownerships(
+        holder,
+        await token.initialOwnershipTimestamp(holder)
+      );
       assert.equal(amount.toString(), initialSupply.toString());
     });
   });
@@ -39,6 +43,7 @@ contract("ERC1400OwnershipSnapshot", function ([deployer, holder]) {
 
   describe("describeOwnership", function () {
     it("should issue and set the ownership timestamp to the provided timestamp", async () => {
+      await time.increase(10);
       await token.issueByPartition(
         issuedPartition,
         holder,
@@ -48,6 +53,7 @@ contract("ERC1400OwnershipSnapshot", function ([deployer, holder]) {
           from: deployer,
         }
       );
+
       const { amounts: amounts1 } = await token.describeOwnership(
         holder,
         initialSupply
@@ -95,8 +101,9 @@ contract("ERC1400OwnershipSnapshot", function ([deployer, holder]) {
     });
   });
 
-  describe.only("transfer", function () {
+  describe("transfer", function () {
     it("should burn latest ownership", async () => {
+      await time.increase(10);
       await token.issueByPartition(
         issuedPartition,
         holder,

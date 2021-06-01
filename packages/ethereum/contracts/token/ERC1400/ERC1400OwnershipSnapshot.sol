@@ -9,10 +9,15 @@ abstract contract ERC1400OwnershipSnapshot is ERC1400 {
     using SafeMath for uint256;
 
     struct Ownership {
-        uint256 timestamp;
         uint256 amount;
+        uint256 next;
+        uint256 prev;
     }
-    mapping(address => Ownership[]) public ownerships;
+    mapping(address => uint256) public initialOwnershipTimestamp;
+    mapping(address => uint256) public latestOwnershipTimestamp;
+    mapping(address => mapping(uint256 => Ownership)) public ownerships;
+
+    bool private skipCaptureOwnernship = false;
 
     /**
      * @notice Unsorted insertion of previously owned amount at specified timestamp.
@@ -29,11 +34,41 @@ abstract contract ERC1400OwnershipSnapshot is ERC1400 {
         uint256 amount,
         bytes calldata data
     ) external onlyMinter onlyIssuable {
+        // skip _beforeTokenTransfer hook that calls _captureOwnernship
+        skipCaptureOwnernship = true;
+
         _issueByPartition(partition, msg.sender, account, amount, data);
 
-        // modify the latest addition with the provided timestamp
-        ownerships[account][ownerships[account].length - 1]
-            .timestamp = timestamp;
+        uint256 before = initialOwnershipTimestamp[account];
+        while (before != 0) {
+            if (before > timestamp) {
+                if (ownerships[account][before].prev != 0) {
+                    ownerships[account][ownerships[account][before].prev]
+                        .next = timestamp;
+                }
+                ownerships[account][before].prev = timestamp;
+            }
+            before = ownerships[account][before].next;
+        }
+
+        if (initialOwnershipTimestamp[account] < timestamp) {
+            initialOwnershipTimestamp[account] = timestamp;
+        }
+        if (
+            latestOwnershipTimestamp[account] == 0 ||
+            latestOwnershipTimestamp[account] > timestamp
+        ) {
+            latestOwnershipTimestamp[account] = timestamp;
+        }
+
+        ownerships[account][timestamp] = Ownership({
+            amount: amount,
+            prev: ownerships[account][before].prev,
+            next: before
+        });
+
+        // resume _beforeTokenTransfer hook that calls _captureOwnernship
+        skipCaptureOwnernship = false;
     }
 
     /**
@@ -48,8 +83,10 @@ abstract contract ERC1400OwnershipSnapshot is ERC1400 {
     {
         uint256 size = 0;
         uint256 _remainingAmount = amount;
-        for (uint256 i = 0; i < ownerships[account].length; i++) {
-            Ownership storage ownership = ownerships[account][i];
+
+        uint256 current = initialOwnershipTimestamp[account];
+        while (current != 0) {
+            Ownership storage ownership = ownerships[account][current];
 
             if (_remainingAmount >= ownership.amount) {
                 _remainingAmount = _remainingAmount.sub(ownership.amount);
@@ -59,18 +96,21 @@ abstract contract ERC1400OwnershipSnapshot is ERC1400 {
 
             size++;
 
+            current = ownership.next;
             if (_remainingAmount == 0) {
                 break;
             }
         }
-        require(_remainingAmount == 0);
+        require(_remainingAmount == 0, "55");
 
         amounts = new uint256[](size);
         durations = new uint256[](size);
 
         _remainingAmount = amount;
-        for (uint256 i = 0; i < ownerships[account].length; i++) {
-            Ownership storage ownership = ownerships[account][i];
+        current = initialOwnershipTimestamp[account];
+        uint256 i = 0;
+        while (current != 0) {
+            Ownership storage ownership = ownerships[account][current];
 
             if (_remainingAmount >= ownership.amount) {
                 amounts[i] = ownership.amount;
@@ -79,21 +119,39 @@ abstract contract ERC1400OwnershipSnapshot is ERC1400 {
                 amounts[i] = ownership.amount.sub(_remainingAmount);
                 _remainingAmount = 0;
             }
-            durations[i] = block.timestamp - ownership.timestamp;
+            durations[i] = block.timestamp - current;
+
+            i++;
+            current = ownership.next;
             if (_remainingAmount == 0) {
                 break;
             }
         }
-        require(_remainingAmount == 0);
+        require(_remainingAmount == 0, "55");
     }
 
     /**
      * @notice Captures the time when the token amount was received
      */
     function _captureOwnernship(address account, uint256 amount) private {
-        ownerships[account].push(
-            Ownership({amount: amount, timestamp: block.timestamp})
-        );
+        if (skipCaptureOwnernship == false) {
+            ownerships[account][block.timestamp] = Ownership({
+                amount: amount,
+                prev: latestOwnershipTimestamp[account],
+                next: 0
+            });
+
+            if (initialOwnershipTimestamp[account] == 0) {
+                initialOwnershipTimestamp[account] = block.timestamp;
+            }
+
+            if (latestOwnershipTimestamp[account] != 0) {
+                ownerships[account][latestOwnershipTimestamp[account]]
+                    .next = block.timestamp;
+            }
+
+            latestOwnershipTimestamp[account] = block.timestamp;
+        }
     }
 
     /**
@@ -101,8 +159,18 @@ abstract contract ERC1400OwnershipSnapshot is ERC1400 {
      */
     function _burnOldest(address account, uint256 amount) private {
         uint256 _remainingAmount = amount;
-        for (uint256 i = 0; i < ownerships[account].length; i++) {
-            _remainingAmount = _burnOwnership(i, account, _remainingAmount);
+        uint256 current = initialOwnershipTimestamp[account];
+        while (current != 0) {
+            _remainingAmount = _burnOwnership(
+                current,
+                account,
+                _remainingAmount
+            );
+
+            current = ownerships[account][current].next;
+
+            _deleteOwnership(current, account);
+
             if (_remainingAmount == 0) {
                 break;
             }
@@ -119,8 +187,18 @@ abstract contract ERC1400OwnershipSnapshot is ERC1400 {
         returns (uint256)
     {
         uint256 _remainingAmount = amount;
-        for (uint256 i = ownerships[account].length - 1; i >= 0; i--) {
-            _remainingAmount = _burnOwnership(i, account, _remainingAmount);
+        uint256 current = latestOwnershipTimestamp[account];
+        while (current != 0) {
+            _remainingAmount = _burnOwnership(
+                current,
+                account,
+                _remainingAmount
+            );
+
+            current = ownerships[account][current].prev;
+
+            _deleteOwnership(current, account);
+
             if (_remainingAmount == 0) {
                 break;
             }
@@ -130,11 +208,11 @@ abstract contract ERC1400OwnershipSnapshot is ERC1400 {
     }
 
     function _burnOwnership(
-        uint256 index,
+        uint256 timestamp,
         address account,
         uint256 amount
     ) private returns (uint256) {
-        Ownership storage ownership = ownerships[account][index];
+        Ownership storage ownership = ownerships[account][timestamp];
         uint256 _ownedAmount = ownership.amount;
         if (amount >= _ownedAmount) {
             ownership.amount = 0;
@@ -145,6 +223,20 @@ abstract contract ERC1400OwnershipSnapshot is ERC1400 {
         ownership.amount = _ownedAmount.sub(amount);
 
         return 0;
+    }
+
+    function _deleteOwnership(uint256 timestamp, address account) private {
+        Ownership storage ownership = ownerships[account][timestamp];
+        if (ownership.amount == 0) {
+            if (ownership.next != 0) {
+                ownerships[account][ownership.next].prev = ownership.prev;
+            }
+            if (ownership.prev != 0) {
+                ownerships[account][ownership.prev].prev = ownership.next;
+            }
+
+            delete ownerships[account][timestamp];
+        }
     }
 
     function _beforeTokenTransfer(
