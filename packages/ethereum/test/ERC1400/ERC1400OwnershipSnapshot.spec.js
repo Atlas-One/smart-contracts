@@ -38,7 +38,58 @@ contract("ERC1400OwnershipSnapshot", function ([deployer, holder]) {
   });
 
   describe("issueOwned", function () {
-    it("should issue and set the ownership timestamp to the provided timestamp", async () => {});
+    it("should issue and set the ownership timestamp to the provided timestamp", async () => {
+      await time.increase(10);
+      const timestamp1 = await time.latest();
+
+      await time.increase(10);
+      const timestamp2 = await time.latest();
+
+      await time.increase(10);
+      await token.issueOwned(
+        issuedPartition,
+        timestamp1,
+        holder,
+        5 * initialSupply,
+        "0x",
+        {
+          from: deployer,
+        }
+      );
+
+      await time.increase(10);
+      await token.issueByPartition(
+        issuedPartition,
+        holder,
+        initialSupply * 2,
+        "0x",
+        {
+          from: deployer,
+        }
+      );
+
+      await time.increase(10);
+      await token.issueOwned(
+        issuedPartition,
+        timestamp2,
+        holder,
+        4 * initialSupply,
+        "0x",
+        {
+          from: deployer,
+        }
+      );
+
+      const { amount } = await token.ownerships(holder, timestamp1);
+      assert.equal(amount.toString(), (5 * initialSupply).toString());
+
+      const { amount: amount2, prev } = await token.ownerships(
+        holder,
+        timestamp2
+      );
+      assert.equal(amount2.toString(), (4 * initialSupply).toString());
+      assert.equal(prev.toString(), timestamp1.toString());
+    });
   });
 
   describe("describeOwnership", function () {

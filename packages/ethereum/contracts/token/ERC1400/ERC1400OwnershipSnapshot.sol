@@ -34,6 +34,7 @@ abstract contract ERC1400OwnershipSnapshot is ERC1400 {
         uint256 amount,
         bytes calldata data
     ) external onlyMinter onlyIssuable {
+        require(ownerships[account][timestamp].amount == 0);
         // skip _beforeTokenTransfer hook that calls _captureOwnernship
         skipCaptureOwnernship = true;
 
@@ -41,23 +42,19 @@ abstract contract ERC1400OwnershipSnapshot is ERC1400 {
 
         uint256 before = initialOwnershipTimestamp[account];
         while (before != 0) {
-            if (before > timestamp) {
-                if (ownerships[account][before].prev != 0) {
-                    ownerships[account][ownerships[account][before].prev]
-                        .next = timestamp;
-                }
-                ownerships[account][before].prev = timestamp;
+            if (before < timestamp) {
+                break;
             }
             before = ownerships[account][before].next;
         }
 
-        if (initialOwnershipTimestamp[account] < timestamp) {
+        if (
+            initialOwnershipTimestamp[account] == 0 ||
+            initialOwnershipTimestamp[account] > timestamp
+        ) {
             initialOwnershipTimestamp[account] = timestamp;
         }
-        if (
-            latestOwnershipTimestamp[account] == 0 ||
-            latestOwnershipTimestamp[account] > timestamp
-        ) {
+        if (latestOwnershipTimestamp[account] < timestamp) {
             latestOwnershipTimestamp[account] = timestamp;
         }
 
@@ -66,6 +63,14 @@ abstract contract ERC1400OwnershipSnapshot is ERC1400 {
             prev: ownerships[account][before].prev,
             next: before
         });
+
+        if (before != 0) {
+            if (ownerships[account][before].prev != 0) {
+                ownerships[account][ownerships[account][before].prev]
+                    .next = timestamp;
+            }
+            ownerships[account][before].prev = timestamp;
+        }
 
         // resume _beforeTokenTransfer hook that calls _captureOwnernship
         skipCaptureOwnernship = false;
