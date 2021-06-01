@@ -86,11 +86,23 @@ class OwnershipSnapshots(sp.Contract):
         sp.if ~self.data.ownerships.contains(params.account):
             self.data.ownerships[params.account] = sp.map({})
         
-        len = sp.len(self.data.ownerships[params.account])
-        self.data.ownerships[params.account][sp.as_nat((len + 1) - 1)] = sp.record(
-            timestamp = sp.now,
-            amount = params.amount
-        )
+        sp.if self.data.latestOwnershipTimestamp.contains(params.account):
+            self.data.ownerships[params.account][sp.now] = sp.record(
+                amount = params.amount,
+                next = sp.none,
+                prev = sp.some(self.data.latestOwnershipTimestamp[params.account])
+            )
+        sp.else:
+            self.data.ownerships[params.account][sp.now] = sp.record(
+                amount = params.amount,
+                next = sp.none,
+                prev = sp.none
+            )
+        
+        sp.if ~self.data.initialOwnershipTimestamp.contains(params.account):
+            self.data.initialOwnershipTimestamp[params.account] = sp.now
+        
+        self.data.latestOwnershipTimestamp[params.account] = sp.now
 
     def burnOldestOwnership(self, params):
         sp.set_type(params, sp.TRecord(account = sp.TAddress, amount = sp.TNat))
@@ -99,20 +111,22 @@ class OwnershipSnapshots(sp.Contract):
             sp.verify(sp.len(self.data.ownerships[params.account]) > 0)
             
             remainingAmount = sp.local('remainingAmount', params.amount)
-            index = sp.local('index', sp.nat(0))
+            current = sp.local('current', self.data.initialOwnershipTimestamp[params.account])
             
             sp.while remainingAmount.value > 0:
-                sp.if remainingAmount.value > self.data.ownerships[params.account][index.value].amount:
-                    remainingAmount.value = sp.as_nat(remainingAmount.value - self.data.ownerships[params.account][index.value].amount)
-                    self.data.ownerships[params.account][index.value].amount = sp.nat(0)
+                sp.if remainingAmount.value > self.data.ownerships[params.account][current.value].amount:
+                    remainingAmount.value = sp.as_nat(remainingAmount.value - self.data.ownerships[params.account][current.value].amount)
+                    self.data.ownerships[params.account][current.value].amount = sp.nat(0)
                 sp.else:
-                    self.data.ownerships[params.account][index.value].amount = sp.as_nat(self.data.ownerships[params.account][index.value].amount - remainingAmount.value)
+                    self.data.ownerships[params.account][current.value].amount = sp.as_nat(self.data.ownerships[params.account][current.value].amount - remainingAmount.value)
                     remainingAmount.value = 0
+                    
+                    self.deleteOwnership(sp.record(account=params.account, timestamp=current.value))
                 
-                index.value = index.value + sp.as_nat(1)
-                sp.if remainingAmount.value > 0:
-                    sp.verify(index.value < sp.len(self.data.ownerships[params.account]))
-
+                sp.if self.data.ownerships[params.account][current.value].next.is_some():
+                    current.value = self.data.ownerships[params.account][current.value].next.open_some()
+                sp.else:
+                    sp.verify(remainingAmount.value == 0)
 
     def burnLatestOwnership(self, params):
         sp.set_type(params, sp.TRecord(account = sp.TAddress, amount = sp.TNat))
@@ -121,20 +135,27 @@ class OwnershipSnapshots(sp.Contract):
             sp.verify(sp.len(self.data.ownerships[params.account]) > sp.as_nat(sp.len(self.data.ownerships[params.account]) - 1))
             
             remainingAmount = sp.local('remainingAmount', params.amount)
-            index = sp.local('index', sp.as_nat(sp.len(self.data.ownerships[params.account]) - 1))
+            current = sp.local('current', self.data.latestOwnershipTimestamp[params.account])
             
             sp.while remainingAmount.value > 0:
-                sp.if remainingAmount.value > self.data.ownerships[params.account][index.value].amount:
-                    remainingAmount.value = sp.as_nat(remainingAmount.value - self.data.ownerships[params.account][index.value].amount)
-                    self.data.ownerships[params.account][index.value].amount = sp.nat(0)
+                sp.if remainingAmount.value > self.data.ownerships[params.account][current.value].amount:
+                    remainingAmount.value = sp.as_nat(remainingAmount.value - self.data.ownerships[params.account][current.value].amount)
+                    self.data.ownerships[params.account][current.value].amount = sp.nat(0)
                 sp.else:
-                    self.data.ownerships[params.account][index.value].amount = sp.as_nat(self.data.ownerships[params.account][index.value].amount - remainingAmount.value)
+                    self.data.ownerships[params.account][current.value].amount = sp.as_nat(self.data.ownerships[params.account][current.value].amount - remainingAmount.value)
                     remainingAmount.value = 0
-                
-                sp.if remainingAmount.value > 0:
-                    sp.verify(index.value > 0)
                     
-                index.value = sp.as_nat(index.value - 1)
+                    self.deleteOwnership(sp.record(account=params.account, timestamp=current.value))
+                
+                sp.if self.data.ownerships[params.account][current.value].prev.is_some():
+                    current.value = self.data.ownerships[params.account][current.value].prev.open_some()
+                sp.else:
+                    sp.verify(remainingAmount.value == 0)
+
+    def deleteOwnership(self, params):
+        sp.set_type(params, sp.TRecord(account = sp.TAddress, timestamp = sp.TTimestamp))
+        
+        del self.data.ownerships[params.account][params.timestamp]
 
 
 class Mintable(AccessControl, OwnershipSnapshots):
@@ -179,11 +200,11 @@ class Mintable(AccessControl, OwnershipSnapshots):
             sp.if ~self.data.ownerships.contains(p.address):
                 self.data.ownerships[p.address] = sp.map({})
             
-            len = sp.len(self.data.ownerships[p.address])
-            self.data.ownerships[p.address][sp.as_nat((len + 1) - 1)] = sp.record(
-                    timestamp = p.timestamp,
-                    amount = p.amount
-                )
+            # len = sp.len(self.data.ownerships[p.address])
+            # self.data.ownerships[p.address][sp.as_nat((len + 1) - 1)] = sp.record(
+            #         timestamp = p.timestamp,
+            #         amount = p.amount
+            #     )
             
     
     @sp.entry_point
@@ -593,14 +614,23 @@ class ST12(
                 burners=burners,
                 minters=burners,
             ),
+            initialOwnershipTimestamp= sp.big_map({},
+                tkey=sp.TAddress, 
+                tvalue=sp.TTimestamp
+            ),
+            latestOwnershipTimestamp= sp.big_map({},
+                tkey=sp.TAddress, 
+                tvalue=sp.TTimestamp
+            ),
             ownerships=sp.big_map(
                 {},
                 tkey=sp.TAddress, 
                 tvalue=sp.TMap(
-                    sp.TNat,
+                    sp.TTimestamp,
                     sp.TRecord(
-                        timestamp = sp.TTimestamp,
-                        amount = sp.TNat
+                        amount = sp.TNat,
+                        next = sp.TOption(sp.TTimestamp),
+                        prev = sp.TOption(sp.TTimestamp)
                     )
                 )
             )
@@ -643,17 +673,20 @@ def add_test(config, is_default=True):
         
         scenario.h2("Ownerships")
         scenario += c1.mint(sp.list([sp.record(address=alice.address, amount=12)])).run(sender=admin, now=sp.timestamp(0))
-        scenario.verify(c1.data.ownerships[alice.address][0].amount == 12)
+        scenario.verify(c1.data.ownerships[alice.address][sp.timestamp(0)].amount == 12)
         scenario += c1.burn(sp.list([sp.record(address=alice.address, amount=6)])).run(sender=admin, now=sp.timestamp(1))
-        scenario.verify(c1.data.ownerships[alice.address][0].amount == 6)
-        scenario += c1.mint(sp.list([sp.record(address=alice.address, amount=12)])).run(sender=admin, now=sp.timestamp(2))
+        scenario.verify(c1.data.ownerships[alice.address][sp.timestamp(0)].amount == 6)
+        scenario += c1.mint(sp.list([sp.record(address=alice.address, amount=12)])).run(
+            sender=admin,
+            now=sp.timestamp(2)
+        )
         scenario += c1.transfer(from_=alice.address, to_=bob.address, value=6).run(
             sender=alice,
             now=sp.timestamp(2)
         )
-        scenario.verify(c1.data.ownerships[alice.address][0].amount == 6)
-        scenario.verify(c1.data.ownerships[alice.address][1].amount == 6)
-        scenario.verify(c1.data.ownerships[bob.address][0].amount == 6)
+        scenario.verify(c1.data.ownerships[alice.address][sp.timestamp(0)].amount == 6)
+        scenario.verify(c1.data.ownerships[alice.address][sp.timestamp(2)].amount == 6)
+        scenario.verify(c1.data.ownerships[bob.address][sp.timestamp(2)].amount == 6)
         scenario += c1.burn(sp.list([sp.record(address=bob.address, amount=6)])).run(sender=admin, now=sp.timestamp(3))
         scenario += c1.burn(sp.list([sp.record(address=alice.address, amount=12)])).run(sender=admin, now=sp.timestamp(3))
             
