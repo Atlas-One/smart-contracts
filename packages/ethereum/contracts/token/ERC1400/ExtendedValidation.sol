@@ -38,7 +38,7 @@ abstract contract ExtendedValidation is AccessControl {
             address extention = getRoleMember(VALIDATOR_ROLE, index);
 
             (statusCode, appCode) = IERC1400Validator(extention)
-                .canTransferByPartition(
+                .validateTransfer(
                 msg.data,
                 partition,
                 operator,

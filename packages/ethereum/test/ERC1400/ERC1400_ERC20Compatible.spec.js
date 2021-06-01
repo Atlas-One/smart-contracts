@@ -1,6 +1,6 @@
 const { expectRevert } = require("@openzeppelin/test-helpers");
 
-const ERC1400 = artifacts.require("ERC20Compatible");
+const ERC1400 = artifacts.require("ERC1400_ERC20Compatible");
 
 const MINTER_ROLE =
   "0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6";
@@ -207,7 +207,7 @@ const issueOnMultiplePartitions = async (
 };
 
 contract(
-  "ERC20Compatible",
+  "ERC1400_ERC20Compatible",
   function ([owner, operator, controller, tokenHolder, recipient, unknown]) {
     describe("contract creation", function () {
       it("fails deploying the contract if granularity is lower than 1", async function () {
@@ -1103,7 +1103,9 @@ contract(
                   await this.token.setDefaultPartitions(reversedPartitions, {
                     from: owner,
                   });
-                  const { logs } = await this.token.transferFromWithData(
+                  const {
+                    logs,
+                  } = await this.token.transferFromWithData(
                     tokenHolder,
                     recipient,
                     2.5 * issuanceAmount,
@@ -1621,7 +1623,9 @@ contract(
                 operator,
                 { from: tokenHolder }
               );
-              const { logs } = await this.token.operatorTransferByPartition(
+              const {
+                logs,
+              } = await this.token.operatorTransferByPartition(
                 partition1,
                 tokenHolder,
                 recipient,
@@ -1733,7 +1737,9 @@ contract(
                 operator,
                 { from: tokenHolder }
               );
-              const { logs } = await this.token.operatorTransferByPartition(
+              const {
+                logs,
+              } = await this.token.operatorTransferByPartition(
                 partition1,
                 tokenHolder,
                 recipient,
@@ -1953,7 +1959,9 @@ contract(
         );
       });
       it("emits an authorized event", async function () {
-        const { logs } = await this.token.authorizeOperatorByPartition(
+        const {
+          logs,
+        } = await this.token.authorizeOperatorByPartition(
           partition1,
           operator,
           { from: tokenHolder }
@@ -2936,7 +2944,9 @@ contract(
                 from: tokenHolder,
               }
             );
-            const { logs } = await this.token.operatorRedeemByPartition(
+            const {
+              logs,
+            } = await this.token.operatorRedeemByPartition(
               partition1,
               tokenHolder,
               redeemAmount,

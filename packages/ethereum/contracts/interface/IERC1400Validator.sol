@@ -7,7 +7,7 @@ interface IERC1400Validator {
      * @return ESC (Ethereum Status Code) following the EIP-1066 standard
      * @return Application specific reason codes with additional details
      */
-    function canTransferByPartition(
+    function validateTransfer(
         bytes calldata payload,
         bytes32 partition,
         address operator,
