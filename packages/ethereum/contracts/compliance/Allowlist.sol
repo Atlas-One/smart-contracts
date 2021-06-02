@@ -2,10 +2,11 @@
 
 pragma solidity >=0.6.0 <0.8.0;
 
-import "./Administrable.sol";
+import "./Roles.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 
-abstract contract Allowlist is Administrable {
+abstract contract Allowlist is AccessControl, Roles {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     event AddedToAllowlist(address indexed account);

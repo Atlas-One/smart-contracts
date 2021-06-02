@@ -13,8 +13,6 @@ import "../token/ERC1400/PartitionDestination.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
-// import "../utils/OperatorData.sol";
-
 // Current implementation checks:
 // - only burner can burn
 // - only controller can switch partitions
@@ -52,20 +50,9 @@ contract GeneralTransferManager is
         address from,
         address to,
         uint256, /* value */
-        bytes calldata data,
+        bytes calldata, /* data */
         bytes calldata /*  operatorData */
     ) external view override returns (bytes1, bytes32) {
-        // Operator should not burn tokens
-        if (to == address(0) && !_isBurner(operator)) {
-            return (bytes1(0x50), bytes32(0));
-        }
-
-        // Operator should not be able to switch partitions
-        bytes32 toPartition = _getDestinationPartition(data, partition);
-        if (partition != toPartition && !_isController(operator, partition)) {
-            return (bytes1(0x50), bytes32(0));
-        }
-
         // *IMPORTANT* for compliance
         return _canTransferByAllowlist(operator, partition, from, to);
     }
@@ -112,17 +99,6 @@ contract GeneralTransferManager is
         }
 
         return (bytes1(0x51), bytes32(0));
-    }
-
-    /**
-     * @dev _msgSender() is the token contract
-     */
-    function _isBurner(address account) internal view returns (bool) {
-        return
-            // is token administrator/owner
-            AccessControl(_msgSender()).hasRole(ADMIN_ROLE, account) ||
-            // has the
-            AccessControl(_msgSender()).hasRole(BURNER_ROLE, account);
     }
 
     /**

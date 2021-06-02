@@ -33,7 +33,9 @@ abstract contract ERC1400OwnershipSnapshot is ERC1400 {
         address account,
         uint256 amount,
         bytes calldata data
-    ) external onlyMinter onlyIssuable {
+    ) external {
+        _onlyIssuable();
+        _onlyMinter(msg.sender);
         require(ownerships[account][timestamp].amount == 0);
         // skip _beforeTokenTransfer hook that calls _captureOwnernship
         skipCaptureOwnernship = true;
