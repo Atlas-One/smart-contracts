@@ -737,7 +737,7 @@ contract ERC1400 is
         bytes32 toPartition = _getDestinationPartition(data, fromPartition);
         // Only controllers can switch partitions
         if (toPartition != fromPartition) {
-            require(!_isControllerForPartition(toPartition, operator), "58");
+            require(_isControllerForPartition(toPartition, operator), "58");
         }
 
         _assertValidTransfer(
