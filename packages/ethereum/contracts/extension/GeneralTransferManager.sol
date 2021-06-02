@@ -13,8 +13,6 @@ import "../token/ERC1400/PartitionDestination.sol";
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
-// import "../utils/OperatorData.sol";
-
 // Current implementation checks:
 // - only burner can burn
 // - only controller can switch partitions
