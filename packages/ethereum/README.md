@@ -55,8 +55,8 @@ Ropsten Test Network:
 | Contract               | Address                                    |
 | ---------------------- | ------------------------------------------ |
 | ERC1820                | 0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24 |
-| GeneralTransferManager | 0x09C56c5ceBaB233f98F1b13AE72Fd6Ff11091E78 |
-| VestingEscrowWallet    | 0x5227206eA4B03866db4bbf3A43eA1E59C053C0E2 |
+| GeneralTransferManager | 0xE8C45cD53FE265fc503695E7489745e0792e48e5 |
+| VestingEscrowWallet    | 0xAc3255F83b692dfa91B9Cf88bc283fB8d4bfCF8a |
 
 ## Contract Sizes
 
