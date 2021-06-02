@@ -37,7 +37,9 @@ abstract contract ERC1400Batch is ERC1400 {
         uint256[] calldata amounts,
         bytes32[] calldata partitions,
         bytes calldata data
-    ) external onlyMinter onlyIssuable {
+    ) external {
+        _onlyIssuable();
+        _onlyMinter(msg.sender);
         require(beneficiaries.length == amounts.length);
         require(beneficiaries.length == partitions.length);
 
@@ -63,7 +65,9 @@ abstract contract ERC1400Batch is ERC1400 {
         uint256[] calldata amounts,
         bytes32[] calldata partitions,
         bytes calldata data
-    ) external onlyBurner {
+    ) external {
+        _onlyBurner(msg.sender);
+
         require(holders.length == amounts.length);
         require(holders.length == partitions.length);
 

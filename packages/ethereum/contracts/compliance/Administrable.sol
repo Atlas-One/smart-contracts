@@ -7,43 +7,41 @@ import "../interface/IERC1400Validator.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 abstract contract Administrable is AccessControl, Roles {
-    modifier onlyAdmin {
+    function _onlyAdmin(address account) internal view {
         require(
-            hasRole(ADMIN_ROLE, msg.sender),
+            hasRole(ADMIN_ROLE, account),
             "58" // 0x58	invalid operator (transfer agent)
         );
-        _;
     }
-    modifier onlyController {
+
+    function _onlyController(address account) internal view {
         require(
-            hasRole(CONTROLLER_ROLE, msg.sender) ||
-                hasRole(ADMIN_ROLE, msg.sender),
+            hasRole(CONTROLLER_ROLE, account) || hasRole(ADMIN_ROLE, account),
             "58" // 0x58	invalid operator (transfer agent)
         );
-        _;
     }
-    modifier onlyMinter {
+
+    function _onlyMinter(address account) internal view {
         require(
-            hasRole(MINTER_ROLE, msg.sender) || hasRole(ADMIN_ROLE, msg.sender),
+            hasRole(MINTER_ROLE, account) || hasRole(ADMIN_ROLE, account),
             "58" // 0x58	invalid operator (transfer agent)
         );
-        _;
     }
-    modifier onlyBurner {
+
+    function _onlyBurner(address account) internal view {
         require(
-            hasRole(BURNER_ROLE, msg.sender) ||
-                hasRole(CONTROLLER_ROLE, msg.sender) ||
-                hasRole(ADMIN_ROLE, msg.sender),
+            hasRole(BURNER_ROLE, account) ||
+                hasRole(CONTROLLER_ROLE, account) ||
+                hasRole(ADMIN_ROLE, account),
             "58" // 0x58	invalid operator (transfer agent)
         );
-        _;
     }
-    modifier onlyPauser {
+
+    function _onlyPauser(address account) internal view {
         require(
-            hasRole(PAUSER_ROLE, msg.sender) || hasRole(ADMIN_ROLE, msg.sender),
+            hasRole(PAUSER_ROLE, account) || hasRole(ADMIN_ROLE, account),
             "54" // 0x54	transfers halted (contract paused)
         );
-        _;
     }
 
     /**

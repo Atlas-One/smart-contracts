@@ -9,14 +9,16 @@ abstract contract ERC1400Pausable is ERC1400, Pausable {
     /**
      * @notice freezes transfers
      */
-    function pause() public onlyPauser {
+    function pause() public {
+        _onlyPauser(msg.sender);
         _pause();
     }
 
     /**
      * @notice unfreeze transfers
      */
-    function resume() public onlyPauser {
+    function resume() public {
+        _onlyPauser(msg.sender);
         _unpause();
     }
 

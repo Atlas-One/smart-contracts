@@ -84,11 +84,6 @@ contract ERC1400 is
     mapping(address => mapping(bytes32 => mapping(address => bool)))
         internal _authorizedOperatorByPartition;
 
-    modifier onlyIssuable() {
-        require(_isIssuable, "55"); // 0x55	funds locked (lockup period)
-        _;
-    }
-
     /**
      * @dev Initialize ERC1400
      * @param name Name of the token.
@@ -133,6 +128,10 @@ contract ERC1400 is
         }
     }
 
+    function _onlyIssuable() internal view {
+        require(_isIssuable, "55"); // 0x55	funds locked (lockup period)
+    }
+
     /**
      * @dev Access a document associated with the token.
      * @param name Short name (represented as a bytes32) associated to the document.
@@ -158,7 +157,8 @@ contract ERC1400 is
         bytes32 name,
         string calldata uri,
         bytes32 documentHash
-    ) external override onlyController {
+    ) external override {
+        _onlyController(msg.sender);
         _documents[name] = Doc({docURI: uri, docHash: documentHash});
         emit DocumentUpdated(name, uri, documentHash);
     }
@@ -167,7 +167,8 @@ contract ERC1400 is
      * @dev Remove document associated with the token.
      * @param name Short name (represented as a bytes32) associated to the document.
      */
-    function removeDocument(bytes32 name) external override onlyController {
+    function removeDocument(bytes32 name) external override {
+        _onlyController(msg.sender);
         string memory documentURI = _documents[name].docURI;
         bytes32 documentHash = _documents[name].docHash;
 
@@ -326,7 +327,8 @@ contract ERC1400 is
         uint256 _value,
         bytes calldata _data,
         bytes calldata _operatorData
-    ) external override onlyController {
+    ) external override {
+        _onlyController(msg.sender);
         _transferByDefaultPartitions(_msgSender(), _from, _to, _value, _data);
         emit ControllerTransfer(
             _msgSender(),
@@ -355,7 +357,8 @@ contract ERC1400 is
         uint256 _value,
         bytes calldata _data,
         bytes calldata _operatorData
-    ) external override onlyController {
+    ) external override {
+        _onlyController(msg.sender);
         _redeemByDefaultPartitions(_msgSender(), _tokenHolder, _value, _data);
         emit ControllerRedemption(
             _msgSender(),
@@ -458,7 +461,8 @@ contract ERC1400 is
      * @dev Definitely renounce the possibility to issue new tokens.
      * Once set to false, '_isIssuable' can never be set to 'true' again.
      */
-    function renounceIssuance() external onlyAdmin {
+    function renounceIssuance() external {
+        _onlyAdmin(msg.sender);
         _isIssuable = false;
     }
 
@@ -475,7 +479,8 @@ contract ERC1400 is
      * @dev Definitely renounce the possibility to control tokens on behalf of tokenHolders.
      * Once set to false, '_isControllable' can never be set to 'true' again.
      */
-    function renounceControl() external onlyAdmin {
+    function renounceControl() external {
+        _onlyAdmin(msg.sender);
         _isControllable = false;
     }
 
@@ -489,7 +494,9 @@ contract ERC1400 is
         address tokenHolder,
         uint256 value,
         bytes calldata data
-    ) external override onlyMinter onlyIssuable {
+    ) external override {
+        _onlyIssuable();
+        _onlyMinter(msg.sender);
         require(_defaultPartitions.length != 0, "55"); // 0x55	funds locked (lockup period)
 
         _issueByPartition(
@@ -513,7 +520,9 @@ contract ERC1400 is
         address tokenHolder,
         uint256 value,
         bytes calldata data
-    ) external override onlyMinter onlyIssuable {
+    ) external override {
+        _onlyIssuable();
+        _onlyMinter(msg.sender);
         _issueByPartition(partition, msg.sender, tokenHolder, value, data);
     }
 
@@ -522,11 +531,8 @@ contract ERC1400 is
      * @param value Number of tokens to redeem.
      * @param data Information attached to the redemption, by the token holder.
      */
-    function redeem(uint256 value, bytes calldata data)
-        external
-        override
-        onlyBurner
-    {
+    function redeem(uint256 value, bytes calldata data) external override {
+        _onlyBurner(msg.sender);
         _redeemByDefaultPartitions(msg.sender, msg.sender, value, data);
     }
 
@@ -540,9 +546,9 @@ contract ERC1400 is
         address from,
         uint256 value,
         bytes calldata data
-    ) external override onlyBurner {
+    ) external override {
         require(_isOperator(msg.sender, from), "58"); // 0x58	invalid operator (transfer agent)
-
+        _onlyBurner(msg.sender);
         _redeemByDefaultPartitions(msg.sender, from, value, data);
     }
 
@@ -556,7 +562,7 @@ contract ERC1400 is
         bytes32 partition,
         uint256 value,
         bytes calldata data
-    ) external override onlyBurner {
+    ) external override {
         _redeemByPartition(partition, msg.sender, msg.sender, value, data, "");
     }
 
@@ -572,12 +578,13 @@ contract ERC1400 is
         address tokenHolder,
         uint256 value,
         bytes calldata operatorData
-    ) external override onlyBurner {
+    ) external override {
         require(
             _isOperatorForPartition(partition, msg.sender, tokenHolder),
             "58"
         ); // 0x58	invalid operator (transfer agent)
 
+        _onlyBurner(msg.sender);
         _redeemByPartition(
             partition,
             msg.sender,
@@ -665,10 +672,8 @@ contract ERC1400 is
      * Function used for ERC20 retrocompatibility.
      * @param partitions partitions to use by default when not specified.
      */
-    function setDefaultPartitions(bytes32[] calldata partitions)
-        external
-        onlyAdmin
-    {
+    function setDefaultPartitions(bytes32[] calldata partitions) external {
+        _onlyAdmin(msg.sender);
         _defaultPartitions = partitions;
     }
 
