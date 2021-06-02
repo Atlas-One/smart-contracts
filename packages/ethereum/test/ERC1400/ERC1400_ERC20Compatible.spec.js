@@ -2412,6 +2412,8 @@ contract(
           partitions,
           [issuanceAmount, issuanceAmount, issuanceAmount]
         );
+
+        await this.token.grantRole(BURNER_ROLE, tokenHolder);
       });
       describe("when defaultPartitions have been defined", function () {
         describe("when the amount is a multiple of the granularity", function () {
@@ -2555,6 +2557,8 @@ contract(
           partitions,
           [issuanceAmount, issuanceAmount, issuanceAmount]
         );
+
+        await this.token.grantRole(BURNER_ROLE, operator);
       });
       describe("when the operator is approved", function () {
         beforeEach(async function () {
@@ -2815,6 +2819,8 @@ contract(
           ZERO_BYTES32,
           { from: owner }
         );
+
+        await this.token.grantRole(BURNER_ROLE, tokenHolder);
       });
 
       describe("when the redeemer has enough balance for this partition", function () {
@@ -2908,6 +2914,8 @@ contract(
           ZERO_BYTES32,
           { from: owner }
         );
+
+        await this.token.grantRole(BURNER_ROLE, operator);
       });
 
       describe("when the sender is an operator for this partition", function () {
