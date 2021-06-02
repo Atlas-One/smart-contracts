@@ -139,12 +139,6 @@ contract ERC1400_ERC20Compatible is IERC20, ERC1400 {
         bytes memory, /* data */
         bytes memory /* operatorData */
     ) internal virtual override {
-        if (to == address(0)) {
-            emit Transfer(from, to, value);
-        } else if (from == address(0)) {
-            emit Transfer(from, to, value);
-        } else {
-            emit Transfer(from, to, value);
-        }
+        emit Transfer(from, to, value);
     }
 }
