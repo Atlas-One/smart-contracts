@@ -522,7 +522,11 @@ contract ERC1400 is
      * @param value Number of tokens to redeem.
      * @param data Information attached to the redemption, by the token holder.
      */
-    function redeem(uint256 value, bytes calldata data) external override {
+    function redeem(uint256 value, bytes calldata data)
+        external
+        override
+        onlyBurner
+    {
         _redeemByDefaultPartitions(msg.sender, msg.sender, value, data);
     }
 
@@ -536,7 +540,7 @@ contract ERC1400 is
         address from,
         uint256 value,
         bytes calldata data
-    ) external override {
+    ) external override onlyBurner {
         require(_isOperator(msg.sender, from), "58"); // 0x58	invalid operator (transfer agent)
 
         _redeemByDefaultPartitions(msg.sender, from, value, data);
@@ -551,8 +555,8 @@ contract ERC1400 is
     function redeemByPartition(
         bytes32 partition,
         uint256 value,
-        bytes calldata data // onlyBurner: Burner role verified in the GeneralTransferManager. Additional burning logic can be written to determine who can burn.
-    ) external override {
+        bytes calldata data
+    ) external override onlyBurner {
         _redeemByPartition(partition, msg.sender, msg.sender, value, data, "");
     }
 
@@ -567,8 +571,8 @@ contract ERC1400 is
         bytes32 partition,
         address tokenHolder,
         uint256 value,
-        bytes calldata operatorData // onlyBurner: Burner role verified in the GeneralTransferManager. Additional burning logic can be written to determine who can burn.
-    ) external override {
+        bytes calldata operatorData
+    ) external override onlyBurner {
         require(
             _isOperatorForPartition(partition, msg.sender, tokenHolder),
             "58"
