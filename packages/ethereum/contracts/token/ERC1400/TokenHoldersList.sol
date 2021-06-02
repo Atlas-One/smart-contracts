@@ -3,39 +3,19 @@
 pragma solidity >=0.6.0 <0.8.0;
 
 import "./ERC1400.sol";
+import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 
 abstract contract TokenHoldersList is ERC1400 {
-    address[] public tokenHolders;
-    mapping(address => uint256) internal _tokenHoldersIndex;
+    using EnumerableSet for EnumerableSet.AddressSet;
+
+    EnumerableSet.AddressSet internal tokenHolders;
+
+    function tokenHolder(uint256 index) public view returns (address) {
+        return tokenHolders.at(index);
+    }
 
     function tokenHoldersCount() public view returns (uint256) {
-        return tokenHolders.length;
-    }
-
-    function allTokenHolders() public view returns (address[] memory) {
-        return tokenHolders;
-    }
-
-    function _addTokenHolder(address _tokenHolder) internal {
-        if (_tokenHoldersIndex[_tokenHolder] == 0) {
-            tokenHolders.push(_tokenHolder);
-            _tokenHoldersIndex[_tokenHolder] = tokenHolders.length;
-        }
-    }
-
-    function _removeTokenHolder(address _tokenHolder) internal {
-        if (tokenHolders.length > 0 && _balances[_tokenHolder] == 0) {
-            uint256 removeIndex = _tokenHoldersIndex[_tokenHolder] - 1;
-            uint256 lastIndex = tokenHolders.length - 1;
-
-            if (tokenHolders.length >= 2) {
-                tokenHolders[removeIndex] = tokenHolders[lastIndex];
-                _tokenHoldersIndex[tokenHolders[lastIndex]] = removeIndex;
-            }
-
-            delete tokenHolders[lastIndex];
-            delete _tokenHoldersIndex[_tokenHolder];
-        }
+        return tokenHolders.length();
     }
 
     function _afterTokenTransfer(
@@ -49,14 +29,14 @@ abstract contract TokenHoldersList is ERC1400 {
     ) internal virtual override {
         if (to == address(0)) {
             // handle burning
-            _removeTokenHolder(from);
+            tokenHolders.remove(from);
         } else if (to == address(0)) {
             // hanlde minting
-            _addTokenHolder(to);
+            tokenHolders.add(to);
         } else {
             // handle transfer
-            _removeTokenHolder(from);
-            _addTokenHolder(to);
+            tokenHolders.remove(from);
+            tokenHolders.add(to);
         }
     }
 }
