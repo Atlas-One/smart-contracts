@@ -52,15 +52,9 @@ contract GeneralTransferManager is
         address from,
         address to,
         uint256, /* value */
-        bytes calldata data,
+        bytes calldata, /* data */
         bytes calldata /*  operatorData */
     ) external view override returns (bytes1, bytes32) {
-        // Operator should not be able to switch partitions
-        bytes32 toPartition = _getDestinationPartition(data, partition);
-        if (partition != toPartition && !_isController(operator, partition)) {
-            return (bytes1(0x50), bytes32(0));
-        }
-
         // *IMPORTANT* for compliance
         return _canTransferByAllowlist(operator, partition, from, to);
     }
