@@ -2,20 +2,19 @@
 
 pragma solidity >=0.6.0 <0.8.0;
 
-import "../../interface/IERC1410.sol";
-
-import "./BeneficiariesList.sol";
+import "../interface/IERC1410.sol";
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
-import "@openzeppelin/contracts/GSN/Context.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 
 /**
  * @title Wallet for core vesting escrow functionality
  */
-contract VestingEscrowWallet is Context, BeneficiariesList {
+contract VestingEscrowWallet {
     using SafeMath for uint256;
+    using EnumerableSet for EnumerableSet.AddressSet;
 
     bytes32 private constant TOKEN_ADMIN_ROLE = 0x00;
 
@@ -30,6 +29,8 @@ contract VestingEscrowWallet is Context, BeneficiariesList {
     // holder => scheduleName
     // scheduleNames should be unique per token
     mapping(address => mapping(bytes32 => Schedule)) public schedules;
+
+    mapping(address => EnumerableSet.AddressSet) internal _beneficiariesByToken;
 
     // Emit when new schedule is added
     event ScheduleAdded(
@@ -87,14 +88,20 @@ contract VestingEscrowWallet is Context, BeneficiariesList {
         address revokedBy;
     }
 
-    modifier scheduleExists(
-        address beneficiary,
-        bytes32 scheduleName,
-        bool exists
-    ) {
-        require(beneficiary != address(0), "Invalid address");
-        require(schedules[beneficiary][scheduleName].exists == exists);
-        _;
+    function beneficiaryForToken(address token, uint256 index)
+        public
+        view
+        returns (address)
+    {
+        return _beneficiariesByToken[token].at(index);
+    }
+
+    function _addBeneficiary(address _token, address _beneficiary) internal {
+        _beneficiariesByToken[_token].add(_beneficiary);
+    }
+
+    function _removeBeneficiary(address _token, address _beneficiary) internal {
+        _beneficiariesByToken[_token].remove(_beneficiary);
     }
 
     /**
@@ -109,7 +116,7 @@ contract VestingEscrowWallet is Context, BeneficiariesList {
      * @notice Used to withdraw available tokens by beneficiary
      */
     function claim() external {
-        _transferPerSchedule(_msgSender());
+        _transferPerSchedule(msg.sender);
     }
 
     /**
@@ -277,10 +284,10 @@ contract VestingEscrowWallet is Context, BeneficiariesList {
         address from,
         address to,
         bytes32 scheduleName
-    ) internal scheduleExists(from, scheduleName, true) {
-        Schedule storage schedule = schedules[from][scheduleName];
+    ) internal {
+        Schedule storage schedule = _getSchedule(from, scheduleName);
 
-        require(_isTokenAdmin(schedule.token, _msgSender()));
+        require(_isTokenAdmin(schedule.token, msg.sender));
 
         schedules[to][scheduleName] = Schedule({
             exists: true,
@@ -311,8 +318,8 @@ contract VestingEscrowWallet is Context, BeneficiariesList {
         address beneficiary,
         bytes32 scheduleName,
         uint256 amount
-    ) internal scheduleExists(beneficiary, scheduleName, true) {
-        Schedule storage schedule = schedules[beneficiary][scheduleName];
+    ) internal {
+        Schedule storage schedule = _getSchedule(beneficiary, scheduleName);
 
         schedule.vestingAmount = schedule.vestingAmount.add(amount);
 
@@ -361,11 +368,11 @@ contract VestingEscrowWallet is Context, BeneficiariesList {
     {
         address token = schedules[beneficiary][scheduleName].token;
 
-        require(_isTokenAdmin(token, _msgSender()));
+        require(_isTokenAdmin(token, msg.sender));
 
         schedules[beneficiary][scheduleName].revoked = true;
         schedules[beneficiary][scheduleName].revokedAt = block.timestamp;
-        schedules[beneficiary][scheduleName].revokedBy = _msgSender();
+        schedules[beneficiary][scheduleName].revokedBy = msg.sender;
 
         uint256 redeemAmount =
             schedules[beneficiary][scheduleName].vestingAmount.sub(
@@ -543,5 +550,16 @@ contract VestingEscrowWallet is Context, BeneficiariesList {
         returns (bool)
     {
         return AccessControl(securityToken).hasRole(TOKEN_ADMIN_ROLE, operator);
+    }
+
+    function _getSchedule(address beneficiary, bytes32 scheduleName)
+        private
+        view
+        returns (Schedule storage)
+    {
+        require(beneficiary != address(0), "Invalid address");
+        require(schedules[beneficiary][scheduleName].exists == true);
+
+        return schedules[beneficiary][scheduleName];
     }
 }
