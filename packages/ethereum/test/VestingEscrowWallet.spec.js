@@ -1,5 +1,6 @@
 const { BN, time } = require("@openzeppelin/test-helpers");
 
+const GeneralTransferManager = artifacts.require("GeneralTransferManager");
 const ERC1400_ERC20Compatible = artifacts.require("ERC1400_ERC20Compatible");
 const VestingEscrowWallet = artifacts.require("VestingEscrowWallet");
 
@@ -12,6 +13,9 @@ contract(
   "VestingEscrowWallet",
   function ([deployer, beneficiary, beneficiary2]) {
     beforeEach(async () => {
+      this.gtm = await GeneralTransferManager.new({
+        from: deployer,
+      });
       this.vestingWallet = await VestingEscrowWallet.new({
         from: deployer,
       });
@@ -21,7 +25,7 @@ contract(
         1,
         [],
         [],
-        [],
+        [this.gtm.address],
         {
           from: deployer,
         }
@@ -31,6 +35,17 @@ contract(
         from: deployer,
       });
       await this.token.grantRole(BURNER_ROLE, this.vestingWallet.address, {
+        from: deployer,
+      });
+
+      // allow the vesting wallet to hold security tokens
+      await this.gtm.addToAllowlist(this.vestingWallet.address, {
+        from: deployer,
+      });
+      await this.gtm.addToAllowlist(beneficiary, {
+        from: deployer,
+      });
+      await this.gtm.addToAllowlist(beneficiary2, {
         from: deployer,
       });
     });
