@@ -87,16 +87,6 @@ contract VestingEscrowWallet is Context, BeneficiariesList {
         address revokedBy;
     }
 
-    modifier scheduleExists(
-        address beneficiary,
-        bytes32 scheduleName,
-        bool exists
-    ) {
-        require(beneficiary != address(0), "Invalid address");
-        require(schedules[beneficiary][scheduleName].exists == exists);
-        _;
-    }
-
     /**
      * @notice Pushes available tokens to the beneficiary's address
      * @param beneficiary Address of the beneficiary who will receive tokens
@@ -277,8 +267,8 @@ contract VestingEscrowWallet is Context, BeneficiariesList {
         address from,
         address to,
         bytes32 scheduleName
-    ) internal scheduleExists(from, scheduleName, true) {
-        Schedule storage schedule = schedules[from][scheduleName];
+    ) internal {
+        Schedule storage schedule = _getSchedule(from, scheduleName);
 
         require(_isTokenAdmin(schedule.token, _msgSender()));
 
@@ -311,8 +301,8 @@ contract VestingEscrowWallet is Context, BeneficiariesList {
         address beneficiary,
         bytes32 scheduleName,
         uint256 amount
-    ) internal scheduleExists(beneficiary, scheduleName, true) {
-        Schedule storage schedule = schedules[beneficiary][scheduleName];
+    ) internal {
+        Schedule storage schedule = _getSchedule(beneficiary, scheduleName);
 
         schedule.vestingAmount = schedule.vestingAmount.add(amount);
 
@@ -543,5 +533,16 @@ contract VestingEscrowWallet is Context, BeneficiariesList {
         returns (bool)
     {
         return AccessControl(securityToken).hasRole(TOKEN_ADMIN_ROLE, operator);
+    }
+
+    function _getSchedule(address beneficiary, bytes32 scheduleName)
+        private
+        view
+        returns (Schedule storage)
+    {
+        require(beneficiary != address(0), "Invalid address");
+        require(schedules[beneficiary][scheduleName].exists == true);
+
+        return schedules[beneficiary][scheduleName];
     }
 }
