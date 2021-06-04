@@ -1,15 +1,13 @@
-const VestingEscrowWallet = artifacts.require(
-  "./wallet/VestingEscrowWallet.sol"
-);
+const { deployProxy } = require("@openzeppelin/truffle-upgrades");
+const VestingEscrowWallet = artifacts.require("VestingEscrowWallet");
 
 module.exports = async function (deployer, network) {
   if (network == "test") return; // test maintains own contracts
 
-  await deployer.deploy(VestingEscrowWallet);
-  const wallet = await VestingEscrowWallet.deployed();
+  const instance = await deployProxy(VestingEscrowWallet, { deployer });
   console.log(
     "\n   > VestingEscrowWallet deployment: Success -->",
-    wallet.address,
+    instance.address,
     "\n   > SecurityTokens will need to grant this wallet MINTER_ROLE and BURNER_ROLE"
   );
 };

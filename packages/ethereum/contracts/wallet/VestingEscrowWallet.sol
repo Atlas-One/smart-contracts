@@ -4,17 +4,17 @@ pragma solidity >=0.6.0 <0.8.0;
 
 import "../interface/IERC1410.sol";
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/utils/EnumerableSet.sol";
+import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/EnumerableSetUpgradeable.sol";
 
 /**
  * @title Wallet for core vesting escrow functionality
  */
 contract VestingEscrowWallet {
-    using SafeMath for uint256;
-    using EnumerableSet for EnumerableSet.AddressSet;
+    using SafeMathUpgradeable for uint256;
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
     bytes32 private constant TOKEN_ADMIN_ROLE = 0x00;
 
@@ -30,7 +30,8 @@ contract VestingEscrowWallet {
     // scheduleNames should be unique per token
     mapping(address => mapping(bytes32 => Schedule)) public schedules;
 
-    mapping(address => EnumerableSet.AddressSet) internal _beneficiariesByToken;
+    mapping(address => EnumerableSetUpgradeable.AddressSet)
+        internal _beneficiariesByToken;
 
     // Emit when new schedule is added
     event ScheduleAdded(
@@ -549,7 +550,11 @@ contract VestingEscrowWallet {
         view
         returns (bool)
     {
-        return AccessControl(securityToken).hasRole(TOKEN_ADMIN_ROLE, operator);
+        return
+            AccessControlUpgradeable(securityToken).hasRole(
+                TOKEN_ADMIN_ROLE,
+                operator
+            );
     }
 
     function _getSchedule(address beneficiary, bytes32 scheduleName)

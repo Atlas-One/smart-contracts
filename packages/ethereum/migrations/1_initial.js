@@ -1,4 +1,4 @@
-const Migrations = artifacts.require("./Migrations.sol");
+const Migrations = artifacts.require("Migrations");
 
 module.exports = function (deployer, network, accounts) {
   if (network == "test") return; // test maintains own contracts

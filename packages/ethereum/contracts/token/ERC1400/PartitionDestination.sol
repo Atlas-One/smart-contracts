@@ -35,4 +35,6 @@ abstract contract PartitionDestination {
             }
         }
     }
+
+    uint256[50] private __gap;
 }
