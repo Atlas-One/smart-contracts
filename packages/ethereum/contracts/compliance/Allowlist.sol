@@ -3,11 +3,11 @@
 pragma solidity >=0.6.0 <0.8.0;
 
 import "./Roles.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/utils/EnumerableSet.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/EnumerableSetUpgradeable.sol";
 
-abstract contract Allowlist is AccessControl, Roles {
-    using EnumerableSet for EnumerableSet.AddressSet;
+abstract contract Allowlist is AccessControlUpgradeable, Roles {
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
     event AddedToAllowlist(address indexed account);
     event AddedToBlocklist(address indexed account);
@@ -25,7 +25,7 @@ abstract contract Allowlist is AccessControl, Roles {
 
     // Allowlist:
     // - can be used to validate transfer to or from address
-    EnumerableSet.AddressSet private _allowlist;
+    EnumerableSetUpgradeable.AddressSet private _allowlist;
     // TODO: [allowlist] granular transfer restrictions
     // mapping(address => EnumerableSet.AddressSet) private _allowedByToken;
     // mapping(bytes32 => EnumerableSet.AddressSet) private _allowedByPartition;
@@ -34,7 +34,7 @@ abstract contract Allowlist is AccessControl, Roles {
     // Blocklist:
     // - blocks an address from being added to the whitelist until explicitly removed
     // - can be used to validate transfer to or from address
-    EnumerableSet.AddressSet private _blocklist;
+    EnumerableSetUpgradeable.AddressSet private _blocklist;
     // TODO: [blocklist] granular transfer restrictions
     // mapping(address => EnumerableSet.AddressSet) private _blockedByToken;
     // mapping(bytes32 => EnumerableSet.AddressSet) private _blockedByPartition;
@@ -105,4 +105,6 @@ abstract contract Allowlist is AccessControl, Roles {
     function blockedAddress(uint256 index) public view returns (address) {
         return _blocklist.at(index);
     }
+
+    uint256[50] private __gap;
 }

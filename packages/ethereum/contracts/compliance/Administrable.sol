@@ -52,4 +52,6 @@ abstract contract Administrable is AccessControl, Roles {
     function _isSuccess(bytes1 status) internal pure returns (bool successful) {
         return (status & 0x0F) == 0x01;
     }
+
+    uint256[50] private __gap;
 }

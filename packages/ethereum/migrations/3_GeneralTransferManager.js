@@ -1,14 +1,13 @@
-const GeneralTransferManager = artifacts.require(
-  "./extension/GeneralTransferManager.sol"
-);
+const { deployProxy } = require("@openzeppelin/truffle-upgrades");
+
+const GeneralTransferManager = artifacts.require("GeneralTransferManager");
 
 module.exports = async function (deployer, network) {
   if (network == "test") return; // test maintains own contracts
 
-  await deployer.deploy(GeneralTransferManager);
-  const extension = await GeneralTransferManager.deployed();
+  const instance = await deployProxy(GeneralTransferManager, { deployer });
   console.log(
     "\n   > GeneralTransferManager deployment: Success -->",
-    extension.address
+    instance.address
   );
 };

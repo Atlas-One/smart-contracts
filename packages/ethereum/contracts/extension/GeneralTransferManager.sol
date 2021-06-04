@@ -2,16 +2,16 @@
 
 pragma solidity >=0.6.0 <0.8.0;
 
+import "../compliance/Roles.sol";
 import "../compliance/Allowlist.sol";
-import "../compliance/Administrable.sol";
 
 import "../interface/IERC1644.sol";
 import "../interface/IERC1400Validator.sol";
 
 import "../token/ERC1400/PartitionDestination.sol";
 
-import "@openzeppelin/contracts/utils/Context.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
 // Current implementation checks:
 // - only burner can burn
@@ -19,13 +19,15 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 // - address is in the allowed list
 // - address is not in the blocked list
 contract GeneralTransferManager is
-    Context,
-    Administrable,
-    Allowlist,
     IERC1400Validator,
+    Initializable,
+    AccessControlUpgradeable,
+    Roles,
+    Allowlist,
     PartitionDestination
 {
-    constructor() public {
+    function initialize() public virtual initializer {
+        __AccessControl_init();
         _setupRole(ADMIN_ROLE, _msgSender());
     }
 
@@ -113,14 +115,17 @@ contract GeneralTransferManager is
         return
             IERC1644(securityToken).isControllable() &&
             (// is administrator/owner
-            AccessControl(securityToken).hasRole(ADMIN_ROLE, operator) ||
+            AccessControlUpgradeable(securityToken).hasRole(
+                ADMIN_ROLE,
+                operator
+            ) ||
                 // is controller for all tokens and partitions
-                AccessControl(securityToken).hasRole(
+                AccessControlUpgradeable(securityToken).hasRole(
                     CONTROLLER_ROLE,
                     operator
                 ) ||
                 // is controller for tokens in this partition
-                AccessControl(securityToken).hasRole(
+                AccessControlUpgradeable(securityToken).hasRole(
                     keccak256(abi.encodePacked(partition, CONTROLLER_ROLE)),
                     operator
                 ));

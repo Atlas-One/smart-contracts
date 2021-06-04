@@ -1,5 +1,5 @@
 const { expectRevert } = require("@openzeppelin/test-helpers");
-
+const { deployProxy } = require("@openzeppelin/truffle-upgrades");
 const SecurityToken = artifacts.require("ERC1400WithoutIntrospection");
 const GeneralTransferManager = artifacts.require("GeneralTransferManager");
 
@@ -76,7 +76,7 @@ contract(
   "ERC1400WithoutIntrospection",
   function ([owner, operator, controller, tokenHolder, recipient, unknown]) {
     before(async function () {
-      this.extension = await GeneralTransferManager.new({
+      this.extension = await deployProxy(GeneralTransferManager, {
         from: owner,
       });
     });
@@ -247,7 +247,9 @@ contract(
       });
       describe("pause", function () {
         beforeEach(async function () {
-          this.extension = await GeneralTransferManager.new();
+          this.extension = await deployProxy(GeneralTransferManager, {
+            from: owner,
+          });
           this.token = await SecurityToken.new(
             "SecurityToken",
             "TEST",

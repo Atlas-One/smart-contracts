@@ -1,4 +1,5 @@
-const { BN, time } = require("@openzeppelin/test-helpers");
+const { BN } = require("@openzeppelin/test-helpers");
+const { deployProxy } = require("@openzeppelin/truffle-upgrades");
 
 const GeneralTransferManager = artifacts.require("GeneralTransferManager");
 const ERC1400_ERC20Compatible = artifacts.require("ERC1400_ERC20Compatible");
@@ -13,7 +14,7 @@ contract(
   "VestingEscrowWallet",
   function ([deployer, beneficiary, beneficiary2]) {
     beforeEach(async () => {
-      this.gtm = await GeneralTransferManager.new({
+      this.gtm = await deployProxy(GeneralTransferManager, {
         from: deployer,
       });
       this.vestingWallet = await VestingEscrowWallet.new({
