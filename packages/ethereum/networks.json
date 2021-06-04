@@ -1,0 +1,26 @@
+{
+  "GeneralTransferManager": {
+    "1089731529": {
+      "events": {},
+      "links": {},
+      "address": "0x5085111904eb552eBab1C200985814943a19E793",
+      "transactionHash": "0x60228ba75a7fd0d1d40ea348e60902e3f3772b38dd9186f522e8596ab06e1d3c"
+    }
+  },
+  "Migrations": {
+    "1089731529": {
+      "events": {},
+      "links": {},
+      "address": "0xB12aE09939415cbD697E215e27E9FbA5326Ce5e7",
+      "transactionHash": "0x33553d5b2c576cb27679737fcff5c61daf50edd39b09b006ef3217bdc7e2b19d"
+    }
+  },
+  "VestingEscrowWallet": {
+    "1089731529": {
+      "events": {},
+      "links": {},
+      "address": "0x4bcfA58B731528f9c4D244b7Fadd1b85f7EE13E6",
+      "transactionHash": "0x921a86f96a5b9078c6b380f38bbdb9f283a451fd9d647143e96178c0a2322863"
+    }
+  }
+}
