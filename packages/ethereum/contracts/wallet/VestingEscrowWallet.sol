@@ -538,7 +538,15 @@ contract VestingEscrowWallet {
                 schedules[beneficiary][scheduleName].name,
                 beneficiary,
                 amount,
-                ""
+                // Switch to keccak256("vested") partition
+                abi.encodePacked(
+                    bytes32(
+                        0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+                    ),
+                    bytes32(
+                        0x17e2af9a3ef6316f7fee115aa68d75c98e75979d66344017c234a7ca8a2c5487
+                    )
+                )
             );
 
             emit Claimed(tokenAddress, beneficiary, amount);

@@ -25,7 +25,8 @@ contract ERC1400WithoutIntrospection is
         address[] memory validators,
         address[] memory burners,
         address[] memory minters,
-        address[] memory pausers
+        address[] memory pausers,
+        address[] memory partitioners
     )
         public
         ERC1400_ERC20Compatible(
@@ -38,7 +39,8 @@ contract ERC1400WithoutIntrospection is
             validators,
             burners,
             minters,
-            pausers
+            pausers,
+            partitioners
         )
     {}
 

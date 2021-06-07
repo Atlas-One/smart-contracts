@@ -1,4 +1,4 @@
-const { BN } = require("@openzeppelin/test-helpers");
+const { BN, time } = require("@openzeppelin/test-helpers");
 const { deployProxy } = require("@openzeppelin/truffle-upgrades");
 
 const GeneralTransferManager = artifacts.require("GeneralTransferManager");
@@ -31,6 +31,7 @@ contract(
         [this.vestingWallet.address],
         [this.vestingWallet.address],
         [],
+        [this.vestingWallet.address],
         {
           from: deployer,
         }
@@ -84,6 +85,27 @@ contract(
         assert.equal(
           (await this.token.balanceOf(this.vestingWallet.address)).toString(),
           "300"
+        );
+      });
+    });
+    describe.only("claim", () => {
+      it("should claim tokens", async () => {
+        await this.vestingWallet.vest(
+          this.token.address,
+          beneficiary,
+          "0xc07f330d2eb486dda2afcf7f468ebcb22181a6b6e51d02bf5872b650731b01ed",
+          new BN(100),
+          1622677982,
+          1811980382,
+          1633218782
+        );
+
+        await time.increaseTo(1811980382);
+
+        await this.vestingWallet.claim({ from: beneficiary });
+        assert.equal(
+          (await this.token.balanceOf(beneficiary)).toString(),
+          "100"
         );
       });
     });

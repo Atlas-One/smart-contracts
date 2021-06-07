@@ -22,5 +22,9 @@ abstract contract Roles {
     bytes32 public constant PAUSER_ROLE =
         0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a;
 
+    // keccak256("PARTITIONER_ROLE")
+    bytes32 public constant PARTITIONER_ROLE =
+        0xaaa92300dc6b8a00567e94016220ab4a3570eef9a665b6d7804fca19be9bca08;
+
     uint256[50] private __gap;
 }

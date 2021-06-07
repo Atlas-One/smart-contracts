@@ -16,7 +16,8 @@ contract ERC1400OwnershipSnapshotMock is ERC1400OwnershipSnapshot {
         address[] memory validators,
         address[] memory burners,
         address[] memory minters,
-        address[] memory pausers
+        address[] memory pausers,
+        address[] memory partitioners
     )
         public
         ERC1400(
@@ -29,7 +30,8 @@ contract ERC1400OwnershipSnapshotMock is ERC1400OwnershipSnapshot {
             validators,
             burners,
             minters,
-            pausers
+            pausers,
+            partitioners
         )
     {
         _issueByPartition(

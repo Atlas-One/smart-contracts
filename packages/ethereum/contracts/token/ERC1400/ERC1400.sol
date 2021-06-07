@@ -104,7 +104,8 @@ contract ERC1400 is
         address[] memory validators,
         address[] memory burners,
         address[] memory minters,
-        address[] memory pausers
+        address[] memory pausers,
+        address[] memory partitioners
     ) public {
         require(granularity >= 1); // Constructor Blocked - Token granularity can not be lower than 1
 
@@ -147,6 +148,10 @@ contract ERC1400 is
         // set pausers
         for (uint256 i = 0; i < pausers.length; i++) {
             _setupRole(PAUSER_ROLE, pausers[i]);
+        }
+        // set partitioners
+        for (uint256 i = 0; i < partitioners.length; i++) {
+            _setupRole(PARTITIONER_ROLE, partitioners[i]);
         }
     }
 
@@ -760,9 +765,12 @@ contract ERC1400 is
         require(_balanceOfByPartition[from][fromPartition] >= value, "52"); // 0x52	insufficient balance
 
         bytes32 toPartition = _getDestinationPartition(data, fromPartition);
-        // Only controllers can switch partitions
-        if (toPartition != fromPartition) {
-            require(_isControllerForPartition(toPartition, operator), "58");
+        // Only controllers and partitioners can switch partitions
+        if (
+            toPartition != fromPartition &&
+            !_isControllerForPartition(toPartition, operator)
+        ) {
+            _onlyPartitioner(operator);
         }
 
         _assertValidTransfer(

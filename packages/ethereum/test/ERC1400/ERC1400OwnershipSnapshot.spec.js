@@ -25,6 +25,7 @@ contract("ERC1400OwnershipSnapshot", function ([deployer, holder]) {
       [],
       [],
       [],
+      [],
       {
         from: deployer,
       }

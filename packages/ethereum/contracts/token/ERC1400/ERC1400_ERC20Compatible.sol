@@ -22,7 +22,8 @@ contract ERC1400_ERC20Compatible is IERC20, ERC1400 {
         address[] memory validators,
         address[] memory burners,
         address[] memory minters,
-        address[] memory pausers
+        address[] memory pausers,
+        address[] memory partitioners
     )
         public
         ERC1400(
@@ -35,7 +36,8 @@ contract ERC1400_ERC20Compatible is IERC20, ERC1400 {
             validators,
             burners,
             minters,
-            pausers
+            pausers,
+            partitioners
         )
     {}
 

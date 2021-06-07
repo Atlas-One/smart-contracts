@@ -25,7 +25,8 @@ contract ERC1400WithIntrospection is
         address[] memory validators,
         address[] memory burners,
         address[] memory minters,
-        address[] memory pausers
+        address[] memory pausers,
+        address[] memory partitioners
     )
         public
         ERC1400_ERC777Compatible(
@@ -38,7 +39,8 @@ contract ERC1400WithIntrospection is
             validators,
             burners,
             minters,
-            pausers
+            pausers,
+            partitioners
         )
     {}
 
