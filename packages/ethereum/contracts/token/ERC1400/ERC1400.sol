@@ -128,6 +128,88 @@ contract ERC1400 is
         }
     }
 
+    /**
+     * @dev Get the name of the token, e.g., "MyToken".
+     * @return Name of the token.
+     */
+    function name() external view returns (string memory) {
+        return _name;
+    }
+
+    /**
+     * @dev Get the symbol of the token, e.g., "MYT".
+     * @return Symbol of the token.
+     */
+    function symbol() external view returns (string memory) {
+        return _symbol;
+    }
+
+    /**
+     * @dev Get the smallest part of the token that’s not divisible.
+     * @return The smallest non-divisible part of the token.
+     */
+    function granularity() external view returns (uint256) {
+        return _granularity;
+    }
+
+    /**
+     * @dev Returns the number of decimals used to get its user representation.
+     * For example, if `decimals` equals `2`, a balance of `505` tokens should
+     * be displayed to a user as `5,05` (`505 / 10 ** 2`).
+     *
+     * Tokens usually opt for a value of 18, imitating the relationship between
+     * Ether and Wei. This is the value {ERC20} uses, unless {_setupDecimals} is
+     * called.
+     *
+     * NOTE: This information is only used for _display_ purposes: it in
+     * no way affects any of the arithmetic of the contract, including
+     * {IERC20-balanceOf} and {IERC20-transfer}.
+     */
+    function decimals() public pure virtual returns (uint8) {
+        return uint8(18);
+    }
+
+    /**
+     * @dev Get list of existing partitions.
+     * @return Array of all exisiting partitions.
+     */
+    function totalPartitions() external view returns (bytes32[] memory) {
+        return _totalPartitions;
+    }
+
+    /**
+     * @dev Get the total number of issued tokens for a given partition.
+     * @param partition Name of the partition.
+     * @return Total supply of tokens currently in circulation, for a given partition.
+     */
+    function totalSupplyByPartition(bytes32 partition)
+        external
+        view
+        returns (uint256)
+    {
+        return _totalSupplyByPartition[partition];
+    }
+
+    /**
+     * @dev Get default partitions to transfer from.
+     * Function used for ERC20 retrocompatibility.
+     * For example, a security token may return the bytes32("unrestricted").
+     * @return Array of default partitions.
+     */
+    function getDefaultPartitions() external view returns (bytes32[] memory) {
+        return _defaultPartitions;
+    }
+
+    /**
+     * @dev Set default partitions to transfer from.
+     * Function used for ERC20 retrocompatibility.
+     * @param partitions partitions to use by default when not specified.
+     */
+    function setDefaultPartitions(bytes32[] calldata partitions) external {
+        _onlyAdmin(msg.sender);
+        _defaultPartitions = partitions;
+    }
+
     function _onlyIssuable() internal view {
         require(_isIssuable, "55"); // 0x55	funds locked (lockup period)
     }
@@ -595,88 +677,6 @@ contract ERC1400 is
             "",
             operatorData
         );
-    }
-
-    /**
-     * @dev Get the name of the token, e.g., "MyToken".
-     * @return Name of the token.
-     */
-    function name() external view returns (string memory) {
-        return _name;
-    }
-
-    /**
-     * @dev Get the symbol of the token, e.g., "MYT".
-     * @return Symbol of the token.
-     */
-    function symbol() external view returns (string memory) {
-        return _symbol;
-    }
-
-    /**
-     * @dev Get the smallest part of the token that’s not divisible.
-     * @return The smallest non-divisible part of the token.
-     */
-    function granularity() external view returns (uint256) {
-        return _granularity;
-    }
-
-    /**
-     * @dev Returns the number of decimals used to get its user representation.
-     * For example, if `decimals` equals `2`, a balance of `505` tokens should
-     * be displayed to a user as `5,05` (`505 / 10 ** 2`).
-     *
-     * Tokens usually opt for a value of 18, imitating the relationship between
-     * Ether and Wei. This is the value {ERC20} uses, unless {_setupDecimals} is
-     * called.
-     *
-     * NOTE: This information is only used for _display_ purposes: it in
-     * no way affects any of the arithmetic of the contract, including
-     * {IERC20-balanceOf} and {IERC20-transfer}.
-     */
-    function decimals() public pure virtual returns (uint8) {
-        return uint8(18);
-    }
-
-    /**
-     * @dev Get list of existing partitions.
-     * @return Array of all exisiting partitions.
-     */
-    function totalPartitions() external view returns (bytes32[] memory) {
-        return _totalPartitions;
-    }
-
-    /**
-     * @dev Get the total number of issued tokens for a given partition.
-     * @param partition Name of the partition.
-     * @return Total supply of tokens currently in circulation, for a given partition.
-     */
-    function totalSupplyByPartition(bytes32 partition)
-        external
-        view
-        returns (uint256)
-    {
-        return _totalSupplyByPartition[partition];
-    }
-
-    /**
-     * @dev Get default partitions to transfer from.
-     * Function used for ERC20 retrocompatibility.
-     * For example, a security token may return the bytes32("unrestricted").
-     * @return Array of default partitions.
-     */
-    function getDefaultPartitions() external view returns (bytes32[] memory) {
-        return _defaultPartitions;
-    }
-
-    /**
-     * @dev Set default partitions to transfer from.
-     * Function used for ERC20 retrocompatibility.
-     * @param partitions partitions to use by default when not specified.
-     */
-    function setDefaultPartitions(bytes32[] calldata partitions) external {
-        _onlyAdmin(msg.sender);
-        _defaultPartitions = partitions;
     }
 
     /**
