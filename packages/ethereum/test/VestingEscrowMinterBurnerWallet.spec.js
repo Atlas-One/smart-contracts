@@ -1,3 +1,4 @@
+const Web3 = require("web3");
 const { BN, time } = require("@openzeppelin/test-helpers");
 const { deployProxy } = require("@openzeppelin/truffle-upgrades");
 
@@ -107,6 +108,15 @@ contract(
         await this.vestingWallet.claim({ from: beneficiary });
         assert.equal(
           (await this.token.balanceOf(beneficiary)).toString(),
+          "100"
+        );
+        assert.equal(
+          (
+            await this.token.balanceOfByPartition(
+              Web3.utils.fromAscii("vested"),
+              beneficiary
+            )
+          ).toString(),
           "100"
         );
       });
