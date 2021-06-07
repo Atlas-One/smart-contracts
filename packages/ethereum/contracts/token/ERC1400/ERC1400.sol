@@ -216,47 +216,50 @@ contract ERC1400 is
 
     /**
      * @dev Access a document associated with the token.
-     * @param name Short name (represented as a bytes32) associated to the document.
+     * @param documentName Short name (represented as a bytes32) associated to the document.
      * @return Requested document + document hash.
      */
-    function getDocument(bytes32 name)
+    function getDocument(bytes32 documentName)
         external
         view
         override
         returns (string memory, bytes32)
     {
-        require(bytes(_documents[name].docURI).length != 0); // Action Blocked - Empty document
-        return (_documents[name].docURI, _documents[name].docHash);
+        require(bytes(_documents[documentName].docURI).length != 0); // Action Blocked - Empty document
+        return (
+            _documents[documentName].docURI,
+            _documents[documentName].docHash
+        );
     }
 
     /**
      * @dev Associate a document with the token.
-     * @param name Short name (represented as a bytes32) associated to the document.
+     * @param documentName Short name (represented as a bytes32) associated to the document.
      * @param uri Document content.
      * @param documentHash Hash of the document [optional parameter].
      */
     function setDocument(
-        bytes32 name,
+        bytes32 documentName,
         string calldata uri,
         bytes32 documentHash
     ) external override {
         _onlyController(msg.sender);
-        _documents[name] = Doc({docURI: uri, docHash: documentHash});
-        emit DocumentUpdated(name, uri, documentHash);
+        _documents[documentName] = Doc({docURI: uri, docHash: documentHash});
+        emit DocumentUpdated(documentName, uri, documentHash);
     }
 
     /**
      * @dev Remove document associated with the token.
-     * @param name Short name (represented as a bytes32) associated to the document.
+     * @param documentName Short name (represented as a bytes32) associated to the document.
      */
-    function removeDocument(bytes32 name) external override {
+    function removeDocument(bytes32 documentName) external override {
         _onlyController(msg.sender);
-        string memory documentURI = _documents[name].docURI;
-        bytes32 documentHash = _documents[name].docHash;
+        string memory documentURI = _documents[documentName].docURI;
+        bytes32 documentHash = _documents[documentName].docHash;
 
-        delete _documents[name];
+        delete _documents[documentName];
 
-        emit DocumentRemoved(name, documentURI, documentHash);
+        emit DocumentRemoved(documentName, documentURI, documentHash);
     }
 
     /**
