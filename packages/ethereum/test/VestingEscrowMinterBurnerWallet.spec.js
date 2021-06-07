@@ -3,7 +3,9 @@ const { deployProxy } = require("@openzeppelin/truffle-upgrades");
 
 const GeneralTransferManager = artifacts.require("GeneralTransferManager");
 const ERC1400_ERC20Compatible = artifacts.require("ERC1400_ERC20Compatible");
-const VestingEscrowWallet = artifacts.require("VestingEscrowWallet");
+const VestingEscrowMinterBurnerWallet = artifacts.require(
+  "VestingEscrowMinterBurnerWallet"
+);
 
 const MINTER_ROLE =
   "0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6";
@@ -11,13 +13,13 @@ const BURNER_ROLE =
   "0x3c11d16cbaffd01df69ce1c404f6340ee057498f5f00246190ea54220576a848";
 
 contract(
-  "VestingEscrowWallet",
+  "VestingEscrowMinterBurnerWallet",
   function ([deployer, beneficiary, beneficiary2]) {
     beforeEach(async () => {
       this.gtm = await deployProxy(GeneralTransferManager, {
         from: deployer,
       });
-      this.vestingWallet = await VestingEscrowWallet.new({
+      this.vestingWallet = await VestingEscrowMinterBurnerWallet.new({
         from: deployer,
       });
       this.token = await ERC1400_ERC20Compatible.new(

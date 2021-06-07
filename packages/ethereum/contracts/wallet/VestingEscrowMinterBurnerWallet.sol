@@ -12,7 +12,7 @@ import "@openzeppelin/contracts-upgradeable/utils/EnumerableSetUpgradeable.sol";
 /**
  * @title Wallet for core vesting escrow functionality
  */
-contract VestingEscrowWallet {
+contract VestingEscrowMinterBurnerWallet {
     using SafeMathUpgradeable for uint256;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 

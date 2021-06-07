@@ -30,5 +30,5 @@ async function deploy(path, init) {
 
 (async () => {
   await deploy("extension/GeneralTransferManager");
-  await deploy("wallet/VestingEscrowWallet");
+  await deploy("wallet/VestingEscrowMinterBurnerWallet");
 })();

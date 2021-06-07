@@ -137,28 +137,28 @@
       "layout": {
         "storage": [
           {
-            "contract": "VestingEscrowWallet",
+            "contract": "VestingEscrowMinterBurnerWallet",
             "label": "scheduleNames",
             "type": "t_mapping(t_address,t_array(t_bytes32)dyn_storage)",
-            "src": "wallet/VestingEscrowWallet.sol:24"
+            "src": "wallet/VestingEscrowMinterBurnerWallet.sol:24"
           },
           {
-            "contract": "VestingEscrowWallet",
+            "contract": "VestingEscrowMinterBurnerWallet",
             "label": "scheduleNamesPerToken",
             "type": "t_mapping(t_address,t_mapping(t_address,t_array(t_bytes32)dyn_storage))",
-            "src": "wallet/VestingEscrowWallet.sol:27"
+            "src": "wallet/VestingEscrowMinterBurnerWallet.sol:27"
           },
           {
-            "contract": "VestingEscrowWallet",
+            "contract": "VestingEscrowMinterBurnerWallet",
             "label": "schedules",
             "type": "t_mapping(t_address,t_mapping(t_bytes32,t_struct(Schedule)5646_storage))",
-            "src": "wallet/VestingEscrowWallet.sol:31"
+            "src": "wallet/VestingEscrowMinterBurnerWallet.sol:31"
           },
           {
-            "contract": "VestingEscrowWallet",
+            "contract": "VestingEscrowMinterBurnerWallet",
             "label": "_beneficiariesByToken",
             "type": "t_mapping(t_address,t_struct(AddressSet)8717_storage)",
-            "src": "wallet/VestingEscrowWallet.sol:33"
+            "src": "wallet/VestingEscrowMinterBurnerWallet.sol:33"
           }
         ],
         "types": {
@@ -178,13 +178,13 @@
             "label": "mapping(address => mapping(address => bytes32[]))"
           },
           "t_mapping(t_address,t_mapping(t_bytes32,t_struct(Schedule)5646_storage))": {
-            "label": "mapping(address => mapping(bytes32 => struct VestingEscrowWallet.Schedule))"
+            "label": "mapping(address => mapping(bytes32 => struct VestingEscrowMinterBurnerWallet.Schedule))"
           },
           "t_mapping(t_bytes32,t_struct(Schedule)5646_storage)": {
-            "label": "mapping(bytes32 => struct VestingEscrowWallet.Schedule)"
+            "label": "mapping(bytes32 => struct VestingEscrowMinterBurnerWallet.Schedule)"
           },
           "t_struct(Schedule)5646_storage": {
-            "label": "struct VestingEscrowWallet.Schedule",
+            "label": "struct VestingEscrowMinterBurnerWallet.Schedule",
             "members": [
               {
                 "label": "exists",
