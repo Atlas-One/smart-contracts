@@ -31,10 +31,10 @@ See the access control design doc [here](/docs/tezos/access-control-design.md) f
 
 ### Deployed on SmartPy Edonet
 
-| Contract                                                                                                | Address                              |
-| ------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| [GeneralTransferManager](https://smartpy.io/explorer.html?address=KT1DAp2GKchqQcXFZzMFptbyNLChKxQ6F3to) | KT1DAp2GKchqQcXFZzMFptbyNLChKxQ6F3to |
-| [VestingEscrowWallet](https://smartpy.io/explorer.html?address=KT1SUf8fDdXjGyUUFLzjUyoATn2wN2PKb26b)    | KT1SUf8fDdXjGyUUFLzjUyoATn2wN2PKb26b |
+| Contract                                                                                                         | Address                              |
+| ---------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| [GeneralTransferManager](https://smartpy.io/explorer.html?address=KT1DAp2GKchqQcXFZzMFptbyNLChKxQ6F3to)          | KT1DAp2GKchqQcXFZzMFptbyNLChKxQ6F3to |
+| [VestingEscrowMinterBurnerWallet](https://smartpy.io/explorer.html?address=KT1SUf8fDdXjGyUUFLzjUyoATn2wN2PKb26b) | KT1SUf8fDdXjGyUUFLzjUyoATn2wN2PKb26b |
 
 ## Development
 

@@ -99,8 +99,13 @@ contract ERC1400 is
         string memory symbol,
         uint256 granularity,
         bytes32[] memory defaultPartitions,
+        address[] memory admins,
         address[] memory controllers,
-        address[] memory validators
+        address[] memory validators,
+        address[] memory burners,
+        address[] memory minters,
+        address[] memory pausers,
+        address[] memory partitioners
     ) public {
         require(granularity >= 1); // Constructor Blocked - Token granularity can not be lower than 1
 
@@ -115,9 +120,15 @@ contract ERC1400 is
         _isIssuable = true;
         _isControllable = true;
 
-        // set token Admin
-        _setupRole(ADMIN_ROLE, msg.sender);
-
+        if (admins.length > 0) {
+            // set token admins
+            for (uint256 i = 0; i < admins.length; i++) {
+                _setupRole(ADMIN_ROLE, admins[i]);
+            }
+        } else {
+            // set token admin
+            _setupRole(ADMIN_ROLE, msg.sender);
+        }
         // set controllers
         for (uint256 i = 0; i < controllers.length; i++) {
             _setupRole(CONTROLLER_ROLE, controllers[i]);
@@ -126,6 +137,104 @@ contract ERC1400 is
         for (uint256 i = 0; i < validators.length; i++) {
             _setupRole(VALIDATOR_ROLE, validators[i]);
         }
+        // set burners
+        for (uint256 i = 0; i < burners.length; i++) {
+            _setupRole(BURNER_ROLE, burners[i]);
+        }
+        // set minters
+        for (uint256 i = 0; i < minters.length; i++) {
+            _setupRole(MINTER_ROLE, minters[i]);
+        }
+        // set pausers
+        for (uint256 i = 0; i < pausers.length; i++) {
+            _setupRole(PAUSER_ROLE, pausers[i]);
+        }
+        // set partitioners
+        for (uint256 i = 0; i < partitioners.length; i++) {
+            _setupRole(PARTITIONER_ROLE, partitioners[i]);
+        }
+    }
+
+    /**
+     * @dev Get the name of the token, e.g., "MyToken".
+     * @return Name of the token.
+     */
+    function name() external view returns (string memory) {
+        return _name;
+    }
+
+    /**
+     * @dev Get the symbol of the token, e.g., "MYT".
+     * @return Symbol of the token.
+     */
+    function symbol() external view returns (string memory) {
+        return _symbol;
+    }
+
+    /**
+     * @dev Get the smallest part of the token that’s not divisible.
+     * @return The smallest non-divisible part of the token.
+     */
+    function granularity() external view returns (uint256) {
+        return _granularity;
+    }
+
+    /**
+     * @dev Returns the number of decimals used to get its user representation.
+     * For example, if `decimals` equals `2`, a balance of `505` tokens should
+     * be displayed to a user as `5,05` (`505 / 10 ** 2`).
+     *
+     * Tokens usually opt for a value of 18, imitating the relationship between
+     * Ether and Wei. This is the value {ERC20} uses, unless {_setupDecimals} is
+     * called.
+     *
+     * NOTE: This information is only used for _display_ purposes: it in
+     * no way affects any of the arithmetic of the contract, including
+     * {IERC20-balanceOf} and {IERC20-transfer}.
+     */
+    function decimals() public pure virtual returns (uint8) {
+        return uint8(18);
+    }
+
+    /**
+     * @dev Get list of existing partitions.
+     * @return Array of all exisiting partitions.
+     */
+    function totalPartitions() external view returns (bytes32[] memory) {
+        return _totalPartitions;
+    }
+
+    /**
+     * @dev Get the total number of issued tokens for a given partition.
+     * @param partition Name of the partition.
+     * @return Total supply of tokens currently in circulation, for a given partition.
+     */
+    function totalSupplyByPartition(bytes32 partition)
+        external
+        view
+        returns (uint256)
+    {
+        return _totalSupplyByPartition[partition];
+    }
+
+    /**
+     * @dev Get default partitions to transfer from.
+     * Function used for ERC20 retrocompatibility.
+     * For example, a security token may return the bytes32("unrestricted").
+     * @return Array of default partitions.
+     */
+    function getDefaultPartitions() external view returns (bytes32[] memory) {
+        return _defaultPartitions;
+    }
+
+    /**
+     * @dev Set default partitions to transfer from.
+     * Function used for ERC20 retrocompatibility.
+     * @param partitions partitions to use by default when not specified.
+     */
+    function setDefaultPartitions(bytes32[] calldata partitions) external {
+        _onlyAdmin(msg.sender);
+        _defaultPartitions = partitions;
     }
 
     function _onlyIssuable() internal view {
@@ -134,47 +243,50 @@ contract ERC1400 is
 
     /**
      * @dev Access a document associated with the token.
-     * @param name Short name (represented as a bytes32) associated to the document.
+     * @param documentName Short name (represented as a bytes32) associated to the document.
      * @return Requested document + document hash.
      */
-    function getDocument(bytes32 name)
+    function getDocument(bytes32 documentName)
         external
         view
         override
         returns (string memory, bytes32)
     {
-        require(bytes(_documents[name].docURI).length != 0); // Action Blocked - Empty document
-        return (_documents[name].docURI, _documents[name].docHash);
+        require(bytes(_documents[documentName].docURI).length != 0); // Action Blocked - Empty document
+        return (
+            _documents[documentName].docURI,
+            _documents[documentName].docHash
+        );
     }
 
     /**
      * @dev Associate a document with the token.
-     * @param name Short name (represented as a bytes32) associated to the document.
+     * @param documentName Short name (represented as a bytes32) associated to the document.
      * @param uri Document content.
      * @param documentHash Hash of the document [optional parameter].
      */
     function setDocument(
-        bytes32 name,
+        bytes32 documentName,
         string calldata uri,
         bytes32 documentHash
     ) external override {
         _onlyController(msg.sender);
-        _documents[name] = Doc({docURI: uri, docHash: documentHash});
-        emit DocumentUpdated(name, uri, documentHash);
+        _documents[documentName] = Doc({docURI: uri, docHash: documentHash});
+        emit DocumentUpdated(documentName, uri, documentHash);
     }
 
     /**
      * @dev Remove document associated with the token.
-     * @param name Short name (represented as a bytes32) associated to the document.
+     * @param documentName Short name (represented as a bytes32) associated to the document.
      */
-    function removeDocument(bytes32 name) external override {
+    function removeDocument(bytes32 documentName) external override {
         _onlyController(msg.sender);
-        string memory documentURI = _documents[name].docURI;
-        bytes32 documentHash = _documents[name].docHash;
+        string memory documentURI = _documents[documentName].docURI;
+        bytes32 documentHash = _documents[documentName].docHash;
 
-        delete _documents[name];
+        delete _documents[documentName];
 
-        emit DocumentRemoved(name, documentURI, documentHash);
+        emit DocumentRemoved(documentName, documentURI, documentHash);
     }
 
     /**
@@ -547,8 +659,8 @@ contract ERC1400 is
         uint256 value,
         bytes calldata data
     ) external override {
-        require(_isOperator(msg.sender, from), "58"); // 0x58	invalid operator (transfer agent)
         _onlyBurner(msg.sender);
+        require(_isOperator(msg.sender, from), "58"); // 0x58	invalid operator (transfer agent)
         _redeemByDefaultPartitions(msg.sender, from, value, data);
     }
 
@@ -563,6 +675,7 @@ contract ERC1400 is
         uint256 value,
         bytes calldata data
     ) external override {
+        _onlyBurner(msg.sender);
         _redeemByPartition(partition, msg.sender, msg.sender, value, data, "");
     }
 
@@ -579,12 +692,11 @@ contract ERC1400 is
         uint256 value,
         bytes calldata operatorData
     ) external override {
+        _onlyBurner(msg.sender);
         require(
             _isOperatorForPartition(partition, msg.sender, tokenHolder),
             "58"
         ); // 0x58	invalid operator (transfer agent)
-
-        _onlyBurner(msg.sender);
         _redeemByPartition(
             partition,
             msg.sender,
@@ -593,88 +705,6 @@ contract ERC1400 is
             "",
             operatorData
         );
-    }
-
-    /**
-     * @dev Get the name of the token, e.g., "MyToken".
-     * @return Name of the token.
-     */
-    function name() external view returns (string memory) {
-        return _name;
-    }
-
-    /**
-     * @dev Get the symbol of the token, e.g., "MYT".
-     * @return Symbol of the token.
-     */
-    function symbol() external view returns (string memory) {
-        return _symbol;
-    }
-
-    /**
-     * @dev Get the smallest part of the token that’s not divisible.
-     * @return The smallest non-divisible part of the token.
-     */
-    function granularity() external view returns (uint256) {
-        return _granularity;
-    }
-
-    /**
-     * @dev Returns the number of decimals used to get its user representation.
-     * For example, if `decimals` equals `2`, a balance of `505` tokens should
-     * be displayed to a user as `5,05` (`505 / 10 ** 2`).
-     *
-     * Tokens usually opt for a value of 18, imitating the relationship between
-     * Ether and Wei. This is the value {ERC20} uses, unless {_setupDecimals} is
-     * called.
-     *
-     * NOTE: This information is only used for _display_ purposes: it in
-     * no way affects any of the arithmetic of the contract, including
-     * {IERC20-balanceOf} and {IERC20-transfer}.
-     */
-    function decimals() public pure virtual returns (uint8) {
-        return uint8(18);
-    }
-
-    /**
-     * @dev Get list of existing partitions.
-     * @return Array of all exisiting partitions.
-     */
-    function totalPartitions() external view returns (bytes32[] memory) {
-        return _totalPartitions;
-    }
-
-    /**
-     * @dev Get the total number of issued tokens for a given partition.
-     * @param partition Name of the partition.
-     * @return Total supply of tokens currently in circulation, for a given partition.
-     */
-    function totalSupplyByPartition(bytes32 partition)
-        external
-        view
-        returns (uint256)
-    {
-        return _totalSupplyByPartition[partition];
-    }
-
-    /**
-     * @dev Get default partitions to transfer from.
-     * Function used for ERC20 retrocompatibility.
-     * For example, a security token may return the bytes32("unrestricted").
-     * @return Array of default partitions.
-     */
-    function getDefaultPartitions() external view returns (bytes32[] memory) {
-        return _defaultPartitions;
-    }
-
-    /**
-     * @dev Set default partitions to transfer from.
-     * Function used for ERC20 retrocompatibility.
-     * @param partitions partitions to use by default when not specified.
-     */
-    function setDefaultPartitions(bytes32[] calldata partitions) external {
-        _onlyAdmin(msg.sender);
-        _defaultPartitions = partitions;
     }
 
     /**
@@ -735,9 +765,12 @@ contract ERC1400 is
         require(_balanceOfByPartition[from][fromPartition] >= value, "52"); // 0x52	insufficient balance
 
         bytes32 toPartition = _getDestinationPartition(data, fromPartition);
-        // Only controllers can switch partitions
-        if (toPartition != fromPartition) {
-            require(_isControllerForPartition(toPartition, operator), "58");
+        // Only controllers and partitioners can switch partitions
+        if (
+            toPartition != fromPartition &&
+            !_isControllerForPartition(toPartition, operator)
+        ) {
+            _onlyPartitioner(operator);
         }
 
         _assertValidTransfer(

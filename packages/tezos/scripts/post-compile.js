@@ -5,7 +5,8 @@ const contracts = {
   //   "token/ST2_compiled": "tezos/token/FA2",
   "extension/GeneralTransferManager_compiled":
     "tezos/extension/GeneralTransferManager",
-  "wallet/VestingEscrowWallet_compiled": "tezos/wallet/VestingEscrowWallet",
+  "wallet/VestingEscrowWallet_compiled":
+    "tezos/wallet/VestingEscrowMinterBurnerWallet",
 };
 
 for (const [key, outputPath] of Object.entries(contracts)) {

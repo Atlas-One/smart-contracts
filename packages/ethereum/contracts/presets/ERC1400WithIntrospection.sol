@@ -20,9 +20,13 @@ contract ERC1400WithIntrospection is
         string memory symbol,
         uint256 granularity,
         bytes32[] memory defaultPartitions,
+        address[] memory admins,
         address[] memory controllers,
         address[] memory validators,
-        address vestingEscrowWallet
+        address[] memory burners,
+        address[] memory minters,
+        address[] memory pausers,
+        address[] memory partitioners
     )
         public
         ERC1400_ERC777Compatible(
@@ -30,15 +34,15 @@ contract ERC1400WithIntrospection is
             symbol,
             granularity,
             defaultPartitions,
+            admins,
             controllers,
-            validators
+            validators,
+            burners,
+            minters,
+            pausers,
+            partitioners
         )
-    {
-        if (vestingEscrowWallet != address(0)) {
-            _setupRole(MINTER_ROLE, vestingEscrowWallet);
-            _setupRole(BURNER_ROLE, vestingEscrowWallet);
-        }
-    }
+    {}
 
     // reduce contract size
     // function _canTransferByPartition(

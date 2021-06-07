@@ -212,7 +212,19 @@ contract(
     describe("contract creation", function () {
       it("fails deploying the contract if granularity is lower than 1", async function () {
         await expectRevert.unspecified(
-          ERC1400.new("ERC1400Token", "DAU", 0, partitions, [controller], [])
+          ERC1400.new(
+            "ERC1400Token",
+            "DAU",
+            0,
+            partitions,
+            [],
+            [controller],
+            [],
+            [],
+            [],
+            [],
+            []
+          )
         );
       });
     });
@@ -226,7 +238,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           [],
           { from: owner }
         );
@@ -371,7 +388,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           []
         );
         await this.token.issueByPartition(
@@ -451,6 +473,11 @@ contract(
             2,
             partitions,
             [],
+            [],
+            [],
+            [],
+            [],
+            [],
             []
           );
           await this.token.issueByPartition(
@@ -477,7 +504,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           []
         );
         await this.token.issueByPartition(
@@ -581,6 +613,11 @@ contract(
                 2,
                 partitions,
                 [],
+                [],
+                [],
+                [],
+                [],
+                [],
                 []
               );
               await this.token.issueByPartition(
@@ -646,7 +683,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -696,7 +738,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -773,7 +820,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -825,7 +877,12 @@ contract(
             "DAU",
             1,
             partitions,
+            [],
             [controller],
+            [],
+            [],
+            [],
+            [],
             []
           );
           await issueOnMultiplePartitions(
@@ -986,7 +1043,12 @@ contract(
               "DAU",
               2,
               partitions,
+              [],
               [controller],
+              [],
+              [],
+              [],
+              [],
               []
             );
             await issueOnMultiplePartitions(
@@ -1020,7 +1082,12 @@ contract(
             "DAU",
             1,
             [],
+            [],
             [controller],
+            [],
+            [],
+            [],
+            [],
             []
           );
           await issueOnMultiplePartitions(
@@ -1051,7 +1118,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           []
         );
         await issueOnMultiplePartitions(
@@ -1169,7 +1241,11 @@ contract(
                 //     "ERC1400Token",
                 //     "DAU",
                 //     1,
-                //     [controller],
+                //     [],
+                // [controller],
+                // [],
+                // [],
+                // [],
                 //     partitions,
                 //     ZERO_ADDRESS,
                 //     ZERO_ADDRESS
@@ -1239,7 +1315,12 @@ contract(
               "DAU",
               2,
               partitions,
+              [],
               [controller],
+              [],
+              [],
+              [],
+              [],
               []
             );
             await issueOnMultiplePartitions(
@@ -1299,7 +1380,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           []
         );
         await this.token.issueByPartition(
@@ -1413,7 +1499,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           []
         );
         await this.token.issueByPartition(
@@ -1618,11 +1709,6 @@ contract(
               );
             });
             it("emits a TransferByPartition event", async function () {
-              await this.token.authorizeOperatorByPartition(
-                partition1,
-                operator,
-                { from: tokenHolder }
-              );
               const {
                 logs,
               } = await this.token.operatorTransferByPartition(
@@ -1632,7 +1718,7 @@ contract(
                 transferAmount,
                 ZERO_BYTE,
                 ZERO_BYTES32,
-                { from: operator }
+                { from: owner }
               );
 
               assert.equal(logs.length, 2);
@@ -1640,7 +1726,7 @@ contract(
               assertTransferEvent(
                 logs,
                 partition1,
-                operator,
+                owner,
                 tokenHolder,
                 recipient,
                 transferAmount,
@@ -1659,11 +1745,6 @@ contract(
               );
               await assertBalanceOf(this.token, recipient, partition2, 0);
 
-              await this.token.authorizeOperatorByPartition(
-                partition1,
-                operator,
-                { from: tokenHolder }
-              );
               await this.token.operatorTransferByPartition(
                 partition1,
                 tokenHolder,
@@ -1671,7 +1752,7 @@ contract(
                 transferAmount,
                 changeToPartition2,
                 ZERO_BYTES32,
-                { from: operator }
+                { from: owner }
               );
 
               await assertBalanceOf(
@@ -1702,11 +1783,6 @@ contract(
                 0
               );
 
-              await this.token.authorizeOperatorByPartition(
-                partition1,
-                operator,
-                { from: tokenHolder }
-              );
               await this.token.operatorTransferByPartition(
                 partition1,
                 tokenHolder,
@@ -1714,7 +1790,7 @@ contract(
                 transferAmount,
                 changeToPartition2,
                 ZERO_BYTES32,
-                { from: operator }
+                { from: owner }
               );
 
               await assertBalance(this.token, tokenHolder, issuanceAmount);
@@ -1732,11 +1808,6 @@ contract(
               );
             });
             it("emits a changedPartition event", async function () {
-              await this.token.authorizeOperatorByPartition(
-                partition1,
-                operator,
-                { from: tokenHolder }
-              );
               const {
                 logs,
               } = await this.token.operatorTransferByPartition(
@@ -1746,7 +1817,7 @@ contract(
                 transferAmount,
                 changeToPartition2,
                 ZERO_BYTES32,
-                { from: operator }
+                { from: owner }
               );
 
               assert.equal(logs.length, 3);
@@ -1754,7 +1825,7 @@ contract(
               assertTransferEvent(
                 [logs[0], logs[1]],
                 partition1,
-                operator,
+                owner,
                 tokenHolder,
                 recipient,
                 transferAmount,
@@ -1853,7 +1924,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -1892,7 +1968,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -1935,7 +2016,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -1984,7 +2070,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -2041,7 +2132,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -2075,7 +2171,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -2145,7 +2246,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -2230,7 +2336,12 @@ contract(
                   "DAU",
                   2,
                   partitions,
+                  [],
                   [controller],
+                  [],
+                  [],
+                  [],
+                  [],
                   []
                 );
                 this.token.issue(tokenHolder, 1, ZERO_BYTES32, {
@@ -2246,7 +2357,12 @@ contract(
                 "DAU",
                 1,
                 [],
+                [],
                 [controller],
+                [],
+                [],
+                [],
+                [],
                 []
               );
               await expectRevert.unspecified(
@@ -2290,7 +2406,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -2402,7 +2523,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           []
         );
         await issueOnMultiplePartitions(
@@ -2501,7 +2627,12 @@ contract(
               "DAU",
               2,
               partitions,
+              [],
               [controller],
+              [],
+              [],
+              [],
+              [],
               []
             );
             await issueOnMultiplePartitions(
@@ -2547,7 +2678,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           []
         );
         await issueOnMultiplePartitions(
@@ -2658,7 +2794,11 @@ contract(
                 //     "ERC1400Token",
                 //     "DAU",
                 //     1,
-                //     [controller],
+                //     [],
+                // [controller],
+                // [],
+                // [],
+                // [],
                 //     partitions,
                 //     ZERO_ADDRESS,
                 //     ZERO_ADDRESS
@@ -2692,7 +2832,12 @@ contract(
                   "DAU",
                   2,
                   partitions,
+                  [],
                   [controller],
+                  [],
+                  [],
+                  [],
+                  [],
                   []
                 );
                 await issueOnMultiplePartitions(
@@ -2738,7 +2883,11 @@ contract(
             //     "ERC1400Token",
             //     "DAU",
             //     1,
-            //     [controller],
+            //     [],
+            // [controller],
+            // [],
+            // [],
+            // [],
             //     partitions,
             //     ZERO_ADDRESS,
             //     ZERO_ADDRESS
@@ -2809,7 +2958,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           []
         );
         await this.token.issueByPartition(
@@ -2904,7 +3058,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           []
         );
         await this.token.issueByPartition(
@@ -3041,7 +3200,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -3236,7 +3400,11 @@ contract(
     //       "ERC1400Token",
     //       "DAU",
     //       1,
-    //       [controller],
+    //       [],
+    // [controller],
+    //   [],
+    //   [],
+    //   [],
     //       partitions
     //     );
     //   });
@@ -3303,7 +3471,11 @@ contract(
     //       "ERC1400Token",
     //       "DAU",
     //       1,
-    //       [controller],
+    //       [],
+    // [controller],
+    // [],
+    // [],
+    // [],
     //       partitions
     //     );
     //   });
@@ -3505,7 +3677,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
         defaultPartitions = await this.token.getDefaultPartitions();
@@ -3547,7 +3723,12 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
+          [],
           []
         );
       });

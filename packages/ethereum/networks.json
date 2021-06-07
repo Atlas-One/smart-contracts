@@ -15,7 +15,7 @@
       "transactionHash": "0x33553d5b2c576cb27679737fcff5c61daf50edd39b09b006ef3217bdc7e2b19d"
     }
   },
-  "VestingEscrowWallet": {
+  "VestingEscrowMinterBurnerWallet": {
     "1089731529": {
       "events": {},
       "links": {},

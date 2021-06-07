@@ -76,7 +76,7 @@ contract(
   "ERC1400WithoutIntrospection",
   function ([owner, operator, controller, tokenHolder, recipient, unknown]) {
     before(async function () {
-      this.extension = await deployProxy(GeneralTransferManager, {
+      this.gtm = await deployProxy(GeneralTransferManager, {
         from: owner,
       });
     });
@@ -87,12 +87,17 @@ contract(
         "TEST",
         1,
         partitions,
+        [],
         [controller],
+        [],
+        [],
+        [],
+        [],
         [],
         "0x0000000000000000000000000000000000000000"
       );
 
-      await this.token.grantRoles(this.extension.address, [VALIDATOR_ROLE], {
+      await this.token.grantRoles(this.gtm.address, [VALIDATOR_ROLE], {
         from: owner,
       });
     });
@@ -247,7 +252,7 @@ contract(
       });
       describe("pause", function () {
         beforeEach(async function () {
-          this.extension = await deployProxy(GeneralTransferManager, {
+          this.gtm = await deployProxy(GeneralTransferManager, {
             from: owner,
           });
           this.token = await SecurityToken.new(
@@ -255,13 +260,16 @@ contract(
             "TEST",
             1,
             partitions,
+            [],
             [controller],
-            // transfer extensions
-            [this.extension.address],
+            [this.gtm.address],
+            [],
+            [],
+            [],
             "0x0000000000000000000000000000000000000000"
           );
 
-          await this.extension.addToAllowlist(tokenHolder, {
+          await this.gtm.addToAllowlist(tokenHolder, {
             from: owner,
           });
           await this.token.issue(tokenHolder, issuanceAmount, ZERO_BYTES32, {
@@ -292,7 +300,7 @@ contract(
             );
           });
           it("controller should be able to transfer", async function () {
-            await this.extension.addToAllowlist(recipient, {
+            await this.gtm.addToAllowlist(recipient, {
               from: owner,
             });
             await this.token.controllerTransfer(
@@ -307,7 +315,7 @@ contract(
             );
           });
           it("account with ADMIN_ROLE should be able to transfer", async function () {
-            await this.extension.addToAllowlist(recipient, {
+            await this.gtm.addToAllowlist(recipient, {
               from: owner,
             });
             await this.token.transferFrom(tokenHolder, recipient, amount, {
@@ -323,9 +331,9 @@ contract(
       const redeemAmount = 50;
       const transferAmount = 300;
       beforeEach(async function () {
-        await this.token.hasRole(VALIDATOR_ROLE, this.extension.address);
+        await this.token.hasRole(VALIDATOR_ROLE, this.gtm.address);
 
-        await this.extension.addToAllowlist(tokenHolder, {
+        await this.gtm.addToAllowlist(tokenHolder, {
           from: owner,
         });
 
@@ -352,7 +360,7 @@ contract(
             );
           });
           it("fails issuing when recipient is not allowlisted", async function () {
-            await this.extension.removeFromAllowlist(tokenHolder, {
+            await this.gtm.removeFromAllowlist(tokenHolder, {
               from: owner,
             });
             await expectRevert.unspecified(
@@ -380,7 +388,7 @@ contract(
             );
           });
           it("fails issuing when recipient is not allowlisted", async function () {
-            await this.extension.removeFromAllowlist(tokenHolder, {
+            await this.gtm.removeFromAllowlist(tokenHolder, {
               from: owner,
             });
             await expectRevert.unspecified(
@@ -455,7 +463,7 @@ contract(
         });
         describe("transferWithData", function () {
           it("transfers the requested amount when sender and recipient are allowlisted", async function () {
-            await this.extension.addToAllowlist(recipient, {
+            await this.gtm.addToAllowlist(recipient, {
               from: owner,
             });
             await assertBalance(this.token, tokenHolder, issuanceAmount);
@@ -476,10 +484,10 @@ contract(
             await assertBalance(this.token, recipient, transferAmount);
           });
           it("fails transferring when sender is not allowlisted", async function () {
-            await this.extension.addToAllowlist(recipient, {
+            await this.gtm.addToAllowlist(recipient, {
               from: owner,
             });
-            await this.extension.removeFromAllowlist(tokenHolder, {
+            await this.gtm.removeFromAllowlist(tokenHolder, {
               from: owner,
             });
             await assertBalance(this.token, tokenHolder, issuanceAmount);
@@ -499,7 +507,7 @@ contract(
           });
           it("fails transferring when recipient is not allowlisted", async function () {
             await assertBalance(this.token, tokenHolder, issuanceAmount);
-            await this.extension.removeFromAllowlist(recipient, {
+            await this.gtm.removeFromAllowlist(recipient, {
               from: owner,
             });
             await assertBalance(this.token, recipient, 0);
@@ -519,7 +527,7 @@ contract(
         });
         describe("transferFromWithData", function () {
           it("transfers the requested amount when sender and recipient are allowliste", async function () {
-            await this.extension.addToAllowlist(recipient, {
+            await this.gtm.addToAllowlist(recipient, {
               from: owner,
             });
 
@@ -545,7 +553,7 @@ contract(
         });
         describe("transferByPartition", function () {
           it("transfers the requested amount when sender and recipient are allowlisted", async function () {
-            await this.extension.addToAllowlist(recipient, {
+            await this.gtm.addToAllowlist(recipient, {
               from: owner,
             });
             await assertBalanceOf(
@@ -578,10 +586,10 @@ contract(
             );
           });
           it("fails transferring when sender is not allowlisted", async function () {
-            await this.extension.addToAllowlist(recipient, {
+            await this.gtm.addToAllowlist(recipient, {
               from: owner,
             });
-            await this.extension.removeFromAllowlist(tokenHolder, {
+            await this.gtm.removeFromAllowlist(tokenHolder, {
               from: owner,
             });
             await assertBalanceOf(
@@ -611,7 +619,7 @@ contract(
             await assertBalanceOf(this.token, recipient, partition1, 0);
           });
           it("fails transferring when recipient is not allowlisted", async function () {
-            await this.extension.removeFromAllowlist(recipient, {
+            await this.gtm.removeFromAllowlist(recipient, {
               from: owner,
             });
             await assertBalanceOf(
@@ -643,7 +651,7 @@ contract(
         });
         describe("operatorTransferByPartition", function () {
           it("transfers the requested amount when sender and recipient are allowlisted", async function () {
-            await this.extension.addToAllowlist(recipient, {
+            await this.gtm.addToAllowlist(recipient, {
               from: owner,
             });
             await assertBalanceOf(
@@ -713,7 +721,7 @@ contract(
       describe("ERC20 functions", function () {
         describe("transfer", function () {
           it("transfers the requested amount when sender and recipient are allowlisted", async function () {
-            await this.extension.addToAllowlist(recipient, {
+            await this.gtm.addToAllowlist(recipient, {
               from: owner,
             });
             await assertBalance(this.token, tokenHolder, issuanceAmount);
@@ -731,10 +739,10 @@ contract(
             await assertBalance(this.token, recipient, transferAmount);
           });
           it("fails transferring when sender and is not allowlisted", async function () {
-            await this.extension.addToAllowlist(recipient, {
+            await this.gtm.addToAllowlist(recipient, {
               from: owner,
             });
-            await this.extension.removeFromAllowlist(tokenHolder, {
+            await this.gtm.removeFromAllowlist(tokenHolder, {
               from: owner,
             });
             await assertBalance(this.token, tokenHolder, issuanceAmount);
@@ -750,7 +758,7 @@ contract(
             await assertBalance(this.token, recipient, 0);
           });
           it("fails transferring when recipient and is not allowlisted", async function () {
-            await this.extension.removeFromAllowlist(recipient, {
+            await this.gtm.removeFromAllowlist(recipient, {
               from: owner,
             });
             await assertBalance(this.token, tokenHolder, issuanceAmount);
@@ -768,7 +776,7 @@ contract(
         });
         describe("transferFrom", function () {
           it("transfers the requested amount when sender and recipient are allowlisted", async function () {
-            await this.extension.addToAllowlist(recipient, {
+            await this.gtm.addToAllowlist(recipient, {
               from: owner,
             });
             await assertBalance(this.token, tokenHolder, issuanceAmount);
@@ -792,7 +800,7 @@ contract(
             await assertBalance(this.token, recipient, transferAmount);
           });
           it("fails transferring when sender is not allowlisted", async function () {
-            await this.extension.removeFromAllowlist(tokenHolder, {
+            await this.gtm.removeFromAllowlist(tokenHolder, {
               from: owner,
             });
             await assertBalance(this.token, tokenHolder, issuanceAmount);
@@ -809,7 +817,7 @@ contract(
             await assertBalance(this.token, recipient, 0);
           });
           it("fails transferring when recipient is not allowlisted", async function () {
-            await this.extension.removeFromAllowlist(recipient, {
+            await this.gtm.removeFromAllowlist(recipient, {
               from: owner,
             });
             await assertBalance(this.token, tokenHolder, issuanceAmount);

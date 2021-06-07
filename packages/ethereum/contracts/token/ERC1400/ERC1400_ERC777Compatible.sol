@@ -69,8 +69,13 @@ contract ERC1400_ERC777Compatible is ERC1400_ERC20Compatible {
         string memory symbol,
         uint256 granularity,
         bytes32[] memory defaultPartitions,
+        address[] memory admins,
         address[] memory controllers,
-        address[] memory validators
+        address[] memory validators,
+        address[] memory burners,
+        address[] memory minters,
+        address[] memory pausers,
+        address[] memory partitioners
     )
         public
         ERC1400_ERC20Compatible(
@@ -78,8 +83,13 @@ contract ERC1400_ERC777Compatible is ERC1400_ERC20Compatible {
             symbol,
             granularity,
             defaultPartitions,
+            admins,
             controllers,
-            validators
+            validators,
+            burners,
+            minters,
+            pausers,
+            partitioners
         )
     {
         // register interfaces

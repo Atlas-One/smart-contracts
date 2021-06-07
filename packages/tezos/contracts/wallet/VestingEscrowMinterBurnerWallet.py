@@ -27,7 +27,7 @@ def assert_token_admin(token, account):
         c
     )
 
-class VestingEscrowWallet(sp.Contract):
+class VestingEscrowMinterBurnerWallet(sp.Contract):
     def __init__(self):
         self.init(
             schedules = sp.map(
@@ -417,11 +417,11 @@ class ST2(sp.Contract):
 
 
 def add_test(is_default=True):
-    @sp.add_test(name = "VestingEscrowWallet", is_default=is_default)
+    @sp.add_test(name = "VestingEscrowMinterBurnerWallet", is_default=is_default)
     def test():
         scenario = sp.test_scenario()
         
-        scenario.h1("VestingEscrowWallet")
+        scenario.h1("VestingEscrowMinterBurnerWallet")
         
         admin = sp.test_account("Token Admin")
         alice = sp.test_account("Alice")
@@ -429,7 +429,7 @@ def add_test(is_default=True):
         
         fa12 = ST12(admin.address)
         fa2 = ST2(admin.address)
-        v = VestingEscrowWallet()
+        v = VestingEscrowMinterBurnerWallet()
         
         scenario += fa12
         scenario += fa2
@@ -528,4 +528,4 @@ def add_test(is_default=True):
 
 if "templates" not in __name__:
     add_test()
-    sp.add_compilation_target("VestingEscrowWallet_compiled", VestingEscrowWallet())
+    sp.add_compilation_target("VestingEscrowWallet_compiled", VestingEscrowMinterBurnerWallet())
