@@ -18,6 +18,7 @@ See Tezos access control design doc [here](/docs/tezos/access-control-design.md)
 | Burners        | This role can be granted to any account of contract that can burn tokens.                                                                                                |
 | Validators     | The validator role is granted to another contract only that has restrictions set to validate a transaction. The current restriction is a shared Whitelist and Blacklist. |
 | Pauser         | This role can pause transactions. Only controllers can perform transactions when a contract is paused.                                                                   |
+| Partitioner    | This role is granted to accounts or contracts that can change token partitions (currently used in ethereum ERC1400).                                                     |
 | Operators      | Token holders are operators of their own token. A token holder can grant another account the operator role to their tokens.                                              |
 
 ### Granting, Revoking and Renouncing Roles
