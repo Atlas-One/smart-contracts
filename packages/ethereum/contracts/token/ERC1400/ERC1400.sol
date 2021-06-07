@@ -358,6 +358,7 @@ contract ERC1400 is
         bytes calldata _data,
         bytes calldata _operatorData
     ) external override {
+        _onlyBurner(msg.sender);
         _onlyController(msg.sender);
         _redeemByDefaultPartitions(_msgSender(), _tokenHolder, _value, _data);
         emit ControllerRedemption(
@@ -563,6 +564,7 @@ contract ERC1400 is
         uint256 value,
         bytes calldata data
     ) external override {
+        _onlyBurner(msg.sender);
         _redeemByPartition(partition, msg.sender, msg.sender, value, data, "");
     }
 
