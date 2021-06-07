@@ -465,7 +465,6 @@ contract ERC1400 is
         bytes calldata _data,
         bytes calldata _operatorData
     ) external override {
-        _onlyBurner(msg.sender);
         _onlyController(msg.sender);
         _redeemByDefaultPartitions(_msgSender(), _tokenHolder, _value, _data);
         emit ControllerRedemption(
@@ -655,8 +654,8 @@ contract ERC1400 is
         uint256 value,
         bytes calldata data
     ) external override {
-        require(_isOperator(msg.sender, from), "58"); // 0x58	invalid operator (transfer agent)
         _onlyBurner(msg.sender);
+        require(_isOperator(msg.sender, from), "58"); // 0x58	invalid operator (transfer agent)
         _redeemByDefaultPartitions(msg.sender, from, value, data);
     }
 
@@ -688,12 +687,11 @@ contract ERC1400 is
         uint256 value,
         bytes calldata operatorData
     ) external override {
+        _onlyBurner(msg.sender);
         require(
             _isOperatorForPartition(partition, msg.sender, tokenHolder),
             "58"
         ); // 0x58	invalid operator (transfer agent)
-
-        _onlyBurner(msg.sender);
         _redeemByPartition(
             partition,
             msg.sender,

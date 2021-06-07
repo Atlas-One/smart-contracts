@@ -30,9 +30,7 @@ abstract contract Administrable is AccessControl, Roles {
 
     function _onlyBurner(address account) internal view {
         require(
-            hasRole(BURNER_ROLE, account) ||
-                hasRole(CONTROLLER_ROLE, account) ||
-                hasRole(ADMIN_ROLE, account),
+            hasRole(BURNER_ROLE, account) || hasRole(ADMIN_ROLE, account),
             "58" // 0x58	invalid operator (transfer agent)
         );
     }
