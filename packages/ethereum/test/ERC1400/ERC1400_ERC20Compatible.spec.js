@@ -212,7 +212,18 @@ contract(
     describe("contract creation", function () {
       it("fails deploying the contract if granularity is lower than 1", async function () {
         await expectRevert.unspecified(
-          ERC1400.new("ERC1400Token", "DAU", 0, partitions, [controller], [])
+          ERC1400.new(
+            "ERC1400Token",
+            "DAU",
+            0,
+            partitions,
+            [],
+            [controller],
+            [],
+            [],
+            [],
+            []
+          )
         );
       });
     });
@@ -226,7 +237,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           [],
           { from: owner }
         );
@@ -371,7 +386,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
         await this.token.issueByPartition(
@@ -451,6 +470,10 @@ contract(
             2,
             partitions,
             [],
+            [],
+            [],
+            [],
+            [],
             []
           );
           await this.token.issueByPartition(
@@ -477,7 +500,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
         await this.token.issueByPartition(
@@ -581,6 +608,10 @@ contract(
                 2,
                 partitions,
                 [],
+                [],
+                [],
+                [],
+                [],
                 []
               );
               await this.token.issueByPartition(
@@ -646,7 +677,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -696,7 +731,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -773,7 +812,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -825,7 +868,11 @@ contract(
             "DAU",
             1,
             partitions,
+            [],
             [controller],
+            [],
+            [],
+            [],
             []
           );
           await issueOnMultiplePartitions(
@@ -986,7 +1033,11 @@ contract(
               "DAU",
               2,
               partitions,
+              [],
               [controller],
+              [],
+              [],
+              [],
               []
             );
             await issueOnMultiplePartitions(
@@ -1020,7 +1071,11 @@ contract(
             "DAU",
             1,
             [],
+            [],
             [controller],
+            [],
+            [],
+            [],
             []
           );
           await issueOnMultiplePartitions(
@@ -1051,7 +1106,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
         await issueOnMultiplePartitions(
@@ -1169,7 +1228,11 @@ contract(
                 //     "ERC1400Token",
                 //     "DAU",
                 //     1,
-                //     [controller],
+                //     [],
+                // [controller],
+                // [],
+                // [],
+                // [],
                 //     partitions,
                 //     ZERO_ADDRESS,
                 //     ZERO_ADDRESS
@@ -1239,7 +1302,11 @@ contract(
               "DAU",
               2,
               partitions,
+              [],
               [controller],
+              [],
+              [],
+              [],
               []
             );
             await issueOnMultiplePartitions(
@@ -1299,7 +1366,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
         await this.token.issueByPartition(
@@ -1413,7 +1484,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
         await this.token.issueByPartition(
@@ -1538,7 +1613,7 @@ contract(
           });
         });
       });
-      describe("when the sender is an operator for this partition", function () {
+      describe.only("when the sender is an operator for this partition", function () {
         describe("when the sender has enough balance for this partition", function () {
           describe("when partition does not change", function () {
             it("transfers the requested amount", async function () {
@@ -1618,11 +1693,6 @@ contract(
               );
             });
             it("emits a TransferByPartition event", async function () {
-              await this.token.authorizeOperatorByPartition(
-                partition1,
-                operator,
-                { from: tokenHolder }
-              );
               const {
                 logs,
               } = await this.token.operatorTransferByPartition(
@@ -1632,7 +1702,7 @@ contract(
                 transferAmount,
                 ZERO_BYTE,
                 ZERO_BYTES32,
-                { from: operator }
+                { from: owner }
               );
 
               assert.equal(logs.length, 2);
@@ -1640,7 +1710,7 @@ contract(
               assertTransferEvent(
                 logs,
                 partition1,
-                operator,
+                owner,
                 tokenHolder,
                 recipient,
                 transferAmount,
@@ -1659,11 +1729,6 @@ contract(
               );
               await assertBalanceOf(this.token, recipient, partition2, 0);
 
-              await this.token.authorizeOperatorByPartition(
-                partition1,
-                operator,
-                { from: tokenHolder }
-              );
               await this.token.operatorTransferByPartition(
                 partition1,
                 tokenHolder,
@@ -1671,7 +1736,7 @@ contract(
                 transferAmount,
                 changeToPartition2,
                 ZERO_BYTES32,
-                { from: operator }
+                { from: owner }
               );
 
               await assertBalanceOf(
@@ -1702,11 +1767,6 @@ contract(
                 0
               );
 
-              await this.token.authorizeOperatorByPartition(
-                partition1,
-                operator,
-                { from: tokenHolder }
-              );
               await this.token.operatorTransferByPartition(
                 partition1,
                 tokenHolder,
@@ -1714,7 +1774,7 @@ contract(
                 transferAmount,
                 changeToPartition2,
                 ZERO_BYTES32,
-                { from: operator }
+                { from: owner }
               );
 
               await assertBalance(this.token, tokenHolder, issuanceAmount);
@@ -1732,11 +1792,6 @@ contract(
               );
             });
             it("emits a changedPartition event", async function () {
-              await this.token.authorizeOperatorByPartition(
-                partition1,
-                operator,
-                { from: tokenHolder }
-              );
               const {
                 logs,
               } = await this.token.operatorTransferByPartition(
@@ -1746,7 +1801,7 @@ contract(
                 transferAmount,
                 changeToPartition2,
                 ZERO_BYTES32,
-                { from: operator }
+                { from: owner }
               );
 
               assert.equal(logs.length, 3);
@@ -1754,7 +1809,7 @@ contract(
               assertTransferEvent(
                 [logs[0], logs[1]],
                 partition1,
-                operator,
+                owner,
                 tokenHolder,
                 recipient,
                 transferAmount,
@@ -1853,7 +1908,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -1892,7 +1951,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -1935,7 +1998,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -1984,7 +2051,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -2041,7 +2112,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -2075,7 +2150,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -2145,7 +2224,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -2230,7 +2313,11 @@ contract(
                   "DAU",
                   2,
                   partitions,
+                  [],
                   [controller],
+                  [],
+                  [],
+                  [],
                   []
                 );
                 this.token.issue(tokenHolder, 1, ZERO_BYTES32, {
@@ -2246,7 +2333,11 @@ contract(
                 "DAU",
                 1,
                 [],
+                [],
                 [controller],
+                [],
+                [],
+                [],
                 []
               );
               await expectRevert.unspecified(
@@ -2290,7 +2381,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -2402,7 +2497,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
         await issueOnMultiplePartitions(
@@ -2501,7 +2600,11 @@ contract(
               "DAU",
               2,
               partitions,
+              [],
               [controller],
+              [],
+              [],
+              [],
               []
             );
             await issueOnMultiplePartitions(
@@ -2547,7 +2650,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
         await issueOnMultiplePartitions(
@@ -2658,7 +2765,11 @@ contract(
                 //     "ERC1400Token",
                 //     "DAU",
                 //     1,
-                //     [controller],
+                //     [],
+                // [controller],
+                // [],
+                // [],
+                // [],
                 //     partitions,
                 //     ZERO_ADDRESS,
                 //     ZERO_ADDRESS
@@ -2692,7 +2803,11 @@ contract(
                   "DAU",
                   2,
                   partitions,
+                  [],
                   [controller],
+                  [],
+                  [],
+                  [],
                   []
                 );
                 await issueOnMultiplePartitions(
@@ -2738,7 +2853,11 @@ contract(
             //     "ERC1400Token",
             //     "DAU",
             //     1,
-            //     [controller],
+            //     [],
+            // [controller],
+            // [],
+            // [],
+            // [],
             //     partitions,
             //     ZERO_ADDRESS,
             //     ZERO_ADDRESS
@@ -2809,7 +2928,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
         await this.token.issueByPartition(
@@ -2904,7 +3027,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
         await this.token.issueByPartition(
@@ -3041,7 +3168,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
       });
@@ -3236,306 +3367,318 @@ contract(
     //       "ERC1400Token",
     //       "DAU",
     //       1,
-    //       [controller],
-    //       partitions
-    //     );
-    //   });
-    //   describe("when the caller is the contract owner", function () {
-    //     it("sets the operators as controllers", async function () {
-    //       const controllers1 = await this.token.controllers();
-    //       assert.equal(controllers1.length, 1);
-    //       assert.equal(controllers1[0], controller);
-    //       assert.isTrue(await this.token.isOperator(controller, unknown));
-    //       assert.isTrue(
-    //         !(await this.token.isOperator(controller_alternative1, unknown))
-    //       );
-    //       assert.isTrue(
-    //         !(await this.token.isOperator(controller_alternative2, unknown))
-    //       );
-    //       await this.token.setControllers(
-    //         [controller_alternative1, controller_alternative2],
-    //         { from: owner }
-    //       );
-    //       const controllers2 = await this.token.controllers();
-    //       assert.equal(controllers2.length, 2);
-    //       assert.equal(controllers2[0], controller_alternative1);
-    //       assert.equal(controllers2[1], controller_alternative2);
-    //       assert.isTrue(!(await this.token.isOperator(controller, unknown)));
-    //       assert.isTrue(
-    //         await this.token.isOperator(controller_alternative1, unknown)
-    //       );
-    //       assert.isTrue(
-    //         await this.token.isOperator(controller_alternative2, unknown)
-    //       );
-    //       await this.token.renounceControl({ from: owner });
-    //       assert.isTrue(
-    //         !(await this.token.isOperator(controller_alternative1, unknown))
-    //       );
-    //       assert.isTrue(
-    //         !(await this.token.isOperator(controller_alternative1, unknown))
-    //       );
-    //       assert.isTrue(
-    //         !(await this.token.isOperator(controller_alternative2, unknown))
-    //       );
-    //     });
-    //   });
-    //   describe("when the caller is not the contract owner", function () {
-    //     it("reverts", async function () {
-    //       await expectRevert.unspecified(
-    //         this.token.setControllers(
-    //           [controller_alternative1, controller_alternative2],
-    //           { from: unknown }
-    //         )
-    //       );
-    //     });
-    //   });
-    // });
+    //       [],
+    [controller],
+      [],
+      [],
+      [],
+      //       partitions
+      //     );
+      //   });
+      //   describe("when the caller is the contract owner", function () {
+      //     it("sets the operators as controllers", async function () {
+      //       const controllers1 = await this.token.controllers();
+      //       assert.equal(controllers1.length, 1);
+      //       assert.equal(controllers1[0], controller);
+      //       assert.isTrue(await this.token.isOperator(controller, unknown));
+      //       assert.isTrue(
+      //         !(await this.token.isOperator(controller_alternative1, unknown))
+      //       );
+      //       assert.isTrue(
+      //         !(await this.token.isOperator(controller_alternative2, unknown))
+      //       );
+      //       await this.token.setControllers(
+      //         [controller_alternative1, controller_alternative2],
+      //         { from: owner }
+      //       );
+      //       const controllers2 = await this.token.controllers();
+      //       assert.equal(controllers2.length, 2);
+      //       assert.equal(controllers2[0], controller_alternative1);
+      //       assert.equal(controllers2[1], controller_alternative2);
+      //       assert.isTrue(!(await this.token.isOperator(controller, unknown)));
+      //       assert.isTrue(
+      //         await this.token.isOperator(controller_alternative1, unknown)
+      //       );
+      //       assert.isTrue(
+      //         await this.token.isOperator(controller_alternative2, unknown)
+      //       );
+      //       await this.token.renounceControl({ from: owner });
+      //       assert.isTrue(
+      //         !(await this.token.isOperator(controller_alternative1, unknown))
+      //       );
+      //       assert.isTrue(
+      //         !(await this.token.isOperator(controller_alternative1, unknown))
+      //       );
+      //       assert.isTrue(
+      //         !(await this.token.isOperator(controller_alternative2, unknown))
+      //       );
+      //     });
+      //   });
+      //   describe("when the caller is not the contract owner", function () {
+      //     it("reverts", async function () {
+      //       await expectRevert.unspecified(
+      //         this.token.setControllers(
+      //           [controller_alternative1, controller_alternative2],
+      //           { from: unknown }
+      //         )
+      //       );
+      //     });
+      //   });
+      // });
 
-    // SET PARTITION CONTROLLERS
+      // SET PARTITION CONTROLLERS
 
-    // describe("setPartitionControllers", function () {
-    //   beforeEach(async function () {
-    //
-    //
-    //
-    //
-    //     this.token = await ERC1400.new(
-    //       "ERC1400Token",
-    //       "DAU",
-    //       1,
-    //       [controller],
-    //       partitions
-    //     );
-    //   });
-    //   describe("when the caller is the contract owner", function () {
-    //     it("sets the operators as controllers for the specified partition", async function () {
-    //       assert.isTrue(await this.token.isControllable());
+      // describe("setPartitionControllers", function () {
+      //   beforeEach(async function () {
+      //
+      //
+      //
+      //
+      //     this.token = await ERC1400.new(
+      //       "ERC1400Token",
+      //       "DAU",
+      //       1,
+      //       [],
+      // [controller],
+      // [],
+      // [],
+      // [],
+      //       partitions
+      //     );
+      //   });
+      //   describe("when the caller is the contract owner", function () {
+      //     it("sets the operators as controllers for the specified partition", async function () {
+      //       assert.isTrue(await this.token.isControllable());
 
-    //       const controllers1 = await this.token.controllersByPartition(
-    //         partition1
-    //       );
-    //       assert.equal(controllers1.length, 0);
-    //       assert.isTrue(
-    //         await this.token.isOperatorForPartition(
-    //           partition1,
-    //           controller,
-    //           unknown
-    //         )
-    //       );
-    //       assert.isTrue(
-    //         !(await this.token.isOperatorForPartition(
-    //           partition1,
-    //           controller_alternative1,
-    //           unknown
-    //         ))
-    //       );
-    //       assert.isTrue(
-    //         !(await this.token.isOperatorForPartition(
-    //           partition1,
-    //           controller_alternative2,
-    //           unknown
-    //         ))
-    //       );
-    //       await this.token.setPartitionControllers(
-    //         partition1,
-    //         [controller_alternative1, controller_alternative2],
-    //         { from: owner }
-    //       );
-    //       const controllers2 = await this.token.controllersByPartition(
-    //         partition1
-    //       );
-    //       assert.equal(controllers2.length, 2);
-    //       assert.equal(controllers2[0], controller_alternative1);
-    //       assert.equal(controllers2[1], controller_alternative2);
-    //       assert.isTrue(
-    //         await this.token.isOperatorForPartition(
-    //           partition1,
-    //           controller,
-    //           unknown
-    //         )
-    //       );
-    //       assert.isTrue(
-    //         await this.token.isOperatorForPartition(
-    //           partition1,
-    //           controller_alternative1,
-    //           unknown
-    //         )
-    //       );
-    //       assert.isTrue(
-    //         await this.token.isOperatorForPartition(
-    //           partition1,
-    //           controller_alternative2,
-    //           unknown
-    //         )
-    //       );
-    //       await this.token.renounceControl({ from: owner });
-    //       assert.isTrue(
-    //         !(await this.token.isOperatorForPartition(
-    //           partition1,
-    //           controller_alternative1,
-    //           unknown
-    //         ))
-    //       );
-    //       assert.isTrue(
-    //         !(await this.token.isOperatorForPartition(
-    //           partition1,
-    //           controller_alternative1,
-    //           unknown
-    //         ))
-    //       );
-    //       assert.isTrue(
-    //         !(await this.token.isOperatorForPartition(
-    //           partition1,
-    //           controller_alternative2,
-    //           unknown
-    //         ))
-    //       );
-    //     });
-    //     it("removes the operators as controllers for the specified partition", async function () {
-    //       assert.isTrue(await this.token.isControllable());
+      //       const controllers1 = await this.token.controllersByPartition(
+      //         partition1
+      //       );
+      //       assert.equal(controllers1.length, 0);
+      //       assert.isTrue(
+      //         await this.token.isOperatorForPartition(
+      //           partition1,
+      //           controller,
+      //           unknown
+      //         )
+      //       );
+      //       assert.isTrue(
+      //         !(await this.token.isOperatorForPartition(
+      //           partition1,
+      //           controller_alternative1,
+      //           unknown
+      //         ))
+      //       );
+      //       assert.isTrue(
+      //         !(await this.token.isOperatorForPartition(
+      //           partition1,
+      //           controller_alternative2,
+      //           unknown
+      //         ))
+      //       );
+      //       await this.token.setPartitionControllers(
+      //         partition1,
+      //         [controller_alternative1, controller_alternative2],
+      //         { from: owner }
+      //       );
+      //       const controllers2 = await this.token.controllersByPartition(
+      //         partition1
+      //       );
+      //       assert.equal(controllers2.length, 2);
+      //       assert.equal(controllers2[0], controller_alternative1);
+      //       assert.equal(controllers2[1], controller_alternative2);
+      //       assert.isTrue(
+      //         await this.token.isOperatorForPartition(
+      //           partition1,
+      //           controller,
+      //           unknown
+      //         )
+      //       );
+      //       assert.isTrue(
+      //         await this.token.isOperatorForPartition(
+      //           partition1,
+      //           controller_alternative1,
+      //           unknown
+      //         )
+      //       );
+      //       assert.isTrue(
+      //         await this.token.isOperatorForPartition(
+      //           partition1,
+      //           controller_alternative2,
+      //           unknown
+      //         )
+      //       );
+      //       await this.token.renounceControl({ from: owner });
+      //       assert.isTrue(
+      //         !(await this.token.isOperatorForPartition(
+      //           partition1,
+      //           controller_alternative1,
+      //           unknown
+      //         ))
+      //       );
+      //       assert.isTrue(
+      //         !(await this.token.isOperatorForPartition(
+      //           partition1,
+      //           controller_alternative1,
+      //           unknown
+      //         ))
+      //       );
+      //       assert.isTrue(
+      //         !(await this.token.isOperatorForPartition(
+      //           partition1,
+      //           controller_alternative2,
+      //           unknown
+      //         ))
+      //       );
+      //     });
+      //     it("removes the operators as controllers for the specified partition", async function () {
+      //       assert.isTrue(await this.token.isControllable());
 
-    //       const controllers1 = await this.token.controllersByPartition(
-    //         partition1
-    //       );
-    //       assert.equal(controllers1.length, 0);
-    //       assert.isTrue(
-    //         await this.token.isOperatorForPartition(
-    //           partition1,
-    //           controller,
-    //           unknown
-    //         )
-    //       );
-    //       assert.isTrue(
-    //         !(await this.token.isOperatorForPartition(
-    //           partition1,
-    //           controller_alternative1,
-    //           unknown
-    //         ))
-    //       );
-    //       assert.isTrue(
-    //         !(await this.token.isOperatorForPartition(
-    //           partition1,
-    //           controller_alternative2,
-    //           unknown
-    //         ))
-    //       );
-    //       await this.token.setPartitionControllers(
-    //         partition1,
-    //         [controller_alternative1, controller_alternative2],
-    //         { from: owner }
-    //       );
-    //       const controllers2 = await this.token.controllersByPartition(
-    //         partition1
-    //       );
-    //       assert.equal(controllers2.length, 2);
-    //       assert.equal(controllers2[0], controller_alternative1);
-    //       assert.equal(controllers2[1], controller_alternative2);
-    //       assert.isTrue(
-    //         await this.token.isOperatorForPartition(
-    //           partition1,
-    //           controller,
-    //           unknown
-    //         )
-    //       );
-    //       assert.isTrue(
-    //         await this.token.isOperatorForPartition(
-    //           partition1,
-    //           controller_alternative1,
-    //           unknown
-    //         )
-    //       );
-    //       assert.isTrue(
-    //         await this.token.isOperatorForPartition(
-    //           partition1,
-    //           controller_alternative2,
-    //           unknown
-    //         )
-    //       );
-    //       await this.token.setPartitionControllers(
-    //         partition1,
-    //         [controller_alternative2],
-    //         { from: owner }
-    //       );
-    //       const controllers3 = await this.token.controllersByPartition(
-    //         partition1
-    //       );
-    //       assert.equal(controllers3.length, 1);
-    //       assert.equal(controllers3[0], controller_alternative2);
-    //       assert.isTrue(
-    //         await this.token.isOperatorForPartition(
-    //           partition1,
-    //           controller,
-    //           unknown
-    //         )
-    //       );
-    //       assert.isTrue(
-    //         !(await this.token.isOperatorForPartition(
-    //           partition1,
-    //           controller_alternative1,
-    //           unknown
-    //         ))
-    //       );
-    //       assert.isTrue(
-    //         await this.token.isOperatorForPartition(
-    //           partition1,
-    //           controller_alternative2,
-    //           unknown
-    //         )
-    //       );
-    //     });
-    //   });
-    //   describe("when the caller is not the contract owner", function () {
-    //     it("reverts", async function () {
-    //       await expectRevert.unspecified(
-    //         this.token.setPartitionControllers(
-    //           partition1,
-    //           [controller_alternative1, controller_alternative2],
-    //           { from: unknown }
-    //         )
-    //       );
-    //     });
-    //   });
-    // });
+      //       const controllers1 = await this.token.controllersByPartition(
+      //         partition1
+      //       );
+      //       assert.equal(controllers1.length, 0);
+      //       assert.isTrue(
+      //         await this.token.isOperatorForPartition(
+      //           partition1,
+      //           controller,
+      //           unknown
+      //         )
+      //       );
+      //       assert.isTrue(
+      //         !(await this.token.isOperatorForPartition(
+      //           partition1,
+      //           controller_alternative1,
+      //           unknown
+      //         ))
+      //       );
+      //       assert.isTrue(
+      //         !(await this.token.isOperatorForPartition(
+      //           partition1,
+      //           controller_alternative2,
+      //           unknown
+      //         ))
+      //       );
+      //       await this.token.setPartitionControllers(
+      //         partition1,
+      //         [controller_alternative1, controller_alternative2],
+      //         { from: owner }
+      //       );
+      //       const controllers2 = await this.token.controllersByPartition(
+      //         partition1
+      //       );
+      //       assert.equal(controllers2.length, 2);
+      //       assert.equal(controllers2[0], controller_alternative1);
+      //       assert.equal(controllers2[1], controller_alternative2);
+      //       assert.isTrue(
+      //         await this.token.isOperatorForPartition(
+      //           partition1,
+      //           controller,
+      //           unknown
+      //         )
+      //       );
+      //       assert.isTrue(
+      //         await this.token.isOperatorForPartition(
+      //           partition1,
+      //           controller_alternative1,
+      //           unknown
+      //         )
+      //       );
+      //       assert.isTrue(
+      //         await this.token.isOperatorForPartition(
+      //           partition1,
+      //           controller_alternative2,
+      //           unknown
+      //         )
+      //       );
+      //       await this.token.setPartitionControllers(
+      //         partition1,
+      //         [controller_alternative2],
+      //         { from: owner }
+      //       );
+      //       const controllers3 = await this.token.controllersByPartition(
+      //         partition1
+      //       );
+      //       assert.equal(controllers3.length, 1);
+      //       assert.equal(controllers3[0], controller_alternative2);
+      //       assert.isTrue(
+      //         await this.token.isOperatorForPartition(
+      //           partition1,
+      //           controller,
+      //           unknown
+      //         )
+      //       );
+      //       assert.isTrue(
+      //         !(await this.token.isOperatorForPartition(
+      //           partition1,
+      //           controller_alternative1,
+      //           unknown
+      //         ))
+      //       );
+      //       assert.isTrue(
+      //         await this.token.isOperatorForPartition(
+      //           partition1,
+      //           controller_alternative2,
+      //           unknown
+      //         )
+      //       );
+      //     });
+      //   });
+      //   describe("when the caller is not the contract owner", function () {
+      //     it("reverts", async function () {
+      //       await expectRevert.unspecified(
+      //         this.token.setPartitionControllers(
+      //           partition1,
+      //           [controller_alternative1, controller_alternative2],
+      //           { from: unknown }
+      //         )
+      //       );
+      //     });
+      //   });
+      // });
 
-    // SET/GET TOKEN UNLOCKED PARTITIONS
-    describe("defaultPartitions", function () {
-      beforeEach(async function () {
-        this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          partitions,
-          [controller],
-          []
-        );
-        defaultPartitions = await this.token.getDefaultPartitions();
-        assert.equal(defaultPartitions.length, 3);
-        assert.equal(defaultPartitions[0], partition1);
-        assert.equal(defaultPartitions[1], partition2);
-        assert.equal(defaultPartitions[2], partition3);
-      });
-      describe("when the sender is the contract owner", function () {
-        it("sets the list of token default partitions", async function () {
-          await this.token.setDefaultPartitions(reversedPartitions, {
-            from: owner,
-          });
+      // SET/GET TOKEN UNLOCKED PARTITIONS
+      describe("defaultPartitions", function () {
+        beforeEach(async function () {
+          this.token = await ERC1400.new(
+            "ERC1400Token",
+            "DAU",
+            1,
+            partitions,
+            [],
+            [controller],
+            [],
+            [],
+            [],
+            []
+          );
           defaultPartitions = await this.token.getDefaultPartitions();
           assert.equal(defaultPartitions.length, 3);
-          assert.equal(defaultPartitions[0], partition3);
-          assert.equal(defaultPartitions[1], partition1);
-          assert.equal(defaultPartitions[2], partition2);
+          assert.equal(defaultPartitions[0], partition1);
+          assert.equal(defaultPartitions[1], partition2);
+          assert.equal(defaultPartitions[2], partition3);
+        });
+        describe("when the sender is the contract owner", function () {
+          it("sets the list of token default partitions", async function () {
+            await this.token.setDefaultPartitions(reversedPartitions, {
+              from: owner,
+            });
+            defaultPartitions = await this.token.getDefaultPartitions();
+            assert.equal(defaultPartitions.length, 3);
+            assert.equal(defaultPartitions[0], partition3);
+            assert.equal(defaultPartitions[1], partition1);
+            assert.equal(defaultPartitions[2], partition2);
+          });
+        });
+        describe("when the sender is not the contract owner", function () {
+          it("reverts", async function () {
+            await expectRevert.unspecified(
+              this.token.setDefaultPartitions(reversedPartitions, {
+                from: unknown,
+              })
+            );
+          });
         });
       });
-      describe("when the sender is not the contract owner", function () {
-        it("reverts", async function () {
-          await expectRevert.unspecified(
-            this.token.setDefaultPartitions(reversedPartitions, {
-              from: unknown,
-            })
-          );
-        });
-      });
-    });
 
     // APPROVE BY PARTITION
 
@@ -3547,7 +3690,11 @@ contract(
           "DAU",
           1,
           partitions,
+          [],
           [controller],
+          [],
+          [],
+          [],
           []
         );
       });

@@ -26,18 +26,15 @@ contract(
         1,
         [],
         [],
+        [],
         [this.gtm.address],
+        [this.vestingWallet.address],
+        [this.vestingWallet.address],
+        [],
         {
           from: deployer,
         }
       );
-
-      await this.token.grantRole(MINTER_ROLE, this.vestingWallet.address, {
-        from: deployer,
-      });
-      await this.token.grantRole(BURNER_ROLE, this.vestingWallet.address, {
-        from: deployer,
-      });
 
       // allow the vesting wallet to hold security tokens
       await this.gtm.addToAllowlist(this.vestingWallet.address, {
@@ -51,7 +48,7 @@ contract(
       });
     });
 
-    describe.only("vest", () => {
+    describe("vest", () => {
       it("should mint/issue and add vesting schedule", async () => {
         await this.vestingWallet.vest(
           this.token.address,
@@ -69,7 +66,7 @@ contract(
         );
       });
     });
-    describe.only("vestMultiple", () => {
+    describe("vestMultiple", () => {
       it("should mint/issue and add vesting schedule", async () => {
         await this.vestingWallet.vestMultiple(
           [this.token.address, this.token.address],

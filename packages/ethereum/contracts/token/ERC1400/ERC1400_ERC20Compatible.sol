@@ -17,8 +17,12 @@ contract ERC1400_ERC20Compatible is IERC20, ERC1400 {
         string memory symbol,
         uint256 granularity,
         bytes32[] memory defaultPartitions,
+        address[] memory admins,
         address[] memory controllers,
-        address[] memory validators
+        address[] memory validators,
+        address[] memory burners,
+        address[] memory minters,
+        address[] memory pausers
     )
         public
         ERC1400(
@@ -26,8 +30,12 @@ contract ERC1400_ERC20Compatible is IERC20, ERC1400 {
             symbol,
             granularity,
             defaultPartitions,
+            admins,
             controllers,
-            validators
+            validators,
+            burners,
+            minters,
+            pausers
         )
     {}
 

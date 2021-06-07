@@ -11,11 +11,26 @@ contract ERC1400OwnershipSnapshotMock is ERC1400OwnershipSnapshot {
         address initialAccount,
         uint256 initialBalance,
         bytes32[] memory defaultPartitions,
+        address[] memory admins,
         address[] memory controllers,
-        address[] memory validators
+        address[] memory validators,
+        address[] memory burners,
+        address[] memory minters,
+        address[] memory pausers
     )
         public
-        ERC1400(name, symbol, 1, defaultPartitions, controllers, validators)
+        ERC1400(
+            name,
+            symbol,
+            1,
+            defaultPartitions,
+            admins,
+            controllers,
+            validators,
+            burners,
+            minters,
+            pausers
+        )
     {
         _issueByPartition(
             "issued",

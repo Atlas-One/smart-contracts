@@ -99,8 +99,12 @@ contract ERC1400 is
         string memory symbol,
         uint256 granularity,
         bytes32[] memory defaultPartitions,
+        address[] memory admins,
         address[] memory controllers,
-        address[] memory validators
+        address[] memory validators,
+        address[] memory burners,
+        address[] memory minters,
+        address[] memory pausers
     ) public {
         require(granularity >= 1); // Constructor Blocked - Token granularity can not be lower than 1
 
@@ -115,9 +119,15 @@ contract ERC1400 is
         _isIssuable = true;
         _isControllable = true;
 
-        // set token Admin
-        _setupRole(ADMIN_ROLE, msg.sender);
-
+        if (admins.length > 0) {
+            // set token admins
+            for (uint256 i = 0; i < admins.length; i++) {
+                _setupRole(ADMIN_ROLE, admins[i]);
+            }
+        } else {
+            // set token admin
+            _setupRole(ADMIN_ROLE, msg.sender);
+        }
         // set controllers
         for (uint256 i = 0; i < controllers.length; i++) {
             _setupRole(CONTROLLER_ROLE, controllers[i]);
@@ -125,6 +135,18 @@ contract ERC1400 is
         // set validators
         for (uint256 i = 0; i < validators.length; i++) {
             _setupRole(VALIDATOR_ROLE, validators[i]);
+        }
+        // set burners
+        for (uint256 i = 0; i < burners.length; i++) {
+            _setupRole(BURNER_ROLE, burners[i]);
+        }
+        // set minters
+        for (uint256 i = 0; i < minters.length; i++) {
+            _setupRole(MINTER_ROLE, minters[i]);
+        }
+        // set pausers
+        for (uint256 i = 0; i < pausers.length; i++) {
+            _setupRole(PAUSER_ROLE, pausers[i]);
         }
     }
 
