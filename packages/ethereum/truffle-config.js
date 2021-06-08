@@ -26,28 +26,34 @@ module.exports = {
             gasPrice: "0",
           })
         : new HDWalletProvider({
-            privateKeys: [
-              // don't use this key for anything other than testing
-              "0x4721c3f9d53b35dce5312bc86b320dd37c6ba460f2c3ac9df0ac53e3a35e5fd2",
-            ],
+            privateKeys: [process.env.PRIVATE_KEY],
             providerOrUrl: process.env.INFURA_HTTP_LINK,
           }),
       network_id: "*",
     },
-    kaleido: {
+    kaleido_stage: {
       provider: !process.env.KALEIDO_HTTP_LINK
         ? Ganache.provider({
             gasPrice: "0",
           })
         : new HDWalletProvider({
-            privateKeys: [
-              // don't use this key for anything other than testing
-              "0x4721c3f9d53b35dce5312bc86b320dd37c6ba460f2c3ac9df0ac53e3a35e5fd2",
-            ],
+            privateKeys: [process.env.PRIVATE_KEY],
             providerOrUrl: process.env.KALEIDO_HTTP_LINK,
           }),
       gasPrice: 0,
-      network_id: "*",
+      network_id: "1089731529",
+    },
+    kaleido_prod: {
+      provider: !process.env.KALEIDO_HTTP_LINK
+        ? Ganache.provider({
+            gasPrice: "0",
+          })
+        : new HDWalletProvider({
+            privateKeys: [process.env.PRIVATE_KEY],
+            providerOrUrl: process.env.KALEIDO_HTTP_LINK,
+          }),
+      gasPrice: 0,
+      network_id: "1767184108",
     },
   },
   plugins: ["truffle-contract-size"],

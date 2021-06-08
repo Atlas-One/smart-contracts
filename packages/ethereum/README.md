@@ -47,8 +47,8 @@ Ropsten Test Network:
 | Contract                        | Address                                    |
 | ------------------------------- | ------------------------------------------ |
 | ERC1820                         | 0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24 |
-| GeneralTransferManager          |                                            |
-| VestingEscrowMinterBurnerWallet |                                            |
+| GeneralTransferManager          | 0xd8876f9F635c60fA5075f9034bC44b1a06a3647F |
+| VestingEscrowMinterBurnerWallet | 0xEb9903C89FBd2CEa889002bb6d02e553b3FCa952 |
 
 #### Kaleido Staging Environment
 

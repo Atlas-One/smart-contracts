@@ -1,0 +1,292 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0x2969753F38684c13Db312748254cec9d524E5612",
+    "txHash": "0x95c4330c19883ab3dc36bd9570502cfa06d641bef11a9c94204889fc205fe4ec"
+  },
+  "proxies": [
+    {
+      "address": "0xd8876f9F635c60fA5075f9034bC44b1a06a3647F",
+      "txHash": "0xa069eb02ac40d69a6e56dfb9c7575b9c426339e0deebe6b20b95bdf9c26ad5f2",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xEb9903C89FBd2CEa889002bb6d02e553b3FCa952",
+      "txHash": "0x85709ff18adf156300f0c3941b68c39f01c897ebf52b427edd4ec01401f1c232",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "d34462b2ce6d461342c9a9a0436657a026b795471956523960ca7c46cb60e192": {
+      "address": "0xcECDd03B081Af1aa9Feb4C2Cc26CC94974D9EcB8",
+      "txHash": "0x9d57a5ad27d2c29cb0e349d3c6351ffa0f539ff966ec8820ff67d824e3887fa0",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:25"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "../@openzeppelin/contracts-upgradeable/proxy/Initializable.sol:30"
+          },
+          {
+            "contract": "ContextUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:31"
+          },
+          {
+            "contract": "AccessControlUpgradeable",
+            "label": "_roles",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)7074_storage)",
+            "src": "../@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:61"
+          },
+          {
+            "contract": "AccessControlUpgradeable",
+            "label": "__gap",
+            "type": "t_array(t_uint256)49_storage",
+            "src": "../@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:225"
+          },
+          {
+            "contract": "Roles",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "compliance/Roles.sol:29"
+          },
+          {
+            "contract": "Allowlist",
+            "label": "_allowlist",
+            "type": "t_struct(AddressSet)8326_storage",
+            "src": "compliance/Allowlist.sol:28"
+          },
+          {
+            "contract": "Allowlist",
+            "label": "_blocklist",
+            "type": "t_struct(AddressSet)8326_storage",
+            "src": "compliance/Allowlist.sol:37"
+          },
+          {
+            "contract": "Allowlist",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "compliance/Allowlist.sol:109"
+          },
+          {
+            "contract": "PartitionDestination",
+            "label": "__gap",
+            "type": "t_array(t_uint256)50_storage",
+            "src": "token/ERC1400/PartitionDestination.sol:39"
+          }
+        ],
+        "types": {
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_struct(AddressSet)8326_storage": {
+            "label": "struct EnumerableSetUpgradeable.AddressSet",
+            "members": [
+              {
+                "label": "_inner",
+                "type": "t_struct(Set)8061_storage"
+              }
+            ]
+          },
+          "t_struct(Set)8061_storage": {
+            "label": "struct EnumerableSetUpgradeable.Set",
+            "members": [
+              {
+                "label": "_values",
+                "type": "t_array(t_bytes32)dyn_storage"
+              },
+              {
+                "label": "_indexes",
+                "type": "t_mapping(t_bytes32,t_uint256)"
+              }
+            ]
+          },
+          "t_array(t_bytes32)dyn_storage": {
+            "label": "bytes32[]"
+          },
+          "t_bytes32": {
+            "label": "bytes32"
+          },
+          "t_mapping(t_bytes32,t_uint256)": {
+            "label": "mapping(bytes32 => uint256)"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)7074_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)"
+          },
+          "t_struct(RoleData)7074_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_struct(AddressSet)8326_storage"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32"
+              }
+            ]
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_bool": {
+            "label": "bool"
+          }
+        }
+      }
+    },
+    "4c7e2f8508f4690467f1b7ab79f4caa23cefba8638b946628967d5acdcc6b89b": {
+      "address": "0x0e6323E0bE0C433F41040d0783AdD1AB68d496F5",
+      "txHash": "0x5aaf2c7280fb8d0f48849426213ee33bd241cd5e34f11b1de436f6dd980ccaee",
+      "layout": {
+        "storage": [
+          {
+            "contract": "VestingEscrowMinterBurnerWallet",
+            "label": "scheduleNames",
+            "type": "t_mapping(t_address,t_array(t_bytes32)dyn_storage)",
+            "src": "wallet/VestingEscrowMinterBurnerWallet.sol:24"
+          },
+          {
+            "contract": "VestingEscrowMinterBurnerWallet",
+            "label": "scheduleNamesPerToken",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_array(t_bytes32)dyn_storage))",
+            "src": "wallet/VestingEscrowMinterBurnerWallet.sol:27"
+          },
+          {
+            "contract": "VestingEscrowMinterBurnerWallet",
+            "label": "schedules",
+            "type": "t_mapping(t_address,t_mapping(t_bytes32,t_struct(Schedule)5861_storage))",
+            "src": "wallet/VestingEscrowMinterBurnerWallet.sol:31"
+          },
+          {
+            "contract": "VestingEscrowMinterBurnerWallet",
+            "label": "_beneficiariesByToken",
+            "type": "t_mapping(t_address,t_struct(AddressSet)8326_storage)",
+            "src": "wallet/VestingEscrowMinterBurnerWallet.sol:33"
+          }
+        ],
+        "types": {
+          "t_mapping(t_address,t_array(t_bytes32)dyn_storage)": {
+            "label": "mapping(address => bytes32[])"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_array(t_bytes32)dyn_storage": {
+            "label": "bytes32[]"
+          },
+          "t_bytes32": {
+            "label": "bytes32"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_array(t_bytes32)dyn_storage))": {
+            "label": "mapping(address => mapping(address => bytes32[]))"
+          },
+          "t_mapping(t_address,t_mapping(t_bytes32,t_struct(Schedule)5861_storage))": {
+            "label": "mapping(address => mapping(bytes32 => struct VestingEscrowMinterBurnerWallet.Schedule))"
+          },
+          "t_mapping(t_bytes32,t_struct(Schedule)5861_storage)": {
+            "label": "mapping(bytes32 => struct VestingEscrowMinterBurnerWallet.Schedule)"
+          },
+          "t_struct(Schedule)5861_storage": {
+            "label": "struct VestingEscrowMinterBurnerWallet.Schedule",
+            "members": [
+              {
+                "label": "exists",
+                "type": "t_bool"
+              },
+              {
+                "label": "token",
+                "type": "t_address"
+              },
+              {
+                "label": "beneficiary",
+                "type": "t_address"
+              },
+              {
+                "label": "name",
+                "type": "t_bytes32"
+              },
+              {
+                "label": "start",
+                "type": "t_uint256"
+              },
+              {
+                "label": "end",
+                "type": "t_uint256"
+              },
+              {
+                "label": "cliff",
+                "type": "t_uint256"
+              },
+              {
+                "label": "vestingAmount",
+                "type": "t_uint256"
+              },
+              {
+                "label": "claimedAmount",
+                "type": "t_uint256"
+              },
+              {
+                "label": "revoked",
+                "type": "t_bool"
+              },
+              {
+                "label": "revokedAt",
+                "type": "t_uint256"
+              },
+              {
+                "label": "revokedBy",
+                "type": "t_address"
+              }
+            ]
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_address,t_struct(AddressSet)8326_storage)": {
+            "label": "mapping(address => struct EnumerableSetUpgradeable.AddressSet)"
+          },
+          "t_struct(AddressSet)8326_storage": {
+            "label": "struct EnumerableSetUpgradeable.AddressSet",
+            "members": [
+              {
+                "label": "_inner",
+                "type": "t_struct(Set)8061_storage"
+              }
+            ]
+          },
+          "t_struct(Set)8061_storage": {
+            "label": "struct EnumerableSetUpgradeable.Set",
+            "members": [
+              {
+                "label": "_values",
+                "type": "t_array(t_bytes32)dyn_storage"
+              },
+              {
+                "label": "_indexes",
+                "type": "t_mapping(t_bytes32,t_uint256)"
+              }
+            ]
+          },
+          "t_mapping(t_bytes32,t_uint256)": {
+            "label": "mapping(bytes32 => uint256)"
+          }
+        }
+      }
+    }
+  }
+}
