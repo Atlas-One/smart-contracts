@@ -93,8 +93,7 @@ contract(
         [],
         [],
         [],
-        [],
-        "0x0000000000000000000000000000000000000000"
+        []
       );
 
       await this.token.grantRoles(this.gtm.address, [VALIDATOR_ROLE], {
@@ -102,7 +101,22 @@ contract(
       });
     });
 
+    // ISSUE 
+
+    describe("tokenHoldersCount", function () {
+      it("should have added to the token holders count", async  function () {
+        await this.token.issue(tokenHolder, issuanceAmount, ZERO_BYTES32, {
+          from: owner,
+        });
+        const tokenHoldersCount = await this.token.tokenHoldersCount();
+        assert.equal(tokenHoldersCount.toString(), "1");
+        const address = await this.token.tokenHolder(0);
+        assert.equal(address, tokenHolder);
+      });
+    });
+
     // PAUSER
+
     describe("pauser role", function () {
       describe("addPauser/removePauser", function () {
         describe("add/renounce a pauser", function () {

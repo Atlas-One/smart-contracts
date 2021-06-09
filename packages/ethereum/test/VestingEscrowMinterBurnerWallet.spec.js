@@ -3,7 +3,7 @@ const { BN, time } = require("@openzeppelin/test-helpers");
 const { deployProxy } = require("@openzeppelin/truffle-upgrades");
 
 const GeneralTransferManager = artifacts.require("GeneralTransferManager");
-const ERC1400_ERC20Compatible = artifacts.require("ERC1400_ERC20Compatible");
+const ERC1400WithoutIntrospection = artifacts.require("ERC1400WithoutIntrospection");
 const VestingEscrowMinterBurnerWallet = artifacts.require(
   "VestingEscrowMinterBurnerWallet"
 );
@@ -16,21 +16,21 @@ const BURNER_ROLE =
 contract(
   "VestingEscrowMinterBurnerWallet",
   function ([deployer, beneficiary, beneficiary2]) {
-    beforeEach(async () => {
+    beforeEach(async function () {
       this.gtm = await deployProxy(GeneralTransferManager, {
         from: deployer,
       });
       this.vestingWallet = await VestingEscrowMinterBurnerWallet.new({
         from: deployer,
       });
-      this.token = await ERC1400_ERC20Compatible.new(
+      this.token = await ERC1400WithoutIntrospection.new(
         "My Token",
         "MTKN",
         1,
         [],
         [],
         [],
-        [this.gtm.address],
+        [],
         [this.vestingWallet.address],
         [this.vestingWallet.address],
         [],
@@ -52,8 +52,8 @@ contract(
       });
     });
 
-    describe("vest", () => {
-      it("should mint/issue and add vesting schedule", async () => {
+    describe.only("vest", function () {
+      it("should mint/issue and add vesting schedule", async function () {
         await this.vestingWallet.vest(
           this.token.address,
           beneficiary,
@@ -68,10 +68,16 @@ contract(
           (await this.token.balanceOf(this.vestingWallet.address)).toString(),
           "100"
         );
+
+        const tokenHoldersCount = await this.token.tokenHoldersCount();
+        assert.equal(tokenHoldersCount.toString(), "1");
+        const address = await this.token.tokenHolder(0);
+        assert.equal(address, this.vestingWallet.address);
       });
     });
-    describe("vestMultiple", () => {
-      it("should mint/issue and add vesting schedule", async () => {
+
+    describe("vestMultiple", function () {
+      it("should mint/issue and add vesting schedule", async function () {
         await this.vestingWallet.vestMultiple(
           [this.token.address, this.token.address],
           [beneficiary, beneficiary2],
@@ -91,8 +97,8 @@ contract(
         );
       });
     });
-    describe.only("claim", () => {
-      it("should claim tokens", async () => {
+    describe("claim", function () {
+      it("should claim tokens", async function () {
         await this.vestingWallet.vest(
           this.token.address,
           beneficiary,
