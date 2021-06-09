@@ -30,7 +30,7 @@ abstract contract TokenHoldersList is ERC1400 {
         if (to == address(0)) {
             // handle burning
             tokenHolders.remove(from);
-        } else if (to == address(0)) {
+        } else if (from == address(0)) {
             // hanlde minting
             tokenHolders.add(to);
         } else {
