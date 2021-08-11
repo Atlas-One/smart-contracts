@@ -15,10 +15,36 @@ module.exports = {
    */
 
   networks: {
-    development: {
-      host: "127.0.0.1",
-      port: 8545,
+    // development: {
+    //   host: "127.0.0.1",
+    //   port: 8545,
+    //   network_id: "*",
+    // },
+    chainstack_prod: {
+      provider: !process.env.CHAINSTACK_HTTP_LINK
+        ? Ganache.provider({
+            gasPrice: "0",
+          })
+        : new HDWalletProvider({
+            privateKeys: [process.env.PRIVATE_KEY],
+            providerOrUrl: process.env.CHAINSTACK_HTTP_LINK,
+          }),
+      gasPrice: 0,
+      type: "quorum", // needed for Truffle to support Quorum
       network_id: "*",
+    },
+    chainstack_staging: {
+      provider: !process.env.CHAINSTACK_HTTP_LINK
+        ? Ganache.provider({
+            gasPrice: "0",
+          })
+        : new HDWalletProvider({
+            privateKeys: [process.env.PRIVATE_KEY],
+            providerOrUrl: process.env.CHAINSTACK_HTTP_LINK,
+          }),
+      gasPrice: 0,
+      type: "quorum", // needed for Truffle to support Quorum
+      network_id: "10001",
     },
     infura: {
       provider: !process.env.INFURA_HTTP_LINK

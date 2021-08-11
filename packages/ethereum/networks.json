@@ -1,5 +1,11 @@
 {
   "GeneralTransferManager": {
+    "10001": {
+      "events": {},
+      "links": {},
+      "address": "0x26AeC5037808F46DBDDB9695BbAD6E4da9f25860",
+      "transactionHash": "0x7c063d18cc6f1c4294137be28ceee2adf4feff534638f2ce095c036e848f0abe"
+    },
     "1089731529": {
       "events": {},
       "links": {},
@@ -14,6 +20,12 @@
     }
   },
   "Migrations": {
+    "10001": {
+      "events": {},
+      "links": {},
+      "address": "0xeF9Ee04A5771d1b5c9a8D31b3980B72941a08B46",
+      "transactionHash": "0x09991d74c5f12eabb23dd532ece26e52080249601b684f94e9715826d1bd6b8b"
+    },
     "1089731529": {
       "events": {},
       "links": {},
@@ -28,6 +40,12 @@
     }
   },
   "VestingEscrowMinterBurnerWallet": {
+    "10001": {
+      "events": {},
+      "links": {},
+      "address": "0x8cBbd9a69376115Fd313B2C4D099CC429340D1e1",
+      "transactionHash": "0xf4521f3c3299fe00d8ba33846fd8ce63241bf023e4364736dac73ffc27664449"
+    },
     "1089731529": {
       "events": {},
       "links": {},

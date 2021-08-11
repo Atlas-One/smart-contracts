@@ -2,6 +2,10 @@
 
 Ethereum controlled and permissioned asset.
 
+## Contract Upgrade
+
+The `.openzeppelin` folder keeps the upgradable contracts manifests. The file is prefixed with `unknown-` if the network is not part of the [known network names](https://github.com/OpenZeppelin/openzeppelin-upgrades/blob/cc2a9b718314479c5d3d0b3460d814754782839d/packages/core/src/provider.ts#L57-L64) set by openzeppelin. The suffix is the chain id, `unknown-1089731529` is a kaleido instance.
+
 ## Access Control Roles
 
 ### Token Roles
@@ -25,24 +29,13 @@ Ethereum controlled and permissioned asset.
 
 ## Deployed Contracts
 
-### Deployed on Public Networks
+### Public Networks
 
-| Contract | Address                                    |
-| -------- | ------------------------------------------ |
-| ERC1820  | 0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24 |
-
-### Public Test Networks
-
-Ropsten Test Network:
-
-| Contract                        | Address |
-| ------------------------------- | ------- |
-| GeneralTransferManager          |         |
-| VestingEscrowMinterBurnerWallet |         |
+**TBD**
 
 ### Private Networks
 
-#### Kaleido Production Environment
+#### Kaleido Production Environment (Geth: POA)
 
 | Contract                        | Address                                    |
 | ------------------------------- | ------------------------------------------ |
@@ -50,13 +43,29 @@ Ropsten Test Network:
 | GeneralTransferManager          | 0xd8876f9F635c60fA5075f9034bC44b1a06a3647F |
 | VestingEscrowMinterBurnerWallet | 0xEb9903C89FBd2CEa889002bb6d02e553b3FCa952 |
 
-#### Kaleido Staging Environment
+#### Kaleido Staging Environment (Geth: POA)
 
 | Contract                        | Address                                    |
 | ------------------------------- | ------------------------------------------ |
 | ERC1820                         | 0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24 |
 | GeneralTransferManager          | 0x2165d99771b1Ab589fe38aa194D146C9e910422a |
 | VestingEscrowMinterBurnerWallet | 0x7BA3834E833c1b9354cfc4F3973f6cD2C685bbd3 |
+
+#### Chainstack Production Environment (Quorum: IBFT)
+
+| Contract                        | Address                                    |
+| ------------------------------- | ------------------------------------------ |
+| ERC1820                         | 0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24 |
+| GeneralTransferManager          |                                            |
+| VestingEscrowMinterBurnerWallet |                                            |
+
+#### Chainstack Staging Environment (Quorum: IBFT)
+
+| Contract                        | Address                                    |
+| ------------------------------- | ------------------------------------------ |
+| ERC1820                         | 0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24 |
+| GeneralTransferManager          | 0x26AeC5037808F46DBDDB9695BbAD6E4da9f25860 |
+| VestingEscrowMinterBurnerWallet | 0x8cBbd9a69376115Fd313B2C4D099CC429340D1e1 |
 
 ## Contract Sizes
 
