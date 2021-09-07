@@ -31,7 +31,7 @@ module.exports = {
           }),
       gasPrice: 0,
       type: "quorum", // needed for Truffle to support Quorum
-      network_id: "*",
+      network_id: "10001",
     },
     chainstack_staging: {
       provider: !process.env.CHAINSTACK_HTTP_LINK
@@ -44,7 +44,7 @@ module.exports = {
           }),
       gasPrice: 0,
       type: "quorum", // needed for Truffle to support Quorum
-      network_id: "10001",
+      network_id: "*",
     },
     infura: {
       provider: !process.env.INFURA_HTTP_LINK
