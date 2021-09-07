@@ -7,13 +7,11 @@ module.exports = async function (_, network, accounts) {
   if (network == "test") return; // test maintains own contracts
   if (network == "ropsten") return;
 
-  if (network != "kaleido") {
-    await web3.eth.sendTransaction({
-      from: accounts[0],
-      to: deployerAddress,
-      value: web3.utils.toWei("0.1"),
-    });
-  }
+  await web3.eth.sendTransaction({
+    from: accounts[1],
+    to: deployerAddress,
+    value: web3.utils.toWei("0.1"),
+  });
 
   web3.eth
     .sendSignedTransaction(rawTx)

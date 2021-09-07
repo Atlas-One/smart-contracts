@@ -35,37 +35,21 @@ The `.openzeppelin` folder keeps the upgradable contracts manifests. The file is
 
 ### Private Networks
 
-#### Kaleido Production Environment (Geth: POA)
-
-| Contract                        | Address                                    |
-| ------------------------------- | ------------------------------------------ |
-| ERC1820                         | 0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24 |
-| GeneralTransferManager          | 0xd8876f9F635c60fA5075f9034bC44b1a06a3647F |
-| VestingEscrowMinterBurnerWallet | 0xEb9903C89FBd2CEa889002bb6d02e553b3FCa952 |
-
-#### Kaleido Staging Environment (Geth: POA)
-
-| Contract                        | Address                                    |
-| ------------------------------- | ------------------------------------------ |
-| ERC1820                         | 0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24 |
-| GeneralTransferManager          | 0x2165d99771b1Ab589fe38aa194D146C9e910422a |
-| VestingEscrowMinterBurnerWallet | 0x7BA3834E833c1b9354cfc4F3973f6cD2C685bbd3 |
-
 #### Chainstack Production Environment (Quorum: IBFT)
 
 | Contract                        | Address                                    |
 | ------------------------------- | ------------------------------------------ |
-| ERC1820                         | 0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24 |
-| GeneralTransferManager          |                                            |
-| VestingEscrowMinterBurnerWallet |                                            |
+| ERC1820                         |                                            |
+| GeneralTransferManager          | 0xd8876f9F635c60fA5075f9034bC44b1a06a3647F |
+| VestingEscrowMinterBurnerWallet | 0xEb9903C89FBd2CEa889002bb6d02e553b3FCa952 |
 
 #### Chainstack Staging Environment (Quorum: IBFT)
 
-| Contract                        | Address                                    |
-| ------------------------------- | ------------------------------------------ |
-| ERC1820                         | 0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24 |
-| GeneralTransferManager          | 0x26AeC5037808F46DBDDB9695BbAD6E4da9f25860 |
-| VestingEscrowMinterBurnerWallet | 0x8cBbd9a69376115Fd313B2C4D099CC429340D1e1 |
+| Contract                        | Address |
+| ------------------------------- | ------- |
+| ERC1820                         |         |
+| GeneralTransferManager          |         |
+| VestingEscrowMinterBurnerWallet |         |
 
 ## Contract Sizes
 
