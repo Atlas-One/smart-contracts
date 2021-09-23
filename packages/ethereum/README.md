@@ -31,11 +31,17 @@ The `.openzeppelin` folder keeps the upgradable contracts manifests. The file is
 
 ### Public Networks
 
-**TBD**
+- Ropsten:
+
+| Contract                        | Address                                    |
+| ------------------------------- | ------------------------------------------ |
+| ERC1820                         | 0x1820a4b7618bde71dce8cdc73aab6c95905fad24 |
+| GeneralTransferManager          | 0x26AeC5037808F46DBDDB9695BbAD6E4da9f25860 |
+| VestingEscrowMinterBurnerWallet | 0x8cBbd9a69376115Fd313B2C4D099CC429340D1e1 |
 
 ### Private Networks
 
-#### Chainstack Production Environment (Quorum: IBFT)
+- Chainstack Production Environment (Quorum: IBFT)
 
 | Contract                        | Address                                    |
 | ------------------------------- | ------------------------------------------ |
@@ -43,7 +49,7 @@ The `.openzeppelin` folder keeps the upgradable contracts manifests. The file is
 | GeneralTransferManager          | 0xd8876f9F635c60fA5075f9034bC44b1a06a3647F |
 | VestingEscrowMinterBurnerWallet | 0xEb9903C89FBd2CEa889002bb6d02e553b3FCa952 |
 
-#### Chainstack Staging Environment (Quorum: IBFT)
+- Chainstack Staging Environment (Quorum: IBFT)
 
 | Contract                        | Address |
 | ------------------------------- | ------- |
