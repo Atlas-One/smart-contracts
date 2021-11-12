@@ -1,6 +1,8 @@
+/** @format */
+
 module.exports = {
   networks: {
-    development: "https://edonet.smartpy.io",
+    florencenet: "https://florencenet.smartpy.io",
     mainnet: "https://mainnet.smartpy.io",
   },
 };

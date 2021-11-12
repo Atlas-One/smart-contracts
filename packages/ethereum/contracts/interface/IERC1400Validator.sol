@@ -8,7 +8,6 @@ interface IERC1400Validator {
      * @return Application specific reason codes with additional details
      */
     function validateTransfer(
-        bytes calldata payload,
         bytes32 partition,
         address operator,
         address from,

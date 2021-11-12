@@ -41,13 +41,13 @@ contract(
       );
 
       // allow the vesting wallet to hold security tokens
-      await this.gtm.addToAllowlist(this.vestingWallet.address, {
+      await this.gtm.addToWhitelist(this.vestingWallet.address, {
         from: deployer,
       });
-      await this.gtm.addToAllowlist(beneficiary, {
+      await this.gtm.addToWhitelist(beneficiary, {
         from: deployer,
       });
-      await this.gtm.addToAllowlist(beneficiary2, {
+      await this.gtm.addToWhitelist(beneficiary2, {
         from: deployer,
       });
     });

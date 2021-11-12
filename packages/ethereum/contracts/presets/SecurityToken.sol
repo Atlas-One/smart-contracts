@@ -2,23 +2,20 @@
 
 pragma solidity >=0.6.0 <0.8.0;
 
-import "../token/ERC1400/TokenHoldersList.sol";
 import "../token/ERC1400/ERC1400Batch.sol";
 import "../token/ERC1400/ERC1400Pausable.sol";
-import "../token/ERC1400/ERC1400OwnershipSnapshot.sol";
 import "../token/ERC1400/ERC1400_ERC20Compatible.sol";
 
-contract ERC1400WithoutIntrospection is
+contract SecurityToken is
     ERC1400_ERC20Compatible,
     ERC1400Pausable,
-    ERC1400Batch,
-    ERC1400OwnershipSnapshot,
-    TokenHoldersList
+    ERC1400Batch
 {
     constructor(
         string memory name,
         string memory symbol,
         uint256 granularity,
+        uint8 decimals,
         bytes32[] memory defaultPartitions,
         address[] memory admins,
         address[] memory controllers,
@@ -33,6 +30,7 @@ contract ERC1400WithoutIntrospection is
             name,
             symbol,
             granularity,
+            decimals,
             defaultPartitions,
             admins,
             controllers,
@@ -78,11 +76,7 @@ contract ERC1400WithoutIntrospection is
         uint256 value,
         bytes memory data,
         bytes memory operatorData
-    )
-        internal
-        virtual
-        override(ERC1400, ERC1400Pausable, ERC1400OwnershipSnapshot)
-    {
+    ) internal virtual override(ERC1400, ERC1400Pausable) {
         super._beforeTokenTransfer(
             partition,
             operator,
@@ -102,11 +96,7 @@ contract ERC1400WithoutIntrospection is
         uint256 value,
         bytes memory data,
         bytes memory operatorData
-    )
-        internal
-        virtual
-        override(ERC1400, TokenHoldersList, ERC1400_ERC20Compatible)
-    {
+    ) internal virtual override(ERC1400, ERC1400_ERC20Compatible) {
         super._afterTokenTransfer(
             partition,
             operator,

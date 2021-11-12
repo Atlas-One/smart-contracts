@@ -9,12 +9,6 @@ import "@openzeppelin/contracts-upgradeable/utils/EnumerableSetUpgradeable.sol";
 abstract contract Allowlist is AccessControlUpgradeable, Roles {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
-    event AddedToAllowlist(address indexed account);
-    event AddedToBlocklist(address indexed account);
-
-    event RemovedFromAllowlist(address indexed account);
-    event RemovedFromBlocklist(address indexed account);
-
     // keccak256("ALLOWLIST_ADMIN_ROLE")
     bytes32 public constant ALLOWLIST_ADMIN_ROLE =
         0xe9ea3f660aa5a8eccd1bf9d16e6cdf3c1cf9a2b284b830f15bda4493942cb68f;
@@ -23,24 +17,19 @@ abstract contract Allowlist is AccessControlUpgradeable, Roles {
     bytes32 public constant BLOCKLIST_ADMIN_ROLE =
         0x167d8d68b016f9cc1b8fb15b910e43cbad3223c8d98cf24f4b170dbd14933df1;
 
-    // Allowlist:
-    // - can be used to validate transfer to or from address
-    EnumerableSetUpgradeable.AddressSet private _allowlist;
-    // TODO: [allowlist] granular transfer restrictions
-    // mapping(address => EnumerableSet.AddressSet) private _allowedByToken;
-    // mapping(bytes32 => EnumerableSet.AddressSet) private _allowedByPartition;
-    // mapping(address => mapping(bytes32 => EnumerableSet.AddressSet)) private _allowedByTokenPartition;
+    // Whitelist address has been allowed to hold securities
+    EnumerableSetUpgradeable.AddressSet private _whitelist;
 
-    // Blocklist:
-    // - blocks an address from being added to the whitelist until explicitly removed
-    // - can be used to validate transfer to or from address
-    EnumerableSetUpgradeable.AddressSet private _blocklist;
-    // TODO: [blocklist] granular transfer restrictions
-    // mapping(address => EnumerableSet.AddressSet) private _blockedByToken;
-    // mapping(bytes32 => EnumerableSet.AddressSet) private _blockedByPartition;
-    // mapping(address => mapping(bytes32 => EnumerableSet.AddressSet)) private _blockedByTokenPartition;
+    // Blacklist blocks an address from being added to the whitelist until explicitly removed
+    EnumerableSetUpgradeable.AddressSet private _blacklist;
 
-    modifier onlyAllowlistAdmin {
+    // Address is allowed to hold securities in the tokenAllowlists
+    mapping(address => bytes32[]) public accountAllowlists;
+
+    // Token restricts allowed addresses to have the stated lists e.g. keccak256("ON & Accredited") or keccak256("ON & Using Friends And Family Exemption")
+    mapping(address => bytes32[]) public tokenAllowlists;
+
+    modifier onlyAllowlistAdmin() {
         require(
             hasRole(ALLOWLIST_ADMIN_ROLE, _msgSender()) ||
                 hasRole(ADMIN_ROLE, _msgSender()),
@@ -49,7 +38,7 @@ abstract contract Allowlist is AccessControlUpgradeable, Roles {
         _;
     }
 
-    modifier onlyBlocklistAdmin {
+    modifier onlyBlocklistAdmin() {
         require(
             hasRole(BLOCKLIST_ADMIN_ROLE, _msgSender()) ||
                 hasRole(ADMIN_ROLE, _msgSender()),
@@ -58,52 +47,100 @@ abstract contract Allowlist is AccessControlUpgradeable, Roles {
         _;
     }
 
-    function isAllowlisted(address account) public view returns (bool) {
-        return _allowlist.contains(account);
+    function isAllowed(address account, address token)
+        public
+        view
+        returns (bool)
+    {
+        require(_whitelist.contains(account));
+
+        if (tokenAllowlists[token].length > 0) {
+            for (uint256 i = 0; i < tokenAllowlists[token].length; i++) {
+                for (
+                    uint256 j = 0;
+                    j < accountAllowlists[account].length;
+                    j++
+                ) {
+                    if (
+                        tokenAllowlists[token][i] ==
+                        accountAllowlists[account][j]
+                    ) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
-    function addToAllowlist(address account) public onlyAllowlistAdmin {
-        require(!_blocklist.contains(account), "blocklisted address");
-
-        _allowlist.add(account);
-
-        emit AddedToAllowlist(account);
+    function isBlocked(address account) public view returns (bool) {
+        return _blacklist.contains(account);
     }
 
-    function removeFromAllowlist(address account) public onlyAllowlistAdmin {
-        if (_allowlist.contains(account)) {
-            _allowlist.remove(account);
+    function addToWhitelist(address account) public onlyAllowlistAdmin {
+        require(!_blacklist.contains(account), "blocked address");
 
-            emit RemovedFromAllowlist(account);
+        _whitelist.add(account);
+    }
+
+    function removeFromWhitelist(address account) public onlyAllowlistAdmin {
+        if (_whitelist.contains(account)) {
+            _whitelist.remove(account);
         }
     }
 
-    function isBlocklisted(address account) public view returns (bool) {
-        return _blocklist.contains(account);
+    function setAccountAllowlists(address account, bytes32[] memory lists)
+        public
+        onlyAllowlistAdmin
+    {
+        require(!_blacklist.contains(account), "blocked address");
+
+        _whitelist.add(account);
+        accountAllowlists[account] = lists;
     }
 
-    function addToBlocklist(address account) public onlyBlocklistAdmin {
-        _blocklist.add(account);
+    function addToBlacklist(address account) public onlyBlocklistAdmin {
+        _blacklist.add(account);
 
-        if (_allowlist.contains(account)) {
-            removeFromAllowlist(account);
+        if (_whitelist.contains(account)) {
+            removeFromWhitelist(account);
         }
-
-        emit AddedToBlocklist(account);
     }
 
-    function removeFromBlocklist(address account) public onlyBlocklistAdmin {
-        _blocklist.remove(account);
-
-        emit RemovedFromBlocklist(account);
+    function removeFromBlacklist(address account) public onlyBlocklistAdmin {
+        _blacklist.remove(account);
     }
 
-    function allowedAddress(uint256 index) public view returns (address) {
-        return _allowlist.at(index);
+    function allowedAddressAtIndex(uint256 index)
+        public
+        view
+        returns (address account, bytes32[] memory lists)
+    {
+        account = _whitelist.at(index);
+        lists = accountAllowlists[account];
     }
 
-    function blockedAddress(uint256 index) public view returns (address) {
-        return _blocklist.at(index);
+    function blockedAddressAtIndex(uint256 index)
+        public
+        view
+        returns (address)
+    {
+        return _blacklist.at(index);
+    }
+
+    function addressAllowlists(address account)
+        public
+        view
+        returns (bytes32[] memory)
+    {
+        return accountAllowlists[account];
+    }
+
+    function setTokenAllowlists(address token, bytes32[] memory lists)
+        public
+        onlyAllowlistAdmin
+    {
+        tokenAllowlists[token] = lists;
     }
 
     uint256[50] private __gap;

@@ -11,7 +11,6 @@ import "../interface/IERC1400Validator.sol";
 import "../token/ERC1400/PartitionDestination.sol";
 
 import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
 // Current implementation checks:
 // - only burner can burn
@@ -21,7 +20,6 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 contract GeneralTransferManager is
     IERC1400Validator,
     Initializable,
-    AccessControlUpgradeable,
     Roles,
     Allowlist,
     PartitionDestination
@@ -46,7 +44,6 @@ contract GeneralTransferManager is
      * @return appCode Application specific reason codes with additional details
      */
     function validateTransfer(
-        bytes calldata, /*  payload */
         bytes32 partition,
         address operator,
         address from,
@@ -74,29 +71,30 @@ contract GeneralTransferManager is
         address from,
         address to
     ) internal view returns (bytes1, bytes32) {
+        address securityToken = _msgSender();
         // Controller should be able to:
         // - move tokens *from* an address that is not in the allowed list
         // - move tokens *from* a blocklisted address
         if (
             (from != address(0) &&
-                !isAllowlisted(from) &&
-                !_isController(operator, partition))
+                !isAllowed(from, securityToken) &&
+                !_isController(operator, partition, securityToken))
         ) {
             return (bytes1(0x50), bytes32(0));
         }
         // Not even the controller should be able to an unwhitlisted address
-        if (to != address(0) && !isAllowlisted(to)) {
+        if (to != address(0) && !isAllowed(to, securityToken)) {
             return (bytes1(0x50), bytes32(0));
         }
         if (
             (from != address(0) &&
-                isBlocklisted(from) &&
-                !_isController(operator, partition))
+                isBlocked(from) &&
+                !_isController(operator, partition, securityToken))
         ) {
             return (bytes1(0x50), bytes32(0));
         }
         // Not even the controller should be able to send to a blocklisted address
-        if (to != address(0) && isBlocklisted(to)) {
+        if (to != address(0) && isBlocked(to)) {
             return (bytes1(0x50), bytes32(0));
         }
 
@@ -106,28 +104,26 @@ contract GeneralTransferManager is
     /**
      * @dev _msgSender() is the token contract
      */
-    function _isController(address operator, bytes32 partition)
-        internal
-        view
-        returns (bool)
-    {
-        address securityToken = _msgSender();
+    function _isController(
+        address operator,
+        bytes32 partition,
+        address token
+    ) internal view returns (bool) {
         return
-            IERC1644(securityToken).isControllable() &&
+            IERC1644(token).isControllable() &&
             (// is administrator/owner
-            AccessControlUpgradeable(securityToken).hasRole(
-                ADMIN_ROLE,
-                operator
-            ) ||
+            AccessControlUpgradeable(token).hasRole(ADMIN_ROLE, operator) ||
                 // is controller for all tokens and partitions
-                AccessControlUpgradeable(securityToken).hasRole(
+                AccessControlUpgradeable(token).hasRole(
                     CONTROLLER_ROLE,
                     operator
                 ) ||
                 // is controller for tokens in this partition
-                AccessControlUpgradeable(securityToken).hasRole(
+                AccessControlUpgradeable(token).hasRole(
                     keccak256(abi.encodePacked(partition, CONTROLLER_ROLE)),
                     operator
                 ));
     }
+
+    uint256[50] private __gap;
 }

@@ -28,14 +28,15 @@ abstract contract TokenHoldersList is ERC1400 {
         bytes memory /* operatorData */
     ) internal virtual override {
         if (to == address(0)) {
-            // handle burning
-            tokenHolders.remove(from);
+            if (_balances[from] > 0) {
+                tokenHolders.remove(from);
+            }
         } else if (from == address(0)) {
-            // hanlde minting
             tokenHolders.add(to);
         } else {
-            // handle transfer
-            tokenHolders.remove(from);
+            if (_balances[from] > 0) {
+                tokenHolders.remove(from);
+            }
             tokenHolders.add(to);
         }
     }

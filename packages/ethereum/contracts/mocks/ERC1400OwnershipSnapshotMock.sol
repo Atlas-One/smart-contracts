@@ -24,6 +24,7 @@ contract ERC1400OwnershipSnapshotMock is ERC1400OwnershipSnapshot {
             name,
             symbol,
             1,
+            uint8(18),
             defaultPartitions,
             admins,
             controllers,

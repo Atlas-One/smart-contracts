@@ -39,15 +39,14 @@ abstract contract ExtendedValidation is AccessControl {
 
             (statusCode, appCode) = IERC1400Validator(extention)
                 .validateTransfer(
-                msg.data,
-                partition,
-                operator,
-                from,
-                to,
-                value,
-                data,
-                operatorData
-            );
+                    partition,
+                    operator,
+                    from,
+                    to,
+                    value,
+                    data,
+                    operatorData
+                );
 
             if ((statusCode & 0x0F) != 0x01) {
                 return (statusCode, appCode);

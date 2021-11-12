@@ -29,6 +29,7 @@ contract ERC1400 is
     string internal _name;
     string internal _symbol;
     uint256 internal _granularity;
+    uint8 internal _decimals;
 
     uint256 internal _totalSupply;
 
@@ -38,13 +39,20 @@ contract ERC1400 is
 
     mapping(address => uint256) internal _balances;
 
-    struct Doc {
-        string docURI;
-        bytes32 docHash;
+    struct Document {
+        string documentURI;
+        bytes32 documentHash;
     }
 
     // Mapping for token URIs.
-    mapping(bytes32 => Doc) internal _documents;
+    mapping(bytes32 => Document) internal _documents;
+
+    // List of token default partitions
+    // Supports:
+    // - transferWithData
+    // - redeem
+    // - for other protocol compatibility where you don't specify transferByPartition e.g. ERC20
+    bytes32[] internal _defaultPartitions;
 
     // List of partitions.
     bytes32[] internal _totalPartitions;
@@ -65,13 +73,6 @@ contract ERC1400 is
     // Mapping from (tokenHolder, partition) to balance of corresponding partition.
     mapping(address => mapping(bytes32 => uint256))
         internal _balanceOfByPartition;
-
-    // List of token default partitions
-    // Supports:
-    // - transferWithData
-    // - redeem
-    // - for other protocol compatibility where you don't specify transferByPartition e.g. ERC20
-    bytes32[] internal _defaultPartitions;
 
     // Mapping from (operator, tokenHolder) to authorized status. [TOKEN-HOLDER-SPECIFIC]
     mapping(address => mapping(address => bool)) internal _authorizedOperator;
@@ -98,6 +99,7 @@ contract ERC1400 is
         string memory name,
         string memory symbol,
         uint256 granularity,
+        uint8 decimals,
         bytes32[] memory defaultPartitions,
         address[] memory admins,
         address[] memory controllers,
@@ -114,6 +116,7 @@ contract ERC1400 is
         _totalSupply = 0;
 
         _granularity = granularity;
+        _decimals = decimals;
 
         _defaultPartitions = defaultPartitions;
 
@@ -192,8 +195,8 @@ contract ERC1400 is
      * no way affects any of the arithmetic of the contract, including
      * {IERC20-balanceOf} and {IERC20-transfer}.
      */
-    function decimals() public pure virtual returns (uint8) {
-        return uint8(18);
+    function decimals() public view virtual returns (uint8) {
+        return _decimals;
     }
 
     /**
@@ -252,10 +255,10 @@ contract ERC1400 is
         override
         returns (string memory, bytes32)
     {
-        require(bytes(_documents[documentName].docURI).length != 0); // Action Blocked - Empty document
+        require(bytes(_documents[documentName].documentURI).length != 0); // Action Blocked - Empty document
         return (
-            _documents[documentName].docURI,
-            _documents[documentName].docHash
+            _documents[documentName].documentURI,
+            _documents[documentName].documentHash
         );
     }
 
@@ -271,7 +274,10 @@ contract ERC1400 is
         bytes32 documentHash
     ) external override {
         _onlyController(msg.sender);
-        _documents[documentName] = Doc({docURI: uri, docHash: documentHash});
+        _documents[documentName] = Document({
+            documentURI: uri,
+            documentHash: documentHash
+        });
         emit DocumentUpdated(documentName, uri, documentHash);
     }
 
@@ -281,8 +287,8 @@ contract ERC1400 is
      */
     function removeDocument(bytes32 documentName) external override {
         _onlyController(msg.sender);
-        string memory documentURI = _documents[documentName].docURI;
-        bytes32 documentHash = _documents[documentName].docHash;
+        string memory documentURI = _documents[documentName].documentURI;
+        bytes32 documentHash = _documents[documentName].documentHash;
 
         delete _documents[documentName];
 
@@ -891,8 +897,7 @@ contract ERC1400 is
 
         _balanceOfByPartition[from][partition] = _balanceOfByPartition[from][
             partition
-        ]
-            .sub(value);
+        ].sub(value);
         _totalSupplyByPartition[partition] = _totalSupplyByPartition[partition]
             .sub(value);
 
@@ -916,8 +921,9 @@ contract ERC1400 is
             require(index2 > 0, "50"); // 0x50	transfer failure
 
             // move the last item into the index being vacated
-            bytes32 lastValue =
-                _partitionsOf[from][_partitionsOf[from].length - 1];
+            bytes32 lastValue = _partitionsOf[from][
+                _partitionsOf[from].length - 1
+            ];
             _partitionsOf[from][index2 - 1] = lastValue; // adjust for 1-based indexing
             _indexOfPartitionsOf[from][lastValue] = index2;
 
@@ -947,8 +953,7 @@ contract ERC1400 is
             }
             _balanceOfByPartition[to][partition] = _balanceOfByPartition[to][
                 partition
-            ]
-                .add(value);
+            ].add(value);
 
             if (_indexOfTotalPartitions[partition] == 0) {
                 _totalPartitions.push(partition);
@@ -956,8 +961,7 @@ contract ERC1400 is
             }
             _totalSupplyByPartition[partition] = _totalSupplyByPartition[
                 partition
-            ]
-                .add(value);
+            ].add(value);
         }
     }
 

@@ -76,26 +76,47 @@ class GeneralTransferManager(AccessControl):
     
     def __init__(self, administrators):
         self.init(
-            allowlist = sp.set([], t=sp.TAddress),
+            allowlist = sp.big_map(l={}, t=sp.TMap(sp.TAddress, sp.TSet(sp.TNat))),
             blocklist = sp.set([], t=sp.TAddress),
+            tokenAllowlists = sp.set([], t=sp.TNat),
             roles = make_roles(administrators=administrators)
         )
 
     @sp.entry_point
-    def addToAllowlist(self, params):
+    def addToWhitelist(self, params):
         sp.verify(self.has_role(ALLOWLIST_ADMIN_ROLE, sp.sender) | self.has_role(ADMIN_ROLE, sp.sender))
         sp.verify(~self.data.blocklist.contains(params.address))
 
         self.data.allowlist.add(params.address)
+
+    @sp.entry_point
+    def setAccountAllowlists(self, params):
+        sp.verify(self.has_role(ALLOWLIST_ADMIN_ROLE, sp.sender) | self.has_role(ADMIN_ROLE, sp.sender))
+        sp.verify(~self.data.blocklist.contains(params.address))
+
+        sp.if ~self.data.allowlist.contains(params.address):
+            self.data.allowlist[params.address] = sp.set([])
+
+        self.data.allowlist[params.address] = params.lists
+
+    @sp.entry_point
+    def setTokenAllowlists(self, params):
+        sp.verify(self.has_role(ALLOWLIST_ADMIN_ROLE, sp.sender) | self.has_role(ADMIN_ROLE, sp.sender))
+        sp.verify(~self.data.blocklist.contains(params.address))
+
+        sp.if ~self.data.tokenAllowlists.contains(params.address):
+            self.data.tokenAllowlists[params.address] = sp.set([])
+
+        self.data.tokenAllowlists[params.token] = params.lists
     
     @sp.entry_point
-    def removeFromAllowlist(self, params):
+    def removeFromWhitelist(self, params):
         sp.verify(self.has_role(ALLOWLIST_ADMIN_ROLE, sp.sender) | self.has_role(ADMIN_ROLE, sp.sender))
 
         self.data.allowlist.remove(params.address)
      
     @sp.entry_point
-    def addToBlocklist(self, params):
+    def addToBlacklist(self, params):
         sp.verify(self.has_role(BLOCKLIST_ADMIN_ROLE, sp.sender) | self.has_role(ADMIN_ROLE, sp.sender))
 
         sp.if self.data.allowlist.contains(params.address):
@@ -104,7 +125,7 @@ class GeneralTransferManager(AccessControl):
         self.data.blocklist.add(params.address)
     
     @sp.entry_point
-    def removeFromBlocklist(self, params):
+    def removeFromBlacklist(self, params):
         sp.verify(self.has_role(BLOCKLIST_ADMIN_ROLE, sp.sender) | self.has_role(ADMIN_ROLE, sp.sender))
 
         self.data.blocklist.remove(params.address)
@@ -200,14 +221,14 @@ if "templates" not in __name__:
         scenario.h2("Not Controller Transfer")
         
         scenario.h3("Allowlisted from_ and to_")
-        scenario += g.addToAllowlist(sp.record(address=alice.address)).run(sender=admin.address)
-        scenario += g.addToAllowlist(sp.record(address=bob.address)).run(sender=admin.address)
+        scenario += g.addToWhitelist(sp.record(address=alice.address)).run(sender=admin.address)
+        scenario += g.addToWhitelist(sp.record(address=bob.address)).run(sender=admin.address)
         scenario += t.transfer(sp.record(to_=alice.address, from_=bob.address)).run(sender=bob.address)
         scenario.h3("Controller can move tokens")
         scenario += t.transfer(sp.record(to_=alice.address, from_=bob.address)).run(sender=admin.address)
         
         scenario.h3("Blocklisted to_")
-        scenario += g.addToBlocklist(sp.record(address=alice.address)).run(sender=admin.address)
+        scenario += g.addToBlacklist(sp.record(address=alice.address)).run(sender=admin.address)
         scenario += t.transfer(sp.record(to_=alice.address, from_=bob.address)).run(sender=bob.address, valid=False)
         scenario.h3("Controller can't move tokens to a blocked address")
         scenario += t.transfer(sp.record(to_=alice.address, from_=bob.address)).run(sender=admin.address, valid=False)
@@ -218,7 +239,7 @@ if "templates" not in __name__:
         scenario += t.transfer(sp.record(to_=bob.address, from_=alice.address)).run(sender=admin.address)
         
         scenario.h3("Blocklisted to_")
-        scenario += g.addToBlocklist(sp.record(address=bob.address)).run(sender=admin.address)
+        scenario += g.addToBlacklist(sp.record(address=bob.address)).run(sender=admin.address)
         scenario += t.transfer(sp.record(to_=alice.address, from_=bob.address)).run(sender=bob.address, valid=False)
         scenario.h3("Controller should not move tokens to a blocked address")
         scenario += t.transfer(sp.record(to_=alice.address, from_=bob.address)).run(sender=admin.address, valid=False)
