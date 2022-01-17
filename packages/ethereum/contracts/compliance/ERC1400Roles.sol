@@ -2,10 +2,7 @@
 
 pragma solidity >=0.6.0 <0.8.0;
 
-abstract contract Roles {
-    // AccessControl DEFAULT_ADMIN_ROLE = 0x00
-    bytes32 public constant ADMIN_ROLE = 0x00;
-
+abstract contract ERC1400Roles {
     // keccak256("CONTROLLER_ROLE")
     bytes32 public constant CONTROLLER_ROLE =
         0x7b765e0e932d348852a6f810bfa1ab891e259123f02db8cdcde614c570223357;

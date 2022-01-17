@@ -6,6 +6,15 @@ interface IERC1644 {
     // Controller Operation
     function isControllable() external view returns (bool);
 
+    // Custom
+    function isController(address operator) external view returns (bool);
+
+    // Custom
+    function isControllerForPartition(bytes32 partition, address operator)
+        external
+        view
+        returns (bool);
+
     function controllerTransfer(
         address _from,
         address _to,

@@ -3,8 +3,9 @@
 const { TezosToolkit } = require("@taquito/taquito");
 const { InMemorySigner } = require("@taquito/signer");
 const accounts = require("./accounts.json");
+const config = require("../../scripts/config");
 
-const rpc = process.argv[2];
+const rpc = config.networks[process.argv[2] || "hangzhounet"];
 
 (async () => {
   const client = new TezosToolkit(rpc);

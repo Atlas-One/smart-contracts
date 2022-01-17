@@ -2,7 +2,7 @@
 
 pragma solidity >=0.6.0 <0.8.0;
 
-interface IERC1400Validator {
+interface IValidator {
     /**
      * @return ESC (Ethereum Status Code) following the EIP-1066 standard
      * @return Application specific reason codes with additional details

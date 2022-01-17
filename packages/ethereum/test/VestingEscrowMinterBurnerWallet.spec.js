@@ -2,8 +2,9 @@ const Web3 = require("web3");
 const { BN, time } = require("@openzeppelin/test-helpers");
 const { deployProxy } = require("@openzeppelin/truffle-upgrades");
 
-const GeneralTransferManager = artifacts.require("GeneralTransferManager");
-const ERC1400WithoutIntrospection = artifacts.require("ERC1400WithoutIntrospection");
+const Whitelist = artifacts.require("Whitelist");
+const WhitelistValidator = artifacts.require("WhitelistValidator");
+const SecurityToken = artifacts.require("SecurityToken");
 const VestingEscrowMinterBurnerWallet = artifacts.require(
   "VestingEscrowMinterBurnerWallet"
 );
@@ -17,13 +18,16 @@ contract(
   "VestingEscrowMinterBurnerWallet",
   function ([deployer, beneficiary, beneficiary2]) {
     beforeEach(async function () {
-      this.gtm = await deployProxy(GeneralTransferManager, {
+      this.whitelist = await deployProxy(Whitelist, {
+        from: deployer,
+      });
+      this.whitelistValidator = await deployProxy(WhitelistValidator, [this.whitelist.address], {
         from: deployer,
       });
       this.vestingWallet = await VestingEscrowMinterBurnerWallet.new({
         from: deployer,
       });
-      this.token = await ERC1400WithoutIntrospection.new(
+      this.token = await SecurityToken.new(
         "My Token",
         "MTKN",
         1,
@@ -41,13 +45,13 @@ contract(
       );
 
       // allow the vesting wallet to hold security tokens
-      await this.gtm.addToWhitelist(this.vestingWallet.address, {
+      await this.whitelistValidator.addToWhitelist(this.vestingWallet.address, {
         from: deployer,
       });
-      await this.gtm.addToWhitelist(beneficiary, {
+      await this.whitelistValidator.addToWhitelist(beneficiary, {
         from: deployer,
       });
-      await this.gtm.addToWhitelist(beneficiary2, {
+      await this.whitelistValidator.addToWhitelist(beneficiary2, {
         from: deployer,
       });
     });

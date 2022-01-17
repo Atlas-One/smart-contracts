@@ -1,21 +1,22 @@
 const fs = require("fs");
 
 const contracts = {
-  ERC1400WithoutIntrospection: "ethereum/token/ERC1400_ERC20Compatible",
-  ERC1400WithIntrospection: "ethereum/token/ERC1400_ERC777Compatible",
-  GeneralTransferManager: "ethereum/extension/GeneralTransferManager",
+  SecurityToken: "ethereum/token",
+  Whitelist: "ethereum/compliance",
+  WhitelistValidator: "ethereum/extension",
   VestingEscrowMinterBurnerWallet:
-    "ethereum/wallet/VestingEscrowMinterBurnerWallet",
+    "ethereum/wallet",
 };
 
 for (const [contractName, outputPath] of Object.entries(contracts)) {
   const compile = require(`${__dirname}/../build/contracts/${contractName}.json`);
+  fs.mkdirSync(`${__dirname}/../dist/${outputPath}`, { recursive: true });
   fs.writeFileSync(
-    `${__dirname}/../dist/${outputPath}.abi`,
+    `${__dirname}/../dist/${outputPath}/${contractName}.abi`,
     JSON.stringify(compile.abi, null, 2)
   );
   fs.writeFileSync(
-    `${__dirname}/../dist/${outputPath}.bin`,
+    `${__dirname}/../dist/${outputPath}/${contractName}.bin`,
     compile.bytecode.slice(2)
   );
 }

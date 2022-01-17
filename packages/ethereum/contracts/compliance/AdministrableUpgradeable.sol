@@ -2,9 +2,9 @@
 
 pragma solidity >=0.6.0 <0.8.0;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-abstract contract Administrable is AccessControl {
+abstract contract AdministrableUpgradeable is AccessControlUpgradeable {
     // AccessControl DEFAULT_ADMIN_ROLE = 0x00
     bytes32 public constant ADMIN_ROLE = 0x00;
 

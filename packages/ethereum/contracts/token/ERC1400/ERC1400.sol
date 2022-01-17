@@ -10,7 +10,7 @@ import "../../interface/IERC1643.sol";
 import "./ExtendedValidation.sol";
 import "./PartitionDestination.sol";
 
-import "../../compliance/Administrable.sol";
+import "../../compliance/ERC1400Administrable.sol";
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -20,7 +20,7 @@ contract ERC1400 is
     IERC1410,
     IERC1594,
     IERC1643,
-    Administrable,
+    ERC1400Administrable,
     ExtendedValidation,
     PartitionDestination
 {
@@ -979,9 +979,42 @@ contract ERC1400 is
      * @param operator Address which may be the token controller.
      * @return 'true' if 'operator' is a controller.
      */
+    function isController(address operator)
+        public
+        view
+        override
+        returns (bool)
+    {
+        return _isController(operator);
+    }
+
+    /**
+     * @dev Indicate whether the operator address is a controller.
+     * @param operator Address which may be the token controller.
+     * @return 'true' if 'operator' is a controller.
+     */
     function _isController(address operator) internal view returns (bool) {
-        return (hasRole(CONTROLLER_ROLE, operator) ||
-            hasRole(ADMIN_ROLE, operator));
+        return
+            _isControllable &&
+            (
+                (hasRole(CONTROLLER_ROLE, operator) ||
+                    hasRole(ADMIN_ROLE, operator))
+            );
+    }
+
+    /**
+     * @dev Indicate whether the operator address is a controller for partition.
+     * @param partition Name of the partition.
+     * @param operator Address which may be the token controller.
+     * @return 'true' if 'operator' is a controller partition.
+     */
+    function isControllerForPartition(bytes32 partition, address operator)
+        public
+        view
+        override
+        returns (bool)
+    {
+        return _isControllerForPartition(partition, operator);
     }
 
     /**
@@ -995,12 +1028,16 @@ contract ERC1400 is
         view
         returns (bool)
     {
-        return (hasRole(
-            keccak256(abi.encodePacked(partition, CONTROLLER_ROLE)),
-            operator
-        ) ||
-            hasRole(CONTROLLER_ROLE, operator) ||
-            hasRole(ADMIN_ROLE, operator));
+        return
+            _isControllable &&
+            (
+                (hasRole(
+                    keccak256(abi.encodePacked(partition, CONTROLLER_ROLE)),
+                    operator
+                ) ||
+                    hasRole(CONTROLLER_ROLE, operator) ||
+                    hasRole(ADMIN_ROLE, operator))
+            );
     }
 
     /**
@@ -1016,7 +1053,7 @@ contract ERC1400 is
     {
         return (operator == tokenHolder ||
             _authorizedOperator[operator][tokenHolder] ||
-            (_isControllable && _isController(operator)));
+            _isController(operator));
     }
 
     /**
@@ -1034,8 +1071,7 @@ contract ERC1400 is
     ) internal view returns (bool) {
         return (_isOperator(operator, tokenHolder) ||
             _authorizedOperatorByPartition[tokenHolder][partition][operator] ||
-            (_isControllable &&
-                _isControllerForPartition(partition, operator)));
+            _isControllerForPartition(partition, operator));
     }
 
     /**

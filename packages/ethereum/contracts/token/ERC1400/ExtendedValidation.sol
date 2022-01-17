@@ -2,7 +2,7 @@
 
 pragma solidity >=0.6.0 <0.8.0;
 
-import "../../interface/IERC1400Validator.sol";
+import "../../interface/IValidator.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 // To handle extendend validations
@@ -12,7 +12,7 @@ abstract contract ExtendedValidation is AccessControl {
         0x21702c8af46127c7fa207f89d0b0a8441bb32959a0ac7df790e9ab1a25c98926;
 
     /**
-     * @dev Check against custom validations calling contracts implementing the IERC1400Validator given the VALIDATOR_ROLE
+     * @dev Check against custom validations calling contracts implementing the IValidator given the VALIDATOR_ROLE
      * @param partition Name of the partition (bytes32 to be left empty for transfers where partition is not specified).
      * @param operator Address which triggered the balance decrease (through transfer or redemption).
      * @param from Token holder.
@@ -37,16 +37,15 @@ abstract contract ExtendedValidation is AccessControl {
         ) {
             address extention = getRoleMember(VALIDATOR_ROLE, index);
 
-            (statusCode, appCode) = IERC1400Validator(extention)
-                .validateTransfer(
-                    partition,
-                    operator,
-                    from,
-                    to,
-                    value,
-                    data,
-                    operatorData
-                );
+            (statusCode, appCode) = IValidator(extention).validateTransfer(
+                partition,
+                operator,
+                from,
+                to,
+                value,
+                data,
+                operatorData
+            );
 
             if ((statusCode & 0x0F) != 0x01) {
                 return (statusCode, appCode);

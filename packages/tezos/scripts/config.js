@@ -2,7 +2,8 @@
 
 module.exports = {
   networks: {
-    florencenet: "https://florencenet.smartpy.io",
     mainnet: "https://mainnet.smartpy.io",
+    ithacanet: "https://ithacanet.smartpy.io",
+    hangzhounet: "https://hangzhounet.smartpy.io",
   },
 };
