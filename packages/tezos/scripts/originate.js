@@ -1,17 +1,24 @@
 const config = require("./config");
+const JsonDB = require('simple-json-db');
+const db = new JsonDB(__dirname + '/../networks.json');
 
 const { alice } = require(`../keystore/faucet/accounts.json`);
 const { importKey } = require("@taquito/signer");
 const { TezosToolkit, MichelsonMap } = require("@taquito/taquito");
 
-const tezosNode = config.networks[process.argv[2] || "mondaynet"];
+const rpc = config.networks[process.argv[2] || "mondaynet"];
 
 async function deploy(path, storage) {
+  const key = `${path} ${rpc}`;
+  if (db.has(key)) {
+    return db.get(key).contractAddress;
+  }
+
   // path should end with _compiled
   const contractCode = require(`${__dirname}/../build/${path}_compiled/step_000_cont_0_contract.json`);
   const contractStorage = require(`${__dirname}/../build/${path}_compiled/step_000_cont_0_storage.json`);
 
-  const client = new TezosToolkit(tezosNode);
+  const client = new TezosToolkit(rpc);
 
   await importKey(client, alice.secretKey);
 
@@ -29,6 +36,8 @@ async function deploy(path, storage) {
   await operation.contract();
 
   console.log(`Success ------------ \n`);
+
+  db.set(key, { contractAddress: operation.contractAddress, hash: operation.hash });
 
   return operation.contractAddress;
 }
