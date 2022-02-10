@@ -4,8 +4,8 @@ const Web3 = require("web3");
 
 const privateKey = process.env.PRIVATE_KEY.replace(/"/g, '');
 
-const infuraProvider = new Web3.providers.HttpProvider(
-  `https://ropsten.infura.io/v3/bcafa70c5a3f4289b9084cda97a3a2c8`, {
+const infuraProvider = (network) => new Web3.providers.HttpProvider(
+  `https://${network}.infura.io/v3/bcafa70c5a3f4289b9084cda97a3a2c8`, {
   headers: [
     {
       name: "Authorization",
@@ -70,7 +70,7 @@ module.exports = {
         })
         : new HDWalletProvider({
           privateKeys: [privateKey],
-          providerOrUrl: infuraProvider,
+          providerOrUrl: infuraProvider("mainnet"),
         }),
       network_id: "*",
     },
@@ -81,7 +81,7 @@ module.exports = {
         })
         : new HDWalletProvider({
           privateKeys: [privateKey],
-          providerOrUrl: infuraProvider,
+          providerOrUrl: infuraProvider("ropsten"),
         }),
       network_id: "*",
     }
