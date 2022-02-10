@@ -17,7 +17,7 @@ class WhitelistValidator(sp.Contract):
 
         c = sp.contract(
             t = sp.TAddress, 
-            address = self.data.whitelist_registry, 
+            address = self.data.whitelist_address, 
             entry_point = "assertValid"
         ).open_some()
 
@@ -37,10 +37,6 @@ class WhitelistValidator(sp.Contract):
 class TestToken(sp.Contract):
     def __init__(self, validator, controller):
         self.init(validator=validator, controller=controller)
-    
-    @sp.entry_point
-    def assertRole(self, params):
-        sp.verify((sp.nat(TOKEN_CONTROLLER_ROLE) == params.role) & (params.account == self.data.controller))
     
     @sp.entry_point
     def transfer(self, params):

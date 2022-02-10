@@ -1,27 +1,28 @@
 {
   "alice": {
-    "pkh": "tz1YtbjCAaSjNcvJFW2DKLyxbfNFSfHofP1h",
+    "pkh": "tz1QYU16vVenjYZWua5nA9AQpC2cLJgPBHyY",
     "mnemonic": [
-      "float",
-      "axis",
-      "hood",
-      "priority",
-      "stadium",
-      "survey",
-      "access",
-      "leaf",
-      "benefit",
-      "prepare",
-      "anger",
-      "floor",
-      "credit",
-      "unknown",
-      "almost"
+      "purchase",
+      "neck",
+      "achieve",
+      "arctic",
+      "ridge",
+      "three",
+      "iron",
+      "note",
+      "disorder",
+      "either",
+      "hundred",
+      "over",
+      "faint",
+      "typical",
+      "limit"
     ],
-    "email": "jkzmojkf.krnupadm@teztnets.xyz",
-    "password": "Pn1GDLAvLk",
-    "amount": "303284292735",
-    "activation_code": "ffbfa118be630e1280216bf7cee365a12950cceb",
-    "secretKey": "edskS2Z5onWdR7tUCdZrEADbLhY1iFbViBDEbeb8sD5qQn2kCjBWBQjSZMuJaFJm2hXcLJ8AxbW3D4NXCBbkF6twnvzGPs8xh8"
+    "email": "omoroxxf.orllsvlv@teztnets.xyz",
+    "password": "qeENcm9YOQ",
+    "amount": "340385598857",
+    "activation_code": "53570966400f64384ab8521b540f38475dd45335",
+    "activated": true,
+    "secretKey": "edskRuXVVZMJG9AxXyiH4oZjRoFLumQnZasW6F6yQ9SGkT2EgAcxB367356tvbzjUkNusMgcWiMYZVPk24fVFpdg1Uhjx14jJe"
   }
 }

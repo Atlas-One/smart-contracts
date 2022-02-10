@@ -2,9 +2,9 @@ const config = require("./config");
 
 const { alice } = require(`../keystore/faucet/accounts.json`);
 const { importKey } = require("@taquito/signer");
-const { TezosToolkit } = require("@taquito/taquito");
+const { TezosToolkit, MichelsonMap } = require("@taquito/taquito");
 
-const tezosNode = config.networks[process.argv[2] || "hangzhounet"];
+const tezosNode = config.networks[process.argv[2] || "mondaynet"];
 
 async function deploy(path, storage) {
   // path should end with _compiled
@@ -34,25 +34,31 @@ async function deploy(path, storage) {
 }
 
 (async () => {
-  const vesting_address = await deploy("wallet/VestingEscrowMinterBurnerWallet");
-  const whitelist_address = await deploy("compliance/Whitelist", {
-    whitelist: [vesting_address],
-    blacklist: [],
-    roles: {
-      0: {
-        role_admin: 0,
-        members: [alice.pkh]
-      },
-      1: {
-        role_admin: 0,
-        members: []
-      },
-      2: {
-        role_admin: 0,
-        members: []
-      }
-    }
+  await deploy("wallet/VestingEscrowMinterBurnerWallet");
+
+  // ADMIN_ROLE = 0
+  // WHITELIST_ADMIN_ROLE = 1
+  // BLACKLIST_ADMIN_ROLE = 2
+  const roles = new MichelsonMap();
+  roles.set(0, {
+    role_admin: 0,
+    members: [alice.pkh]
   });
+  roles.set(1, {
+    role_admin: 0,
+    members: [alice.pkh]
+  });
+  roles.set(2, {
+    role_admin: 0,
+    members: [alice.pkh]
+  });
+
+  const whitelist_address = await deploy("compliance/Whitelist", {
+    whitelist: [],
+    blacklist: [],
+    roles
+  });
+
   await deploy("extension/WhitelistValidator", { whitelist_address });
   // await deploy("token/ST12");
 })();

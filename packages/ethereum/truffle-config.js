@@ -2,7 +2,7 @@ const Ganache = require("ganache-core");
 const HDWalletProvider = require("@truffle/hdwallet-provider");
 const Web3 = require("web3");
 
-const privateKey = process.env.PRIVATE_KEY.replace(/"/g, '');
+const privateKey = (process.env.PRIVATE_KEY || "").replace(/"/g, '');
 
 const infuraProvider = (network) => new Web3.providers.HttpProvider(
   `https://${network}.infura.io/v3/bcafa70c5a3f4289b9084cda97a3a2c8`, {
@@ -38,7 +38,7 @@ module.exports = {
     //   network_id: "*",
     // },
     chainstack_prod: {
-      provider: !process.env.CHAINSTACK_HTTP_LINK
+      provider: !process.env.CHAINSTACK_HTTP_LINK || !privateKey
         ? Ganache.provider({
           gasPrice: "0",
         })
@@ -51,7 +51,7 @@ module.exports = {
       network_id: "10001",
     },
     chainstack_staging: {
-      provider: !process.env.CHAINSTACK_HTTP_LINK
+      provider: !process.env.CHAINSTACK_HTTP_LINK || !privateKey
         ? Ganache.provider({
           gasPrice: "0",
         })
@@ -64,7 +64,7 @@ module.exports = {
       network_id: "*",
     },
     ethereum_mainnet: {
-      provider: !process.env.INFURA_PROJECT_SECRET
+      provider: !process.env.INFURA_PROJECT_SECRET || !privateKey
         ? Ganache.provider({
           gasPrice: "0",
         })
@@ -75,7 +75,7 @@ module.exports = {
       network_id: "*",
     },
     ropsten: {
-      provider: !process.env.INFURA_PROJECT_SECRET
+      provider: !process.env.INFURA_PROJECT_SECRET || !privateKey
         ? Ganache.provider({
           gasPrice: "0",
         })
