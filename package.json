@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "build": "lerna run --parallel build",
+    "migrate": "lerna run migrate --",
     "postbuild": "node ./scripts/post-build.js",
     "bootstrap": "lerna bootstrap"
   },

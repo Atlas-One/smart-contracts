@@ -6,15 +6,15 @@ const WhitelistValidator = artifacts.require("WhitelistValidator");
 module.exports = async function (deployer, network) {
   if (network == "test") return; // test maintains own contracts
 
-  const instance = await deployProxy(Whitelist, { deployer });
+  const whitelistInstance = await deployProxy(Whitelist, { deployer });
   console.log(
     "\n   > Whitelist deployment: Success -->",
-    instance.address
+    whitelistInstance.address
   );
 
-  const instance = await deployProxy(WhitelistValidator, [instance.address], { deployer });
+  const whitelistValidatorInstance = await deployProxy(WhitelistValidator, [whitelistInstance.address], { deployer });
   console.log(
     "\n   > WhitelistValidator deployment: Success -->",
-    instance.address
+    whitelistValidatorInstance.address
   );
 };
