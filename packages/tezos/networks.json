@@ -2,5 +2,13 @@
     "wallet/VestingEscrowMinterBurnerWallet https://rpc.mondaynet-2022-02-07.teztnets.xyz": {
         "contractAddress": "KT1XPfPrXj1HhfdkZxs8QvqAeAYFCvyCP6kd",
         "hash": "opA2ZrczBemgxAmJJaSpndfLgyqneo1GgzPkBuQFbA2CckfjeHN"
+    },
+    "compliance/Whitelist https://rpc.mondaynet-2022-02-07.teztnets.xyz": {
+        "contractAddress": "KT1DVSGzdgmWYgKZTJDqXbx6iBAJK38dyLZY",
+        "hash": "oowiKkKGzrE5zVGucbL77itMEkojMbT8eejowGZyyoB54iySmRk"
+    },
+    "extension/WhitelistValidator https://rpc.mondaynet-2022-02-07.teztnets.xyz": {
+        "contractAddress": "KT1Fj1hHgftL7jFHpZceX3ExrEWk1fucpLFc",
+        "hash": "oooabwCkZhmGs3WL4LPGJ2eSuCUCZF8RgW68aaC6oaUUhtZh3vN"
     }
 }

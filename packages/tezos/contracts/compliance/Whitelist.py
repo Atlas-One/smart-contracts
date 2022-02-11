@@ -67,8 +67,8 @@ class Whitelist(AccessControl):
     
     def __init__(self, administrators):
         self.init(
-            whitelist = sp.set([],t=sp.TSet(sp.TAddress)),
-            blacklist = sp.set([], t=sp.TSet(sp.TAddress)),
+            whitelist = sp.set([],t=sp.TAddress),
+            blacklist = sp.set([],t=sp.TAddress),
             roles = make_roles(administrators=administrators)
         )
 

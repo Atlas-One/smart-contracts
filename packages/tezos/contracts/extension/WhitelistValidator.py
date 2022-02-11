@@ -17,7 +17,7 @@ class WhitelistValidator(sp.Contract):
 
         c = sp.contract(
             t = sp.TAddress, 
-            address = self.data.whitelist_address, 
+            address = self.data, 
             entry_point = "assertValid"
         ).open_some()
 
