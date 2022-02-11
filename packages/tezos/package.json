@@ -10,6 +10,7 @@
   "scripts": {
     "build": "sh ./compile.sh && node ./scripts/post-compile.js",
     "migrate": "node ./scripts/originate.js",
-    "faucet:activate": "node ./keystore/faucet/secretKey.js & node ./keystore/faucet/activate.js"
+    "faucet:activate": "node ./keystore/faucet/secretKey.js & node ./keystore/faucet/activate.js",
+    "transfer:staging": "PUBLIC_ADDRESS=$(aws secretsmanager get-secret-value --secret-id staging/wallet --query 'SecretString' | jq 'fromjson.tezosPublicAddress') node ./scripts/transfer.js"
   }
 }
