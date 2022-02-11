@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "sh ./compile.sh && node ./scripts/post-compile.js",
-    "migrate": "yarn faucet:activate & node ./scripts/originate.js",
+    "migrate": "node ./scripts/originate.js",
     "faucet:activate": "node ./keystore/faucet/secretKey.js & node ./keystore/faucet/activate.js"
   }
 }

@@ -2,12 +2,14 @@ const config = require("./config");
 const JsonDB = require('simple-json-db');
 const db = new JsonDB(__dirname + '/../networks.json');
 
-const { alice } = require(`../keystore/faucet/accounts.json`);
+const accounts = require(`../keystore/faucet/accounts.json`);
 const { importKey } = require("@taquito/signer");
 const { TezosToolkit, MichelsonMap } = require("@taquito/taquito");
 const fs = require("fs");
 
-const rpc = config.networks[process.argv[2] || "mondaynet"];
+const network = process.argv[2] || "mondaynet";
+const rpc = config.networks[network];
+const account = accounts[network];
 
 async function deploy(path, storage) {
   const key = `${path} ${rpc}`;
@@ -17,11 +19,11 @@ async function deploy(path, storage) {
 
   // path should end with _compiled
   const contractCode = require(`${__dirname}/../build/${path}_compiled/step_000_cont_0_contract.json`);
-  const contractStorage = fs.existsSync(`${__dirname}/../build/${path}_compiled/step_000_cont_0_storage.json`) ? fs.readFileSync(`${__dirname}/../build/${path}_compiled/step_000_cont_0_storage.json`).toJSON() : undefined;
+  const contractStorage = fs.existsSync(`${__dirname}/../build/${path}_compiled/step_000_cont_0_storage.json`) ? JSON.parse(fs.readFileSync(`${__dirname}/../build/${path}_compiled/step_000_cont_0_storage.json`).toString()) : undefined;
 
   const client = new TezosToolkit(rpc);
 
-  await importKey(client, alice.secretKey);
+  await importKey(client, account.secretKey);
 
   const operation = await client.contract.originate(storage ? {
     code: contractCode,
@@ -52,15 +54,15 @@ async function deploy(path, storage) {
   const roles = new MichelsonMap();
   roles.set(0, {
     role_admin: 0,
-    members: [alice.pkh]
+    members: [account.pkh]
   });
   roles.set(1, {
     role_admin: 0,
-    members: [alice.pkh]
+    members: [account.pkh]
   });
   roles.set(2, {
     role_admin: 0,
-    members: [alice.pkh]
+    members: [account.pkh]
   });
 
   const whitelist_address = await deploy("compliance/Whitelist", {

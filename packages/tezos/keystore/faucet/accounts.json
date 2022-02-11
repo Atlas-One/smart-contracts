@@ -1,5 +1,5 @@
 {
-  "alice": {
+  "mondaynet": {
     "pkh": "tz1QYU16vVenjYZWua5nA9AQpC2cLJgPBHyY",
     "mnemonic": [
       "purchase",
@@ -24,5 +24,30 @@
     "activation_code": "53570966400f64384ab8521b540f38475dd45335",
     "activated": true,
     "secretKey": "edskRuXVVZMJG9AxXyiH4oZjRoFLumQnZasW6F6yQ9SGkT2EgAcxB367356tvbzjUkNusMgcWiMYZVPk24fVFpdg1Uhjx14jJe"
+  },
+  "hangzhounet": {
+    "pkh": "tz1c3Hat1vHEYzSbUvUdSaYe3r9g4d6pH3QM",
+    "mnemonic": [
+      "stadium",
+      "soup",
+      "eight",
+      "area",
+      "habit",
+      "lecture",
+      "margin",
+      "normal",
+      "later",
+      "below",
+      "empower",
+      "climb",
+      "never",
+      "pear",
+      "page"
+    ],
+    "email": "wgskeigb.otqvjhnx@teztnets.xyz",
+    "password": "Zho0N2rlcO",
+    "amount": "64620678761",
+    "activation_code": "d3f41e1de39ac33081e88f778314a1d2abd9cd95",
+    "secretKey": "edskS1hj532Ccgi5wAaZoZ5u6SmNwDDFnoFzNemDcitvC6MeZR1agMA1hU1LiN9qFZiffBDWKBsqpayd5XPoroSRz1hemSiGKC"
   }
 }
