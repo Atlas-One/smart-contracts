@@ -7,12 +7,13 @@ const { importKey } = require("@taquito/signer");
 const { TezosToolkit, MichelsonMap } = require("@taquito/taquito");
 const fs = require("fs");
 
+const env = process.argv[3] || "";
 const network = process.argv[2] || "mondaynet";
 const rpc = config.networks[network];
 const account = accounts[network];
 
 async function deploy(path, storage) {
-  const key = `${path} ${rpc}`;
+  const key = `${env} ${path} ${rpc}`;
   if (db.has(key)) {
     return db.get(key).contractAddress;
   }
@@ -23,7 +24,7 @@ async function deploy(path, storage) {
 
   const client = new TezosToolkit(rpc);
 
-  await importKey(client, account.secretKey);
+  await importKey(client, (process.env.PRIVATE_KEY || "").replace(/"/g, '') || account.secretKey);
 
   const operation = await client.contract.originate(storage ? {
     code: contractCode,

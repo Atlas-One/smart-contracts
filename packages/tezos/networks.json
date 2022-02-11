@@ -22,5 +22,17 @@
     "extension/WhitelistValidator https://hangzhounet.smartpy.io": {
         "contractAddress": "KT1WcmdJi9Cr7ehofDqeoHprd8yzQBcmuJML",
         "hash": "opJmDU6Y6eGv3CBegoitTr9Jm9rwb4vmuZTuspnZfNHKGooCDmt"
+    },
+    "staging wallet/VestingEscrowMinterBurnerWallet https://hangzhounet.smartpy.io": {
+        "contractAddress": "KT1BPRYmZvqAVHBAtSVLhcAMeEJJLD8x3Tii",
+        "hash": "opUsQrUsJLH8bHnFGBEpTzEPwuyMjM9Dc7MthFVNsLB6UWcMzmi"
+    },
+    "staging compliance/Whitelist https://hangzhounet.smartpy.io": {
+        "contractAddress": "KT1AmHdJuAMsVmZ67cxVMacYDB1Qr8dkKMJF",
+        "hash": "onePE6v44GwVAW5MtiWV4qwrraM9uTerBoRfXBbw39kcmeiRPJw"
+    },
+    "staging extension/WhitelistValidator https://hangzhounet.smartpy.io": {
+        "contractAddress": "KT1PH32VeeaZYFgwKaSmHgFyt4eEhw26aysC",
+        "hash": "onw6bUAqJMgeX1QGHRGoNCCiFrmWZiPNiejXgNdQZZ6gbeXKAg4"
     }
 }
