@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.6.0 <0.8.0;
+pragma solidity ^0.8.0;
 
 import "./ERC1400.sol";
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract ERC1400_ERC20Compatible is IERC20, ERC1400 {
@@ -17,7 +17,6 @@ contract ERC1400_ERC20Compatible is IERC20, ERC1400 {
         string memory symbol,
         uint256 granularity,
         uint8 decimals,
-        bytes32[] memory defaultPartitions,
         address[] memory admins,
         address[] memory controllers,
         address[] memory validators,
@@ -26,13 +25,11 @@ contract ERC1400_ERC20Compatible is IERC20, ERC1400 {
         address[] memory pausers,
         address[] memory partitioners
     )
-        public
         ERC1400(
             name,
             symbol,
             granularity,
             decimals,
-            defaultPartitions,
             admins,
             controllers,
             validators,

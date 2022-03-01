@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.6.0 <0.8.0;
+pragma solidity ^0.8.0;
 
 import "../../interface/IERC1644.sol";
 import "../../interface/IERC1410.sol";
@@ -12,7 +12,7 @@ import "./PartitionDestination.sol";
 
 import "../../compliance/ERC1400Administrable.sol";
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract ERC1400 is
@@ -87,20 +87,18 @@ contract ERC1400 is
 
     /**
      * @dev Initialize ERC1400
-     * @param name Name of the token.
-     * @param symbol Symbol of the token.
-     * @param granularity Granularity of the token.
-     * @param defaultPartitions Partitions to transfer by default
+     * @param name_ Name of the token.
+     * @param symbol_ Symbol of the token.
+     * @param granularity_ Granularity of the token.
      * @param controllers Controllers
      * @param validators Validator
      * not specified, like the case ERC20 tranfers.
      */
     constructor(
-        string memory name,
-        string memory symbol,
-        uint256 granularity,
-        uint8 decimals,
-        bytes32[] memory defaultPartitions,
+        string memory name_,
+        string memory symbol_,
+        uint256 granularity_,
+        uint8 decimals_,
         address[] memory admins,
         address[] memory controllers,
         address[] memory validators,
@@ -108,17 +106,17 @@ contract ERC1400 is
         address[] memory minters,
         address[] memory pausers,
         address[] memory partitioners
-    ) public {
-        require(granularity >= 1); // Constructor Blocked - Token granularity can not be lower than 1
+    ) {
+        require(granularity_ >= 1); // Constructor Blocked - Token granularity can not be lower than 1
 
-        _name = name;
-        _symbol = symbol;
+        _name = name_;
+        _symbol = symbol_;
         _totalSupply = 0;
 
-        _granularity = granularity;
-        _decimals = decimals;
+        _granularity = granularity_;
+        _decimals = decimals_;
 
-        _defaultPartitions = defaultPartitions;
+        _defaultPartitions = [bytes32("issued"), bytes32("vested")];
 
         _isIssuable = true;
         _isControllable = true;

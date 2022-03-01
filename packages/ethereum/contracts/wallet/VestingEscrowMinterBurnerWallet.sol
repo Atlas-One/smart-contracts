@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.6.0 <0.8.0;
+pragma solidity ^0.8.0;
 
 import "../interface/IERC1410.sol";
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/access/IAccessControlEnumerable.sol";
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/utils/EnumerableSet.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 /**
  * @title Wallet for core vesting escrow functionality
@@ -577,7 +577,11 @@ contract VestingEscrowMinterBurnerWallet {
         view
         returns (bool)
     {
-        return AccessControl(securityToken).hasRole(TOKEN_ADMIN_ROLE, operator);
+        return
+            IAccessControlEnumerable(securityToken).hasRole(
+                TOKEN_ADMIN_ROLE,
+                operator
+            );
     }
 
     function _getSchedule(address beneficiary, bytes32 scheduleName)

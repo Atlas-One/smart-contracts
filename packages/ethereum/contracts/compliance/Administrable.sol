@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.6.0 <0.8.0;
+pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 
-abstract contract Administrable is AccessControl {
+abstract contract Administrable is AccessControlEnumerable {
     // AccessControl DEFAULT_ADMIN_ROLE = 0x00
     bytes32 public constant ADMIN_ROLE = 0x00;
 

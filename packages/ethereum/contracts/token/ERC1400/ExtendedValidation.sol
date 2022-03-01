@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.6.0 <0.8.0;
+pragma solidity ^0.8.0;
 
 import "../../interface/IValidator.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 
 // To handle extendend validations
-abstract contract ExtendedValidation is AccessControl {
+abstract contract ExtendedValidation is AccessControlEnumerable {
     // keccak256("VALIDATOR")
     bytes32 public constant VALIDATOR_ROLE =
         0x21702c8af46127c7fa207f89d0b0a8441bb32959a0ac7df790e9ab1a25c98926;

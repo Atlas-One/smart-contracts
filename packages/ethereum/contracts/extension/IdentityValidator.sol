@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.6.0 <0.8.0;
+pragma solidity ^0.8.0;
 
 import "../compliance/Identity.sol";
 import "../compliance/AdministrableUpgradeable.sol";
@@ -8,7 +8,7 @@ import "../compliance/AdministrableUpgradeable.sol";
 import "../interface/IERC1644.sol";
 import "../interface/IValidator.sol";
 
-import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 // Current implementation checks:
 // - only burner can burn

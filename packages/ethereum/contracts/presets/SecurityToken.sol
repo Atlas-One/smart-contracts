@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.6.0 <0.8.0;
+pragma solidity ^0.8.0;
 
 import "../token/ERC1400/ERC1400Batch.sol";
 import "../token/ERC1400/ERC1400Pausable.sol";
@@ -16,7 +16,6 @@ contract SecurityToken is
         string memory symbol,
         uint256 granularity,
         uint8 decimals,
-        bytes32[] memory defaultPartitions,
         address[] memory admins,
         address[] memory controllers,
         address[] memory validators,
@@ -25,13 +24,11 @@ contract SecurityToken is
         address[] memory pausers,
         address[] memory partitioners
     )
-        public
         ERC1400_ERC20Compatible(
             name,
             symbol,
             granularity,
             decimals,
-            defaultPartitions,
             admins,
             controllers,
             validators,

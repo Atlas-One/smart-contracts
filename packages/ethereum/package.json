@@ -28,8 +28,8 @@
     "migrate": "PRIVATE_KEY=$(aws secretsmanager get-secret-value --secret-id staging/wallet --query 'SecretString' | jq 'fromjson.ethereumPrivateKey') npx truffle migrate"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^3.0.0",
-    "@openzeppelin/contracts-upgradeable": "^3.3.0",
+    "@openzeppelin/contracts": "^4.5.0",
+    "@openzeppelin/contracts-upgradeable": "^4.5.1",
     "truffle": "^5.4.32",
     "web3": "^1.7.0"
   },
