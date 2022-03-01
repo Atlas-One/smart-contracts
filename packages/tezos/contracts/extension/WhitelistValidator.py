@@ -11,24 +11,27 @@ class WhitelistValidator(sp.Contract):
             sp.TRecord(
                 from_=sp.TAddress,
                 to_=sp.TAddress,
-                operator=sp.TAddress
+                operator=sp.TAddress,
+                is_controller=sp.TBool
             )
         )
 
         c = sp.contract(
-            t = sp.TAddress, 
+            t = sp.TAddress,
             address = self.data, 
             entry_point = "assertValid"
         ).open_some()
 
+        # Only controller can move tokens from a valid or invalid address
+        sp.if ~params.is_controller:
+            sp.transfer(
+                params.from_,
+                sp.mutez(0),
+                c
+            )
+        
         sp.transfer(
             params.to_,
-            sp.mutez(0),
-            c
-        )
-
-        sp.transfer(
-            params.from_,
             sp.mutez(0),
             c
         )
@@ -45,7 +48,8 @@ class TestToken(sp.Contract):
             t = sp.TRecord(
                 from_=sp.TAddress,
                 to_=sp.TAddress,
-                operator=sp.TAddress
+                operator=sp.TAddress,
+                is_controller=sp.TBool
             ), 
             address = self.data.validator, 
             entry_point = "assertTransfer"
@@ -55,7 +59,8 @@ class TestToken(sp.Contract):
             sp.record(
                 from_=params.from_,
                 to_=params.to_,
-                operator=sp.sender
+                operator=sp.sender,
+                is_controller=True
             ),
             sp.mutez(0),
             c

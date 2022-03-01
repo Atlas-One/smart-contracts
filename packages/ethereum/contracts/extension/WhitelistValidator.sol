@@ -57,9 +57,7 @@ contract WhitelistValidator is
             partition,
             operator
         );
-        // Controller should be able to:
-        // - move tokens *from* an address that is not in the allowed list
-        // - move tokens *from* a blacklisted address
+        // Controller can move tokens out of a unwhitelisted address
         if (
             (from != address(0) &&
                 !whitelistContract.isWhitelisted(from) &&
@@ -67,18 +65,19 @@ contract WhitelistValidator is
         ) {
             return (bytes1(0x50), bytes32(0));
         }
-        // Not even the controller should be able to an unwhitlisted address
-        if (to != address(0) && whitelistContract.isBlacklisted(to)) {
-            return (bytes1(0x50), bytes32(0));
-        }
+        // Controller can move tokens out of a blacklisted address
         if (
-            (from != address(0) &&
-                !whitelistContract.isWhitelisted(from) &&
-                !isControllerForPartition)
+            from != address(0) &&
+            whitelistContract.isBlacklisted(from) &&
+            !isControllerForPartition
         ) {
             return (bytes1(0x50), bytes32(0));
         }
-        // Not even the controller should be able to send to a blacklisted address
+        // Allow only moving tokens to an address that is whitelisted
+        if ((to != address(0) && !whitelistContract.isWhitelisted(to))) {
+            return (bytes1(0x50), bytes32(0));
+        }
+        // Allow only moving tokens to an address that is not blacklisted
         if (to != address(0) && whitelistContract.isBlacklisted(to)) {
             return (bytes1(0x50), bytes32(0));
         }

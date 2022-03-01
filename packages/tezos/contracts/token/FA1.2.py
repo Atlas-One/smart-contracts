@@ -281,7 +281,7 @@ class Ledger(sp.Contract):
             self.data.ledger[address] = Ledger_value.make(0)
 
 
-class TransferValidation(AccessControl):
+class TransferValidation(Controller):
 
     def assertTransfer(self, params):
         sp.set_type(params, sp.TRecord(from_ = sp.TAddress, to_ = sp.TAddress))
@@ -291,6 +291,7 @@ class TransferValidation(AccessControl):
                     from_=sp.TAddress,
                     to_=sp.TAddress,
                     operator=sp.TAddress,
+                    is_controller=sp.TBool
                 ), 
                 address = validator, 
                 entry_point = "assertTransfer"
@@ -299,6 +300,7 @@ class TransferValidation(AccessControl):
             sp.transfer(
                 sp.record(
                     operator=sp.sender,
+                    is_controller=self.is_controller(sp.sender),
                     from_=params.from_,
                     to_=params.to_
                 ),
