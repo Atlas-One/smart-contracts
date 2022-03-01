@@ -6,7 +6,7 @@ const privateKey = (process.env.PRIVATE_KEY || "").replace(/"/g, '');
 
 const infuraProvider = (network) => new Web3.providers.HttpProvider(
   `https://${network}.infura.io/v3/bcafa70c5a3f4289b9084cda97a3a2c8`, {
-  headers: [
+  headers: process.env.INFURA_PROJECT_SECRET ? [
     {
       name: "Authorization",
       value:
@@ -15,7 +15,7 @@ const infuraProvider = (network) => new Web3.providers.HttpProvider(
           "base64"
         ),
     }
-  ]
+  ] : []
 });
 
 module.exports = {
@@ -64,7 +64,7 @@ module.exports = {
       network_id: "*",
     },
     ethereum_mainnet: {
-      provider: !process.env.INFURA_PROJECT_SECRET || !privateKey
+      provider: !privateKey
         ? Ganache.provider({
           gasPrice: "0",
         })
@@ -75,7 +75,7 @@ module.exports = {
       network_id: "*",
     },
     ropsten: {
-      provider: !process.env.INFURA_PROJECT_SECRET || !privateKey
+      provider: !privateKey
         ? Ganache.provider({
           gasPrice: "0",
         })
