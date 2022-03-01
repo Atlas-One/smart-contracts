@@ -15,6 +15,16 @@ import "../../compliance/ERC1400Administrable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
+struct ConstructorRoleArguments {
+    address[] admins;
+    address[] controllers;
+    address[] validators;
+    address[] burners;
+    address[] minters;
+    address[] pausers;
+    address[] partitioners;
+}
+
 contract ERC1400 is
     IERC1644,
     IERC1410,
@@ -31,11 +41,11 @@ contract ERC1400 is
     uint256 internal _granularity;
     uint8 internal _decimals;
 
-    uint256 internal _totalSupply;
+    uint256 internal _totalSupply = 0;
 
-    bool internal _isControllable;
+    bool internal _isControllable = true;
 
-    bool internal _isIssuable;
+    bool internal _isIssuable = true;
 
     mapping(address => uint256) internal _balances;
 
@@ -90,8 +100,6 @@ contract ERC1400 is
      * @param name_ Name of the token.
      * @param symbol_ Symbol of the token.
      * @param granularity_ Granularity of the token.
-     * @param controllers Controllers
-     * @param validators Validator
      * not specified, like the case ERC20 tranfers.
      */
     constructor(
@@ -99,60 +107,51 @@ contract ERC1400 is
         string memory symbol_,
         uint256 granularity_,
         uint8 decimals_,
-        address[] memory admins,
-        address[] memory controllers,
-        address[] memory validators,
-        address[] memory burners,
-        address[] memory minters,
-        address[] memory pausers,
-        address[] memory partitioners
+        bytes32[] memory defaultPartitions,
+        ConstructorRoleArguments memory roles
     ) {
         require(granularity_ >= 1); // Constructor Blocked - Token granularity can not be lower than 1
 
         _name = name_;
         _symbol = symbol_;
-        _totalSupply = 0;
 
         _granularity = granularity_;
         _decimals = decimals_;
 
-        _defaultPartitions = [bytes32("issued"), bytes32("vested")];
+        _defaultPartitions = defaultPartitions;
 
-        _isIssuable = true;
-        _isControllable = true;
-
-        if (admins.length > 0) {
+        if (roles.admins.length > 0) {
             // set token admins
-            for (uint256 i = 0; i < admins.length; i++) {
-                _setupRole(ADMIN_ROLE, admins[i]);
+            for (uint256 i = 0; i < roles.admins.length; i++) {
+                _setupRole(ADMIN_ROLE, roles.admins[i]);
             }
         } else {
             // set token admin
             _setupRole(ADMIN_ROLE, msg.sender);
         }
         // set controllers
-        for (uint256 i = 0; i < controllers.length; i++) {
-            _setupRole(CONTROLLER_ROLE, controllers[i]);
+        for (uint256 i = 0; i < roles.controllers.length; i++) {
+            _setupRole(CONTROLLER_ROLE, roles.controllers[i]);
         }
         // set validators
-        for (uint256 i = 0; i < validators.length; i++) {
-            _setupRole(VALIDATOR_ROLE, validators[i]);
+        for (uint256 i = 0; i < roles.validators.length; i++) {
+            _setupRole(VALIDATOR_ROLE, roles.validators[i]);
         }
         // set burners
-        for (uint256 i = 0; i < burners.length; i++) {
-            _setupRole(BURNER_ROLE, burners[i]);
+        for (uint256 i = 0; i < roles.burners.length; i++) {
+            _setupRole(BURNER_ROLE, roles.burners[i]);
         }
         // set minters
-        for (uint256 i = 0; i < minters.length; i++) {
-            _setupRole(MINTER_ROLE, minters[i]);
+        for (uint256 i = 0; i < roles.minters.length; i++) {
+            _setupRole(MINTER_ROLE, roles.minters[i]);
         }
         // set pausers
-        for (uint256 i = 0; i < pausers.length; i++) {
-            _setupRole(PAUSER_ROLE, pausers[i]);
+        for (uint256 i = 0; i < roles.pausers.length; i++) {
+            _setupRole(PAUSER_ROLE, roles.pausers[i]);
         }
         // set partitioners
-        for (uint256 i = 0; i < partitioners.length; i++) {
-            _setupRole(PARTITIONER_ROLE, partitioners[i]);
+        for (uint256 i = 0; i < roles.partitioners.length; i++) {
+            _setupRole(PARTITIONER_ROLE, roles.partitioners[i]);
         }
     }
 

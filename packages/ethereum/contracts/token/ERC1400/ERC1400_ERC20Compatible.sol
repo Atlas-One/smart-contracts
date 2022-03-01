@@ -17,28 +17,9 @@ contract ERC1400_ERC20Compatible is IERC20, ERC1400 {
         string memory symbol,
         uint256 granularity,
         uint8 decimals,
-        address[] memory admins,
-        address[] memory controllers,
-        address[] memory validators,
-        address[] memory burners,
-        address[] memory minters,
-        address[] memory pausers,
-        address[] memory partitioners
-    )
-        ERC1400(
-            name,
-            symbol,
-            granularity,
-            decimals,
-            admins,
-            controllers,
-            validators,
-            burners,
-            minters,
-            pausers,
-            partitioners
-        )
-    {}
+        bytes32[] memory defaultPartitions,
+        ConstructorRoleArguments memory roles
+    ) ERC1400(name, symbol, granularity, decimals, defaultPartitions, roles) {}
 
     /**
      * @dev Get the total number of issued tokens.

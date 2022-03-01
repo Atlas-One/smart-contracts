@@ -16,26 +16,16 @@ contract SecurityToken is
         string memory symbol,
         uint256 granularity,
         uint8 decimals,
-        address[] memory admins,
-        address[] memory controllers,
-        address[] memory validators,
-        address[] memory burners,
-        address[] memory minters,
-        address[] memory pausers,
-        address[] memory partitioners
+        bytes32[] memory defaultPartitions,
+        ConstructorRoleArguments memory roles
     )
         ERC1400_ERC20Compatible(
             name,
             symbol,
             granularity,
             decimals,
-            admins,
-            controllers,
-            validators,
-            burners,
-            minters,
-            pausers,
-            partitioners
+            defaultPartitions,
+            roles
         )
     {}
 
