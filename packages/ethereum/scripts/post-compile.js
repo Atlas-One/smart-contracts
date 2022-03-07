@@ -2,7 +2,7 @@ const fs = require("fs");
 
 const contracts = {
   SecurityToken: "ethereum/token",
-  Whitelist: "ethereum/compliance",
+  WhitelistUpgradeable: "ethereum/compliance",
   WhitelistValidator: "ethereum/extension",
   VestingEscrowMinterBurnerWallet:
     "ethereum/wallet",

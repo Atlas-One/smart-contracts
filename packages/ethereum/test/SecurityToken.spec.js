@@ -2,7 +2,7 @@ const { expectRevert } = require("@openzeppelin/test-helpers");
 const { deployProxy } = require("@openzeppelin/truffle-upgrades");
 
 const SecurityToken = artifacts.require("SecurityToken");
-const Whitelist = artifacts.require("Whitelist");
+const WhitelistUpgradeable = artifacts.require("WhitelistUpgradeable");
 const WhitelistValidator = artifacts.require("WhitelistValidator");
 
 const EMPTY_DATA = "0x";
@@ -78,7 +78,7 @@ contract(
   "SecurityToken",
   function ([owner, operator, controller, tokenHolder, recipient, unknown]) {
     before(async function () {
-      this.whitelist = await deployProxy(Whitelist, {
+      this.whitelist = await deployProxy(WhitelistUpgradeable, {
         from: owner,
       });
       this.whitelistValidator = await deployProxy(WhitelistValidator, [this.whitelist.address], {

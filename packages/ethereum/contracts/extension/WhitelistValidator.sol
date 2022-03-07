@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../compliance/Whitelist.sol";
+import "../compliance/WhitelistUpgradeable.sol";
 import "../compliance/AdministrableUpgradeable.sol";
 
 import "../interface/IERC1644.sol";
@@ -20,13 +20,13 @@ contract WhitelistValidator is
     Initializable,
     AdministrableUpgradeable
 {
-    Whitelist public whitelistContract;
+    WhitelistUpgradeable public whitelistContract;
 
     function initialize(address _whitelistContract) public virtual initializer {
         __AccessControl_init();
         _setupRole(ADMIN_ROLE, msg.sender);
 
-        whitelistContract = Whitelist(_whitelistContract);
+        whitelistContract = WhitelistUpgradeable(_whitelistContract);
     }
 
     /**
@@ -60,7 +60,7 @@ contract WhitelistValidator is
         // Controller can move tokens out of a unwhitelisted address
         if (
             (from != address(0) &&
-                !whitelistContract.isWhitelisted(from) &&
+                !whitelistContract.isWhitelisted(msg.sender, from) &&
                 !isControllerForPartition)
         ) {
             return (bytes1(0x50), bytes32(0));
@@ -74,7 +74,10 @@ contract WhitelistValidator is
             return (bytes1(0x50), bytes32(0));
         }
         // Allow only moving tokens to an address that is whitelisted
-        if ((to != address(0) && !whitelistContract.isWhitelisted(to))) {
+        if (
+            (to != address(0) &&
+                !whitelistContract.isWhitelisted(msg.sender, to))
+        ) {
             return (bytes1(0x50), bytes32(0));
         }
         // Allow only moving tokens to an address that is not blacklisted

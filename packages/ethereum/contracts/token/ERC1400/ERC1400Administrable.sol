@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 import "./ERC1400Roles.sol";
-import "./Administrable.sol";
+import "../../compliance/Administrable.sol";
 
 abstract contract ERC1400Administrable is Administrable, ERC1400Roles {
     function _onlyController(address account) internal view {

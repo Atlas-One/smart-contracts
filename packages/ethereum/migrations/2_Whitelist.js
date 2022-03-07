@@ -1,12 +1,12 @@
 const { deployProxy } = require("@openzeppelin/truffle-upgrades");
 
-const Whitelist = artifacts.require("Whitelist");
+const WhitelistUpgradeable = artifacts.require("WhitelistUpgradeable");
 const WhitelistValidator = artifacts.require("WhitelistValidator");
 
 module.exports = async function (deployer, network) {
   if (network == "test") return; // test maintains own contracts
 
-  const whitelistInstance = await deployProxy(Whitelist, { deployer });
+  const whitelistInstance = await deployProxy(WhitelistUpgradeable, { deployer });
   console.log(
     "\n   > Whitelist deployment: Success -->",
     whitelistInstance.address

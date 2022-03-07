@@ -2,7 +2,7 @@ const Web3 = require("web3");
 const { BN, time } = require("@openzeppelin/test-helpers");
 const { deployProxy } = require("@openzeppelin/truffle-upgrades");
 
-const Whitelist = artifacts.require("Whitelist");
+const WhitelistUpgradeable = artifacts.require("WhitelistUpgradeable");
 const WhitelistValidator = artifacts.require("WhitelistValidator");
 const SecurityToken = artifacts.require("SecurityToken");
 const VestingEscrowMinterBurnerWallet = artifacts.require(
@@ -18,7 +18,7 @@ contract(
   "VestingEscrowMinterBurnerWallet",
   function ([deployer, beneficiary, beneficiary2]) {
     beforeEach(async function () {
-      this.whitelist = await deployProxy(Whitelist, {
+      this.whitelist = await deployProxy(WhitelistUpgradeable, {
         from: deployer,
       });
       this.whitelistValidator = await deployProxy(WhitelistValidator, [this.whitelist.address], {

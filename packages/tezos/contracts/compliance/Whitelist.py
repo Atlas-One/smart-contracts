@@ -67,7 +67,13 @@ class Whitelist(AccessControl):
     
     def __init__(self, administrators):
         self.init(
-            whitelist = sp.set([],t=sp.TAddress),
+            token_whitelist = sp.map(
+                {},
+                tkey=sp.TAddress,
+                tvalue=sp.TSet(
+                    t=sp.TAddress
+                )
+            ),
             blacklist = sp.set([],t=sp.TAddress),
             roles = make_roles(administrators=administrators)
         )
@@ -77,20 +83,23 @@ class Whitelist(AccessControl):
         sp.verify(self.has_role(WHITELIST_ADMIN_ROLE, sp.sender) | self.has_role(ADMIN_ROLE, sp.sender))
         sp.verify(~self.data.blacklist.contains(params.address))
 
-        self.data.whitelist.add(params.address)
+        sp.if ~self.data.token_whitelist.contains(params.token):
+            self.data.token_whitelist[params.token] = sp.set([])
+        
+        self.data.token_whitelist[params.token].add(params.address)
     
     @sp.entry_point
     def removeFromWhitelist(self, params):
         sp.verify(self.has_role(WHITELIST_ADMIN_ROLE, sp.sender) | self.has_role(ADMIN_ROLE, sp.sender))
 
-        self.data.whitelist.remove(params.address)
+        self.data.token_whitelist[params.token].remove(params.address)
      
     @sp.entry_point
     def addToBlacklist(self, params):
         sp.verify(self.has_role(BLACKLIST_ADMIN_ROLE, sp.sender) | self.has_role(ADMIN_ROLE, sp.sender))
 
-        sp.if self.data.whitelist.contains(params.address):
-            self.data.whitelist.remove(params.address)
+        sp.if self.data.token_whitelist[params.token].contains(params.address):
+            self.data.token_whitelist[params.token].remove(params.address)
 
         self.data.blacklist.add(params.address)
     
@@ -101,9 +110,10 @@ class Whitelist(AccessControl):
         self.data.blacklist.remove(params.address)
 
     @sp.entry_point
-    def assertValid(self, address):
-        sp.verify(~self.data.blacklist.contains(address))
-        sp.verify(self.data.whitelist.contains(address))
+    def assertValid(self, params):
+        sp.verify(~self.data.blacklist.contains(params.address))
+        sp.verify(self.data.token_whitelist.contains(params.token))
+        sp.verify(self.data.token_whitelist[params.token].contains(params.address))
 
 
 class TestToken(sp.Contract):

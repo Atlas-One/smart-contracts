@@ -10,7 +10,7 @@ import "../../interface/IERC1643.sol";
 import "./ExtendedValidation.sol";
 import "./PartitionDestination.sol";
 
-import "../../compliance/ERC1400Administrable.sol";
+import "./ERC1400Administrable.sol";
 
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
