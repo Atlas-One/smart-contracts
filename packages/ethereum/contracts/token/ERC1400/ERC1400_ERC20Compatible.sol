@@ -12,14 +12,7 @@ contract ERC1400_ERC20Compatible is IERC20, ERC1400 {
 
     mapping(address => mapping(address => uint256)) internal _allowances;
 
-    constructor(
-        string memory name,
-        string memory symbol,
-        uint256 granularity,
-        uint8 decimals,
-        bytes32[] memory defaultPartitions,
-        ConstructorRoleArguments memory roles
-    ) ERC1400(name, symbol, granularity, decimals, defaultPartitions, roles) {}
+    constructor(ERC1400ConstructorArgs memory args) ERC1400(args) {}
 
     /**
      * @dev Get the total number of issued tokens.

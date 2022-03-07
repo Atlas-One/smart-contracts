@@ -28,12 +28,12 @@ contract(
         from: deployer,
       });
       this.token = await SecurityToken.new(
-        "My Token",
-        "MTKN",
-        1,
-        18,
-        [],
         {
+          name: "My Token",
+          symbol: "MTKN",
+          granularity: 1,
+          decimals: 18,
+          defaultPartitions: [],
           admins: [],
           controllers: [],
           validators: [],
@@ -95,7 +95,7 @@ contract(
         );
       });
     });
-    describe.only("claim", function () {
+    describe("claim", function () {
       it("should claim tokens", async function () {
         await this.vestingWallet.vest(
           this.token.address,

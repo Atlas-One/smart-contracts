@@ -15,13 +15,17 @@ import "./ERC1400Administrable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-struct ConstructorRoleArguments {
+struct ERC1400ConstructorArgs {
+    string name;
+    string symbol;
+    uint8 decimals;
+    uint256 granularity;
+    bytes32[] defaultPartitions;
     address[] admins;
     address[] controllers;
     address[] validators;
     address[] burners;
     address[] minters;
-    address[] pausers;
     address[] partitioners;
 }
 
@@ -97,61 +101,46 @@ contract ERC1400 is
 
     /**
      * @dev Initialize ERC1400
-     * @param name_ Name of the token.
-     * @param symbol_ Symbol of the token.
-     * @param granularity_ Granularity of the token.
-     * not specified, like the case ERC20 tranfers.
      */
-    constructor(
-        string memory name_,
-        string memory symbol_,
-        uint256 granularity_,
-        uint8 decimals_,
-        bytes32[] memory defaultPartitions,
-        ConstructorRoleArguments memory roles
-    ) {
-        require(granularity_ >= 1); // Constructor Blocked - Token granularity can not be lower than 1
+    constructor(ERC1400ConstructorArgs memory args) {
+        require(args.granularity >= 1); // Constructor Blocked - Token granularity can not be lower than 1
 
-        _name = name_;
-        _symbol = symbol_;
+        _name = args.name;
+        _symbol = args.symbol;
 
-        _granularity = granularity_;
-        _decimals = decimals_;
+        _granularity = args.granularity;
+        _decimals = args.decimals;
 
-        _defaultPartitions = defaultPartitions;
+        _defaultPartitions = args.defaultPartitions;
 
-        if (roles.admins.length > 0) {
+        if (args.admins.length > 0) {
             // set token admins
-            for (uint256 i = 0; i < roles.admins.length; i++) {
-                _setupRole(ADMIN_ROLE, roles.admins[i]);
+            for (uint256 i = 0; i < args.admins.length; i++) {
+                _setupRole(ADMIN_ROLE, args.admins[i]);
             }
         } else {
             // set token admin
             _setupRole(ADMIN_ROLE, msg.sender);
         }
         // set controllers
-        for (uint256 i = 0; i < roles.controllers.length; i++) {
-            _setupRole(CONTROLLER_ROLE, roles.controllers[i]);
+        for (uint256 i = 0; i < args.controllers.length; i++) {
+            _setupRole(CONTROLLER_ROLE, args.controllers[i]);
         }
         // set validators
-        for (uint256 i = 0; i < roles.validators.length; i++) {
-            _setupRole(VALIDATOR_ROLE, roles.validators[i]);
+        for (uint256 i = 0; i < args.validators.length; i++) {
+            _setupRole(VALIDATOR_ROLE, args.validators[i]);
         }
         // set burners
-        for (uint256 i = 0; i < roles.burners.length; i++) {
-            _setupRole(BURNER_ROLE, roles.burners[i]);
+        for (uint256 i = 0; i < args.burners.length; i++) {
+            _setupRole(BURNER_ROLE, args.burners[i]);
         }
         // set minters
-        for (uint256 i = 0; i < roles.minters.length; i++) {
-            _setupRole(MINTER_ROLE, roles.minters[i]);
-        }
-        // set pausers
-        for (uint256 i = 0; i < roles.pausers.length; i++) {
-            _setupRole(PAUSER_ROLE, roles.pausers[i]);
+        for (uint256 i = 0; i < args.minters.length; i++) {
+            _setupRole(MINTER_ROLE, args.minters[i]);
         }
         // set partitioners
-        for (uint256 i = 0; i < roles.partitioners.length; i++) {
-            _setupRole(PARTITIONER_ROLE, roles.partitioners[i]);
+        for (uint256 i = 0; i < args.partitioners.length; i++) {
+            _setupRole(PARTITIONER_ROLE, args.partitioners[i]);
         }
     }
 

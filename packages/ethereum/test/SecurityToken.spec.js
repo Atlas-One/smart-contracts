@@ -88,12 +88,12 @@ contract(
 
     beforeEach(async function () {
       this.token = await SecurityToken.new(
-        "SecurityToken",
-        "TEST",
-        1,
-        18,
-        partitions,
         {
+          name: "SecurityToken",
+          symbol: "TEST",
+          granularity: 1,
+          decimals: 18,
+          defaultPartitions: partitions,
           admins: [],
           controllers: [controller],
           validators: [],
@@ -264,12 +264,12 @@ contract(
             from: owner,
           });
           this.token = await SecurityToken.new(
-            "SecurityToken",
-            "TEST",
-            1,
-            18,
-            partitions,
             {
+              name: "SecurityToken",
+              symbol: "TEST",
+              granularity: 1,
+              decimals: 18,
+              defaultPartitions: partitions,
               admins: [],
               controllers: [controller],
               validators: [this.whitelistValidator.address],

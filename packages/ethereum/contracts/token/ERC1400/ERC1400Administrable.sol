@@ -34,13 +34,6 @@ abstract contract ERC1400Administrable is Administrable, ERC1400Roles {
         );
     }
 
-    function _onlyPauser(address account) internal view {
-        require(
-            hasRole(PAUSER_ROLE, account) || hasRole(ADMIN_ROLE, account),
-            "54" // 0x54	transfers halted (contract paused)
-        );
-    }
-
     /**
      * @dev Check if a status code represents success (ie: 0x*1)
      * @param status Binary ERC-1066 status code

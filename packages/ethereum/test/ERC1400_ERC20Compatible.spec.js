@@ -213,18 +213,18 @@ contract(
       it("fails deploying the contract if granularity is lower than 1", async function () {
         await expectRevert.unspecified(
           ERC1400.new(
-            "ERC1400Token",
-            "DAU",
-            0,
-            18,
-            partitions,
             {
+              name: "Test",
+              symbol: "TEST",
+              granularity: 0,
+              decimals: 18,
+              defaultPartitions: partitions,
               admins: [],
               controllers: [controller],
               validators: [],
               burners: [],
               minters: [],
-              pausers: [],
+
               partitioners: []
             }
           )
@@ -236,21 +236,19 @@ contract(
 
     describe("minter role", function () {
       beforeEach(async function () {
-        this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
-          {
-            admins: [],
-            controllers: [controller],
-            validators: [],
-            burners: [],
-            minters: [],
-            pausers: [],
-            partitioners: []
-          },
+        this.token = await ERC1400.new({
+          name: "Test",
+          symbol: "TEST",
+          granularity: 1,
+          decimals: 18,
+          defaultPartitions: partitions,
+          admins: [],
+          controllers: [controller],
+          validators: [],
+          burners: [],
+          minters: [],
+          partitioners: []
+        },
           { from: owner }
         );
       });
@@ -390,18 +388,18 @@ contract(
     describe("transfer", function () {
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
+
             partitioners: []
           }
         );
@@ -488,7 +486,7 @@ contract(
               validators: [],
               burners: [],
               minters: [],
-              pausers: [],
+
               partitioners: []
             }
           );
@@ -512,18 +510,18 @@ contract(
       const approvedAmount = 10000;
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
+
             partitioners: []
           }
         );
@@ -623,18 +621,18 @@ contract(
           describe("when the amount is not a multiple of the granularity", function () {
             it("reverts", async function () {
               this.token = await ERC1400.new(
-                "ERC1400Token",
-                "DAU",
-                2,
-                18,
-                partitions,
                 {
+                  name: "Test",
+                  symbol: "TEST",
+                  granularity: 2,
+                  decimals: 18,
+                  defaultPartitions: partitions,
                   admins: [],
                   controllers: [],
                   validators: [],
                   burners: [],
                   minters: [],
-                  pausers: [],
+
                   partitioners: []
                 }
               );
@@ -697,18 +695,18 @@ contract(
       const amount = 100;
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
+
             partitioners: []
           }
         );
@@ -755,18 +753,18 @@ contract(
 
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
+
             partitioners: []
           }
         );
@@ -840,18 +838,18 @@ contract(
     describe("partitionsOf", function () {
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
+
             partitioners: []
           }
         );
@@ -900,18 +898,18 @@ contract(
       describe("when defaultPartitions have been defined", function () {
         beforeEach(async function () {
           this.token = await ERC1400.new(
-            "ERC1400Token",
-            "DAU",
-            1,
-            18,
-            partitions,
             {
+              name: "Test",
+              symbol: "TEST",
+              granularity: 1,
+              decimals: 18,
+              defaultPartitions: partitions,
               admins: [],
               controllers: [controller],
               validators: [],
               burners: [],
               minters: [],
-              pausers: [],
+
               partitioners: []
             }
           );
@@ -1069,12 +1067,12 @@ contract(
         describe("when the amount is not a multiple of the granularity", function () {
           it("reverts", async function () {
             this.token = await ERC1400.new(
-              "ERC1400Token",
-              "DAU",
-              1,
-              18,
-              partitions,
               {
+                name: "Test",
+                symbol: "TEST",
+                granularity: 1,
+                decimals: 18,
+                defaultPartitions: partitions,
                 admins: [],
                 controllers: [controller],
                 validators: [],
@@ -1111,18 +1109,18 @@ contract(
       describe("when defaultPartitions have not been defined", function () {
         it("reverts", async function () {
           this.token = await ERC1400.new(
-            "ERC1400Token",
-            "DAU",
-            1,
-            18,
-            partitions,
             {
+              name: "Test",
+              symbol: "TEST",
+              granularity: 1,
+              decimals: 18,
+              defaultPartitions: partitions,
               admins: [],
               controllers: [controller],
               validators: [],
               burners: [],
               minters: [],
-              pausers: [],
+
               partitioners: []
             }
           );
@@ -1150,18 +1148,17 @@ contract(
     describe("transferFromWithData", function () {
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
             partitioners: []
           }
         );
@@ -1350,12 +1347,12 @@ contract(
         describe("when the amount is not a multiple of the granularity", function () {
           it("reverts", async function () {
             this.token = await ERC1400.new(
-              "ERC1400Token",
-              "DAU",
-              1,
-              18,
-              partitions,
               {
+                name: "Test",
+                symbol: "TEST",
+                granularity: 1,
+                decimals: 18,
+                defaultPartitions: partitions,
                 admins: [],
                 controllers: [controller],
                 validators: [],
@@ -1418,18 +1415,18 @@ contract(
 
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
+
             partitioners: []
           }
         );
@@ -1540,18 +1537,18 @@ contract(
 
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
+
             partitioners: []
           }
         );
@@ -1968,18 +1965,18 @@ contract(
     describe("authorizeOperator", function () {
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
+
             partitioners: []
           }
         );
@@ -2015,18 +2012,18 @@ contract(
     describe("revokeOperator", function () {
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
+
             partitioners: []
           }
         );
@@ -2066,18 +2063,18 @@ contract(
     describe("authorizeOperatorByPartition", function () {
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
+
             partitioners: []
           }
         );
@@ -2123,18 +2120,18 @@ contract(
     describe("revokeOperatorByPartition", function () {
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
+
             partitioners: []
           }
         );
@@ -2188,18 +2185,18 @@ contract(
     describe("isOperator", function () {
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
+
             partitioners: []
           }
         );
@@ -2230,18 +2227,18 @@ contract(
     describe("isOperatorForPartition", function () {
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
+
             partitioners: []
           }
         );
@@ -2308,18 +2305,18 @@ contract(
     describe("issue", function () {
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
+
             partitioners: []
           }
         );
@@ -2401,12 +2398,12 @@ contract(
             describe("when the amount is not a multiple of the granularity", function () {
               it("issues the requested amount", async function () {
                 this.token = await ERC1400.new(
-                  "ERC1400Token",
-                  "DAU",
-                  2,
-                  18,
-                  partitions,
                   {
+                    name: "Test",
+                    symbol: "TEST",
+                    granularity: 1,
+                    decimals: 18,
+                    defaultPartitions: partitions,
                     admins: [],
                     controllers: [controller],
                     validators: [],
@@ -2425,18 +2422,18 @@ contract(
           describe("when default partitions have not been defined", function () {
             it("reverts", async function () {
               this.token = await ERC1400.new(
-                "ERC1400Token",
-                "DAU",
-                1,
-                18,
-                partitions,
                 {
+                  name: "Test",
+                  symbol: "TEST",
+                  granularity: 1,
+                  decimals: 18,
+                  defaultPartitions: partitions,
                   admins: [],
                   controllers: [controller],
                   validators: [],
                   burners: [],
                   minters: [],
-                  pausers: [],
+
                   partitioners: []
                 }
               );
@@ -2477,18 +2474,18 @@ contract(
     describe("issueByPartition", function () {
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
+
             partitioners: []
           }
         );
@@ -2597,18 +2594,18 @@ contract(
     describe("redeem", function () {
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
+
             partitioners: []
           }
         );
@@ -2704,12 +2701,12 @@ contract(
         describe("when the amount is not a multiple of the granularity", function () {
           it("reverts", async function () {
             this.token = await ERC1400.new(
-              "ERC1400Token",
-              "DAU",
-              1,
-              18,
-              partitions,
               {
+                name: "Test",
+                symbol: "TEST",
+                granularity: 1,
+                decimals: 18,
+                defaultPartitions: partitions,
                 admins: [],
                 controllers: [controller],
                 validators: [],
@@ -2758,18 +2755,18 @@ contract(
     describe("redeemFrom", function () {
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
+
             partitioners: []
           }
         );
@@ -2915,12 +2912,12 @@ contract(
             describe("when the amount is not a multiple of the granularity", function () {
               it("reverts", async function () {
                 this.token = await ERC1400.new(
-                  "ERC1400Token",
-                  "DAU",
-                  2,
-                  18,
-                  partitions,
                   {
+                    name: "Test",
+                    symbol: "TEST",
+                    granularity: 1,
+                    decimals: 18,
+                    defaultPartitions: partitions,
                     admins: [],
                     controllers: [controller],
                     validators: [],
@@ -3044,18 +3041,18 @@ contract(
 
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
+
             partitioners: []
           }
         );
@@ -3147,18 +3144,18 @@ contract(
 
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
+
             partitioners: []
           }
         );
@@ -3292,18 +3289,18 @@ contract(
     describe("parameters", function () {
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
+
             partitioners: []
           }
         );
@@ -3772,18 +3769,18 @@ contract(
     describe("defaultPartitions", function () {
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
+
             partitioners: []
           }
         );
@@ -3822,18 +3819,18 @@ contract(
       const amount = 100;
       beforeEach(async function () {
         this.token = await ERC1400.new(
-          "ERC1400Token",
-          "DAU",
-          1,
-          18,
-          partitions,
           {
+            name: "Test",
+            symbol: "TEST",
+            granularity: 1,
+            decimals: 18,
+            defaultPartitions: partitions,
             admins: [],
             controllers: [controller],
             validators: [],
             burners: [],
             minters: [],
-            pausers: [],
+
             partitioners: []
           }
         );
