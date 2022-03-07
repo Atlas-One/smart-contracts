@@ -31,32 +31,31 @@ contract(
         "My Token",
         "MTKN",
         1,
+        18,
         [],
-        [],
-        [],
-        [],
-        [this.vestingWallet.address],
-        [this.vestingWallet.address],
-        [],
-        [this.vestingWallet.address],
+        {
+          admins: [],
+          controllers: [],
+          validators: [],
+          burners: [this.vestingWallet.address],
+          minters: [this.vestingWallet.address],
+          pausers: [this.vestingWallet.address],
+          partitioners: [this.vestingWallet.address]
+        },
         {
           from: deployer,
         }
       );
 
-      // allow the vesting wallet to hold security tokens
-      await this.whitelistValidator.addToWhitelist(this.vestingWallet.address, {
+      await this.whitelist.addToWhitelist(this.token.address, beneficiary, {
         from: deployer,
       });
-      await this.whitelistValidator.addToWhitelist(beneficiary, {
-        from: deployer,
-      });
-      await this.whitelistValidator.addToWhitelist(beneficiary2, {
+      await this.whitelist.addToWhitelist(this.token.address, beneficiary2, {
         from: deployer,
       });
     });
 
-    describe.only("vest", function () {
+    describe("vest", function () {
       it("should mint/issue and add vesting schedule", async function () {
         await this.vestingWallet.vest(
           this.token.address,
@@ -72,11 +71,6 @@ contract(
           (await this.token.balanceOf(this.vestingWallet.address)).toString(),
           "100"
         );
-
-        const tokenHoldersCount = await this.token.tokenHoldersCount();
-        assert.equal(tokenHoldersCount.toString(), "1");
-        const address = await this.token.tokenHolder(0);
-        assert.equal(address, this.vestingWallet.address);
       });
     });
 
@@ -101,7 +95,7 @@ contract(
         );
       });
     });
-    describe("claim", function () {
+    describe.only("claim", function () {
       it("should claim tokens", async function () {
         await this.vestingWallet.vest(
           this.token.address,

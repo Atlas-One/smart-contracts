@@ -216,14 +216,17 @@ contract(
             "ERC1400Token",
             "DAU",
             0,
+            18,
             partitions,
-            [],
-            [controller],
-            [],
-            [],
-            [],
-            [],
-            []
+            {
+              admins: [],
+              controllers: [controller],
+              validators: [],
+              burners: [],
+              minters: [],
+              pausers: [],
+              partitioners: []
+            }
           )
         );
       });
@@ -239,13 +242,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          [],
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          },
           { from: owner }
         );
       });
@@ -390,13 +395,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
         await this.token.issueByPartition(
           partition1,
@@ -473,14 +480,17 @@ contract(
             "ERC1400Token",
             "DAU",
             2,
+            18,
             partitions,
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            []
+            {
+              admins: [],
+              controllers: [controller],
+              validators: [],
+              burners: [],
+              minters: [],
+              pausers: [],
+              partitioners: []
+            }
           );
           await this.token.issueByPartition(
             partition1,
@@ -507,13 +517,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
         await this.token.issueByPartition(
           partition1,
@@ -614,14 +626,17 @@ contract(
                 "ERC1400Token",
                 "DAU",
                 2,
+                18,
                 partitions,
-                [],
-                [],
-                [],
-                [],
-                [],
-                [],
-                []
+                {
+                  admins: [],
+                  controllers: [],
+                  validators: [],
+                  burners: [],
+                  minters: [],
+                  pausers: [],
+                  partitioners: []
+                }
               );
               await this.token.issueByPartition(
                 partition1,
@@ -687,13 +702,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
       });
       describe("when sender approves an operator", function () {
@@ -743,13 +760,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
       });
 
@@ -826,13 +845,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
       });
       describe("when tokenHolder owes no tokens", function () {
@@ -882,14 +903,17 @@ contract(
             "ERC1400Token",
             "DAU",
             1,
+            18,
             partitions,
-            [],
-            [controller],
-            [],
-            [],
-            [],
-            [],
-            []
+            {
+              admins: [],
+              controllers: [controller],
+              validators: [],
+              burners: [],
+              minters: [],
+              pausers: [],
+              partitioners: []
+            }
           );
           await issueOnMultiplePartitions(
             this.token,
@@ -1047,15 +1071,18 @@ contract(
             this.token = await ERC1400.new(
               "ERC1400Token",
               "DAU",
-              2,
+              1,
+              18,
               partitions,
-              [],
-              [controller],
-              [],
-              [],
-              [],
-              [],
-              []
+              {
+                admins: [],
+                controllers: [controller],
+                validators: [],
+                burners: [],
+                minters: [],
+                pausers: [],
+                partitioners: []
+              }
             );
             await issueOnMultiplePartitions(
               this.token,
@@ -1087,14 +1114,17 @@ contract(
             "ERC1400Token",
             "DAU",
             1,
-            [],
-            [],
-            [controller],
-            [],
-            [],
-            [],
-            [],
-            []
+            18,
+            partitions,
+            {
+              admins: [],
+              controllers: [controller],
+              validators: [],
+              burners: [],
+              minters: [],
+              pausers: [],
+              partitioners: []
+            }
           );
           await issueOnMultiplePartitions(
             this.token,
@@ -1125,13 +1155,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
         await issueOnMultiplePartitions(
           this.token,
@@ -1320,15 +1352,18 @@ contract(
             this.token = await ERC1400.new(
               "ERC1400Token",
               "DAU",
-              2,
+              1,
+              18,
               partitions,
-              [],
-              [controller],
-              [],
-              [],
-              [],
-              [],
-              []
+              {
+                admins: [],
+                controllers: [controller],
+                validators: [],
+                burners: [],
+                minters: [],
+                pausers: [],
+                partitioners: []
+              }
             );
             await issueOnMultiplePartitions(
               this.token,
@@ -1388,13 +1423,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
         await this.token.issueByPartition(
           partition1,
@@ -1508,13 +1545,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
         await this.token.issueByPartition(
           partition1,
@@ -1934,13 +1973,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
       });
       describe("when sender authorizes an operator", function () {
@@ -1979,13 +2020,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
       });
       describe("when sender revokes an operator", function () {
@@ -2028,13 +2071,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
       });
       it("authorizes the operator", async function () {
@@ -2083,13 +2128,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
       });
       describe("when operator is not controller", function () {
@@ -2146,13 +2193,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
       });
       it("when operator is tokenHolder", async function () {
@@ -2186,13 +2235,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
       });
       it("when operator is tokenHolder", async function () {
@@ -2262,13 +2313,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
       });
 
@@ -2351,14 +2404,17 @@ contract(
                   "ERC1400Token",
                   "DAU",
                   2,
+                  18,
                   partitions,
-                  [],
-                  [controller],
-                  [],
-                  [],
-                  [],
-                  [],
-                  []
+                  {
+                    admins: [],
+                    controllers: [controller],
+                    validators: [],
+                    burners: [],
+                    minters: [],
+                    pausers: [],
+                    partitioners: []
+                  }
                 );
                 this.token.issue(tokenHolder, 1, ZERO_BYTES32, {
                   from: owner,
@@ -2372,14 +2428,17 @@ contract(
                 "ERC1400Token",
                 "DAU",
                 1,
-                [],
-                [],
-                [controller],
-                [],
-                [],
-                [],
-                [],
-                []
+                18,
+                partitions,
+                {
+                  admins: [],
+                  controllers: [controller],
+                  validators: [],
+                  burners: [],
+                  minters: [],
+                  pausers: [],
+                  partitioners: []
+                }
               );
               await expectRevert.unspecified(
                 this.token.issue(tokenHolder, issuanceAmount, ZERO_BYTES32, {
@@ -2423,13 +2482,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
       });
 
@@ -2541,13 +2602,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
         await issueOnMultiplePartitions(
           this.token,
@@ -2643,15 +2706,18 @@ contract(
             this.token = await ERC1400.new(
               "ERC1400Token",
               "DAU",
-              2,
+              1,
+              18,
               partitions,
-              [],
-              [controller],
-              [],
-              [],
-              [],
-              [],
-              []
+              {
+                admins: [],
+                controllers: [controller],
+                validators: [],
+                burners: [],
+                minters: [],
+                pausers: [],
+                partitioners: []
+              }
             );
             await issueOnMultiplePartitions(
               this.token,
@@ -2697,13 +2763,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
         await issueOnMultiplePartitions(
           this.token,
@@ -2850,14 +2918,17 @@ contract(
                   "ERC1400Token",
                   "DAU",
                   2,
+                  18,
                   partitions,
-                  [],
-                  [controller],
-                  [],
-                  [],
-                  [],
-                  [],
-                  []
+                  {
+                    admins: [],
+                    controllers: [controller],
+                    validators: [],
+                    burners: [],
+                    minters: [],
+                    pausers: [],
+                    partitioners: []
+                  }
                 );
                 await issueOnMultiplePartitions(
                   this.token,
@@ -2978,13 +3049,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
         await this.token.issueByPartition(
           partition1,
@@ -3079,13 +3152,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
         await this.token.issueByPartition(
           partition1,
@@ -3222,13 +3297,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
       });
 
@@ -3700,12 +3777,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
         defaultPartitions = await this.token.getDefaultPartitions();
         assert.equal(defaultPartitions.length, 3);
@@ -3747,13 +3827,15 @@ contract(
           1,
           18,
           partitions,
-          [],
-          [controller],
-          [],
-          [],
-          [],
-          [],
-          []
+          {
+            admins: [],
+            controllers: [controller],
+            validators: [],
+            burners: [],
+            minters: [],
+            pausers: [],
+            partitioners: []
+          }
         );
       });
       describe("when sender approves an operator for a given partition", function () {
