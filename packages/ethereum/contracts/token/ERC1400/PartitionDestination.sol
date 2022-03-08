@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.6.0 <0.8.0;
+pragma solidity ^0.8.0;
 
 abstract contract PartitionDestination {
     /**
@@ -20,8 +20,7 @@ abstract contract PartitionDestination {
         if (data.length < 64) {
             toPartition = fromPartition;
         } else {
-            bytes32 changePartitionFlag =
-                0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
+            bytes32 changePartitionFlag = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff;
             bytes32 flag;
             assembly {
                 flag := mload(add(data, 32))

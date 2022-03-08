@@ -17,9 +17,14 @@ See Tezos access control design doc [here](/docs/tezos/access-control-design.md)
 | Minters        | This role is granted to accounts or contracts that can mint tokens.                                                                                                      |
 | Burners        | This role can be granted to any account of contract that can burn tokens.                                                                                                |
 | Validators     | The validator role is granted to another contract only that has restrictions set to validate a transaction. The current restriction is a shared Whitelist and Blacklist. |
-| Pauser         | This role can pause transactions. Only controllers can perform transactions when a contract is paused.                                                                   |
 | Partitioner    | This role is granted to accounts or contracts that can change token partitions (currently used in ethereum ERC1400).                                                     |
 | Operators      | Token holders are operators of their own token. A token holder can grant another account the operator role to their tokens.                                              |
+
+### Pausable
+
+| Role           | Description                                                                                                                                                              |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Pauser         | This role can pause transactions. Only controllers can perform transactions when a contract is paused.                                                                   |
 
 ### Granting, Revoking and Renouncing Roles
 
@@ -27,23 +32,25 @@ The deployer is initially granted the administrator role in the Ethereum Contrac
 
 > NOTE: Atlas One maintains an administrative role to manage a token for an issuer.
 
-## Transfer Validation
+## Whitelist Validator
 
-The tokens share an Allowlist of whitelisted and blacklisted addresses. The list maintains it own access control roles:
+The this validator checks the whitelist contract that maintains whitelist respective to each token:
+
+### Whitelist
 
 | Role                       | Description                                                                                                  |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | Administrators             | This role can act as both the allow and block list roles. This is the only role that can grant/revoke roles. |
-| Allowedlist Administrators | This role can modify the allowed list.                                                                       |
-| Blocklist Administrators   | This role can modify the blocked list.                                                                       |
+| Whitelist Administrator | This role can modify the whitelist list.                                                                       |
+| Blacklist Administrator   | This role can modify the blacklist list.                                                                       |
 
-Granting, revoking and renoucng roles is similar to the explanation above.
+Granting, revoking and renoucing roles is similar to the explanation above.
 
-> NOTE: A controller/administrator can force transfer out of a blocklisted address
+> NOTE: A controller/administrator can force transfer out of a blacklisted addresses
 
 ## Pausing
 
-Contract transfers can be paused except for the controller in order to perform any intervention actions. Control can be renounced by admin using the entrypoint `renounceControl`.
+Contract transfers can be paused except for the controller in order to perform any intervention actions.
 
 ## Minting
 

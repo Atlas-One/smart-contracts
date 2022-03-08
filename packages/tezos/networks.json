@@ -1,0 +1,14 @@
+{
+    "staging wallet/VestingEscrowMinterBurnerWallet https://hangzhounet.smartpy.io": {
+        "contractAddress": "KT1LVkuWVqELibQr5ZzGL46vBWNvCQxN2VRK",
+        "hash": "ooHoabmHtsnyDts87Ru3V1AgNbno6P5gynRMBWreYfCKTW9dvSs"
+    },
+    "staging compliance/Whitelist https://hangzhounet.smartpy.io": {
+        "contractAddress": "KT1QqGNUxoBxcjKqELqiUNGgDab45juYy85b",
+        "hash": "op8Q4GRfWyaqZ8F15bJz5MqfeKP7W6h78obq5XrZxbWKhXoy2wm"
+    },
+    "staging extension/WhitelistValidator https://hangzhounet.smartpy.io": {
+        "contractAddress": "KT1HpwEVG1afoRFtdqf46MajMK8MWGm63vW2",
+        "hash": "opKfBjRaM66ZpVbSHcJ7ZD76uWveqCUXQGYT8uBBqDYTuC7drMW"
+    }
+}

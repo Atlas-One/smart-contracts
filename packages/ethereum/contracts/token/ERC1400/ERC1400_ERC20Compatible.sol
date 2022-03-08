@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.6.0 <0.8.0;
+pragma solidity ^0.8.0;
 
 import "./ERC1400.sol";
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract ERC1400_ERC20Compatible is IERC20, ERC1400 {
@@ -12,34 +12,7 @@ contract ERC1400_ERC20Compatible is IERC20, ERC1400 {
 
     mapping(address => mapping(address => uint256)) internal _allowances;
 
-    constructor(
-        string memory name,
-        string memory symbol,
-        uint256 granularity,
-        bytes32[] memory defaultPartitions,
-        address[] memory admins,
-        address[] memory controllers,
-        address[] memory validators,
-        address[] memory burners,
-        address[] memory minters,
-        address[] memory pausers,
-        address[] memory partitioners
-    )
-        public
-        ERC1400(
-            name,
-            symbol,
-            granularity,
-            defaultPartitions,
-            admins,
-            controllers,
-            validators,
-            burners,
-            minters,
-            pausers,
-            partitioners
-        )
-    {}
+    constructor(ERC1400ConstructorArgs memory args) ERC1400(args) {}
 
     /**
      * @dev Get the total number of issued tokens.

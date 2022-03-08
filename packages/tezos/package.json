@@ -3,13 +3,15 @@
   "version": "1.0.0",
   "license": "MIT",
   "devDependencies": {
-    "@taquito/signer": "^9.0.0",
-    "@taquito/taquito": "^9.0.0",
-    "ganache-cli": "^6.12.1-tezos.0",
-    "truffle": "^5.5.0-tezos.4"
+    "@taquito/signer": "^11.2.0",
+    "@taquito/taquito": "^11.2.0",
+    "simple-json-db": "^1.2.3"
   },
   "scripts": {
     "build": "sh ./compile.sh && node ./scripts/post-compile.js",
-    "start:sandbox": "ganache-cli --flavor tezos --seed alice"
+    "migrate": "node ./scripts/migrate.js",
+    "faucet:activate": "node ./keystore/faucet/secretKey.js & node ./keystore/faucet/activate.js",
+    "migrate:staging": "ACCOUNTS=$(aws secretsmanager get-secret-value --secret-id staging/wallet --query 'SecretString') node ./scripts/migrate.js",
+    "transfer:staging": "PUBLIC_ADDRESS=$(aws secretsmanager get-secret-value --secret-id staging/wallet --query 'SecretString' | jq 'fromjson.tezosPublicAddress') node ./scripts/transfer.js"
   }
 }

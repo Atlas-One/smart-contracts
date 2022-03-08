@@ -8,6 +8,8 @@
   ],
   "scripts": {
     "build": "lerna run --parallel build",
+    "migrate:ethereum": "lerna run --scope @atlasone/ethereum-smart-contracts migrate --",
+    "migrate:tezos": "lerna run --scope @atlasone/tezos-smart-contracts migrate --",
     "postbuild": "node ./scripts/post-build.js",
     "bootstrap": "lerna bootstrap"
   },

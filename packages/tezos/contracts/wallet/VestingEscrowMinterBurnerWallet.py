@@ -528,4 +528,4 @@ def add_test(is_default=True):
 
 if "templates" not in __name__:
     add_test()
-    sp.add_compilation_target("VestingEscrowWallet_compiled", VestingEscrowMinterBurnerWallet())
+    sp.add_compilation_target("VestingEscrowMinterBurnerWallet_compiled", VestingEscrowMinterBurnerWallet())

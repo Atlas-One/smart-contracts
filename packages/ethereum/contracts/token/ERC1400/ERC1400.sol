@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.6.0 <0.8.0;
+pragma solidity ^0.8.0;
 
 import "../../interface/IERC1644.sol";
 import "../../interface/IERC1410.sol";
@@ -10,17 +10,31 @@ import "../../interface/IERC1643.sol";
 import "./ExtendedValidation.sol";
 import "./PartitionDestination.sol";
 
-import "../../compliance/Administrable.sol";
+import "./ERC1400Administrable.sol";
 
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
+struct ERC1400ConstructorArgs {
+    string name;
+    string symbol;
+    uint8 decimals;
+    uint256 granularity;
+    bytes32[] defaultPartitions;
+    address[] admins;
+    address[] controllers;
+    address[] validators;
+    address[] burners;
+    address[] minters;
+    address[] partitioners;
+}
 
 contract ERC1400 is
     IERC1644,
     IERC1410,
     IERC1594,
     IERC1643,
-    Administrable,
+    ERC1400Administrable,
     ExtendedValidation,
     PartitionDestination
 {
@@ -29,22 +43,30 @@ contract ERC1400 is
     string internal _name;
     string internal _symbol;
     uint256 internal _granularity;
+    uint8 internal _decimals;
 
-    uint256 internal _totalSupply;
+    uint256 internal _totalSupply = 0;
 
-    bool internal _isControllable;
+    bool internal _isControllable = true;
 
-    bool internal _isIssuable;
+    bool internal _isIssuable = true;
 
     mapping(address => uint256) internal _balances;
 
-    struct Doc {
-        string docURI;
-        bytes32 docHash;
+    struct Document {
+        string documentURI;
+        bytes32 documentHash;
     }
 
     // Mapping for token URIs.
-    mapping(bytes32 => Doc) internal _documents;
+    mapping(bytes32 => Document) internal _documents;
+
+    // List of token default partitions
+    // Supports:
+    // - transferWithData
+    // - redeem
+    // - for other protocol compatibility where you don't specify transferByPartition e.g. ERC20
+    bytes32[] internal _defaultPartitions;
 
     // List of partitions.
     bytes32[] internal _totalPartitions;
@@ -66,13 +88,6 @@ contract ERC1400 is
     mapping(address => mapping(bytes32 => uint256))
         internal _balanceOfByPartition;
 
-    // List of token default partitions
-    // Supports:
-    // - transferWithData
-    // - redeem
-    // - for other protocol compatibility where you don't specify transferByPartition e.g. ERC20
-    bytes32[] internal _defaultPartitions;
-
     // Mapping from (operator, tokenHolder) to authorized status. [TOKEN-HOLDER-SPECIFIC]
     mapping(address => mapping(address => bool)) internal _authorizedOperator;
 
@@ -86,72 +101,46 @@ contract ERC1400 is
 
     /**
      * @dev Initialize ERC1400
-     * @param name Name of the token.
-     * @param symbol Symbol of the token.
-     * @param granularity Granularity of the token.
-     * @param defaultPartitions Partitions to transfer by default
-     * @param controllers Controllers
-     * @param validators Validator
-     * not specified, like the case ERC20 tranfers.
      */
-    constructor(
-        string memory name,
-        string memory symbol,
-        uint256 granularity,
-        bytes32[] memory defaultPartitions,
-        address[] memory admins,
-        address[] memory controllers,
-        address[] memory validators,
-        address[] memory burners,
-        address[] memory minters,
-        address[] memory pausers,
-        address[] memory partitioners
-    ) public {
-        require(granularity >= 1); // Constructor Blocked - Token granularity can not be lower than 1
+    constructor(ERC1400ConstructorArgs memory args) {
+        require(args.granularity >= 1); // Constructor Blocked - Token granularity can not be lower than 1
 
-        _name = name;
-        _symbol = symbol;
-        _totalSupply = 0;
+        _name = args.name;
+        _symbol = args.symbol;
 
-        _granularity = granularity;
+        _granularity = args.granularity;
+        _decimals = args.decimals;
 
-        _defaultPartitions = defaultPartitions;
+        _defaultPartitions = args.defaultPartitions;
 
-        _isIssuable = true;
-        _isControllable = true;
-
-        if (admins.length > 0) {
+        if (args.admins.length > 0) {
             // set token admins
-            for (uint256 i = 0; i < admins.length; i++) {
-                _setupRole(ADMIN_ROLE, admins[i]);
+            for (uint256 i = 0; i < args.admins.length; i++) {
+                _setupRole(ADMIN_ROLE, args.admins[i]);
             }
         } else {
             // set token admin
             _setupRole(ADMIN_ROLE, msg.sender);
         }
         // set controllers
-        for (uint256 i = 0; i < controllers.length; i++) {
-            _setupRole(CONTROLLER_ROLE, controllers[i]);
+        for (uint256 i = 0; i < args.controllers.length; i++) {
+            _setupRole(CONTROLLER_ROLE, args.controllers[i]);
         }
         // set validators
-        for (uint256 i = 0; i < validators.length; i++) {
-            _setupRole(VALIDATOR_ROLE, validators[i]);
+        for (uint256 i = 0; i < args.validators.length; i++) {
+            _setupRole(VALIDATOR_ROLE, args.validators[i]);
         }
         // set burners
-        for (uint256 i = 0; i < burners.length; i++) {
-            _setupRole(BURNER_ROLE, burners[i]);
+        for (uint256 i = 0; i < args.burners.length; i++) {
+            _setupRole(BURNER_ROLE, args.burners[i]);
         }
         // set minters
-        for (uint256 i = 0; i < minters.length; i++) {
-            _setupRole(MINTER_ROLE, minters[i]);
-        }
-        // set pausers
-        for (uint256 i = 0; i < pausers.length; i++) {
-            _setupRole(PAUSER_ROLE, pausers[i]);
+        for (uint256 i = 0; i < args.minters.length; i++) {
+            _setupRole(MINTER_ROLE, args.minters[i]);
         }
         // set partitioners
-        for (uint256 i = 0; i < partitioners.length; i++) {
-            _setupRole(PARTITIONER_ROLE, partitioners[i]);
+        for (uint256 i = 0; i < args.partitioners.length; i++) {
+            _setupRole(PARTITIONER_ROLE, args.partitioners[i]);
         }
     }
 
@@ -192,8 +181,8 @@ contract ERC1400 is
      * no way affects any of the arithmetic of the contract, including
      * {IERC20-balanceOf} and {IERC20-transfer}.
      */
-    function decimals() public pure virtual returns (uint8) {
-        return uint8(18);
+    function decimals() public view virtual returns (uint8) {
+        return _decimals;
     }
 
     /**
@@ -252,10 +241,10 @@ contract ERC1400 is
         override
         returns (string memory, bytes32)
     {
-        require(bytes(_documents[documentName].docURI).length != 0); // Action Blocked - Empty document
+        require(bytes(_documents[documentName].documentURI).length != 0); // Action Blocked - Empty document
         return (
-            _documents[documentName].docURI,
-            _documents[documentName].docHash
+            _documents[documentName].documentURI,
+            _documents[documentName].documentHash
         );
     }
 
@@ -271,7 +260,10 @@ contract ERC1400 is
         bytes32 documentHash
     ) external override {
         _onlyController(msg.sender);
-        _documents[documentName] = Doc({docURI: uri, docHash: documentHash});
+        _documents[documentName] = Document({
+            documentURI: uri,
+            documentHash: documentHash
+        });
         emit DocumentUpdated(documentName, uri, documentHash);
     }
 
@@ -281,8 +273,8 @@ contract ERC1400 is
      */
     function removeDocument(bytes32 documentName) external override {
         _onlyController(msg.sender);
-        string memory documentURI = _documents[documentName].docURI;
-        bytes32 documentHash = _documents[documentName].docHash;
+        string memory documentURI = _documents[documentName].documentURI;
+        bytes32 documentHash = _documents[documentName].documentHash;
 
         delete _documents[documentName];
 
@@ -891,8 +883,7 @@ contract ERC1400 is
 
         _balanceOfByPartition[from][partition] = _balanceOfByPartition[from][
             partition
-        ]
-            .sub(value);
+        ].sub(value);
         _totalSupplyByPartition[partition] = _totalSupplyByPartition[partition]
             .sub(value);
 
@@ -916,8 +907,9 @@ contract ERC1400 is
             require(index2 > 0, "50"); // 0x50	transfer failure
 
             // move the last item into the index being vacated
-            bytes32 lastValue =
-                _partitionsOf[from][_partitionsOf[from].length - 1];
+            bytes32 lastValue = _partitionsOf[from][
+                _partitionsOf[from].length - 1
+            ];
             _partitionsOf[from][index2 - 1] = lastValue; // adjust for 1-based indexing
             _indexOfPartitionsOf[from][lastValue] = index2;
 
@@ -947,8 +939,7 @@ contract ERC1400 is
             }
             _balanceOfByPartition[to][partition] = _balanceOfByPartition[to][
                 partition
-            ]
-                .add(value);
+            ].add(value);
 
             if (_indexOfTotalPartitions[partition] == 0) {
                 _totalPartitions.push(partition);
@@ -956,8 +947,7 @@ contract ERC1400 is
             }
             _totalSupplyByPartition[partition] = _totalSupplyByPartition[
                 partition
-            ]
-                .add(value);
+            ].add(value);
         }
     }
 
@@ -975,9 +965,42 @@ contract ERC1400 is
      * @param operator Address which may be the token controller.
      * @return 'true' if 'operator' is a controller.
      */
+    function isController(address operator)
+        public
+        view
+        override
+        returns (bool)
+    {
+        return _isController(operator);
+    }
+
+    /**
+     * @dev Indicate whether the operator address is a controller.
+     * @param operator Address which may be the token controller.
+     * @return 'true' if 'operator' is a controller.
+     */
     function _isController(address operator) internal view returns (bool) {
-        return (hasRole(CONTROLLER_ROLE, operator) ||
-            hasRole(ADMIN_ROLE, operator));
+        return
+            _isControllable &&
+            (
+                (hasRole(CONTROLLER_ROLE, operator) ||
+                    hasRole(ADMIN_ROLE, operator))
+            );
+    }
+
+    /**
+     * @dev Indicate whether the operator address is a controller for partition.
+     * @param partition Name of the partition.
+     * @param operator Address which may be the token controller.
+     * @return 'true' if 'operator' is a controller partition.
+     */
+    function isControllerForPartition(bytes32 partition, address operator)
+        public
+        view
+        override
+        returns (bool)
+    {
+        return _isControllerForPartition(partition, operator);
     }
 
     /**
@@ -991,12 +1014,16 @@ contract ERC1400 is
         view
         returns (bool)
     {
-        return (hasRole(
-            keccak256(abi.encodePacked(partition, CONTROLLER_ROLE)),
-            operator
-        ) ||
-            hasRole(CONTROLLER_ROLE, operator) ||
-            hasRole(ADMIN_ROLE, operator));
+        return
+            _isControllable &&
+            (
+                (hasRole(
+                    keccak256(abi.encodePacked(partition, CONTROLLER_ROLE)),
+                    operator
+                ) ||
+                    hasRole(CONTROLLER_ROLE, operator) ||
+                    hasRole(ADMIN_ROLE, operator))
+            );
     }
 
     /**
@@ -1012,7 +1039,7 @@ contract ERC1400 is
     {
         return (operator == tokenHolder ||
             _authorizedOperator[operator][tokenHolder] ||
-            (_isControllable && _isController(operator)));
+            _isController(operator));
     }
 
     /**
@@ -1030,8 +1057,7 @@ contract ERC1400 is
     ) internal view returns (bool) {
         return (_isOperator(operator, tokenHolder) ||
             _authorizedOperatorByPartition[tokenHolder][partition][operator] ||
-            (_isControllable &&
-                _isControllerForPartition(partition, operator)));
+            _isControllerForPartition(partition, operator));
     }
 
     /**

@@ -1,80 +1,32 @@
 {
-  "GeneralTransferManager": {
-    "3": {
-      "events": {},
-      "links": {},
-      "address": "0x26AeC5037808F46DBDDB9695BbAD6E4da9f25860",
-      "transactionHash": "0xfbe114dddab7b7670ee4f1336578ed7d255980219768d0a7a7573b28684bf5a3"
-    },
-    "10001": {
-      "events": {},
-      "links": {},
-      "address": "0xd8876f9F635c60fA5075f9034bC44b1a06a3647F",
-      "transactionHash": "0x9d57a5ad27d2c29cb0e349d3c6351ffa0f539ff966ec8820ff67d824e3887fa0"
-    },
-    "1089731529": {
-      "events": {},
-      "links": {},
-      "address": "0x5085111904eb552eBab1C200985814943a19E793",
-      "transactionHash": "0x60228ba75a7fd0d1d40ea348e60902e3f3772b38dd9186f522e8596ab06e1d3c"
-    },
-    "1767184108": {
-      "events": {},
-      "links": {},
-      "address": "0xd8876f9F635c60fA5075f9034bC44b1a06a3647F",
-      "transactionHash": "0x9d57a5ad27d2c29cb0e349d3c6351ffa0f539ff966ec8820ff67d824e3887fa0"
-    }
-  },
   "Migrations": {
     "3": {
       "events": {},
       "links": {},
-      "address": "0xeF9Ee04A5771d1b5c9a8D31b3980B72941a08B46",
-      "transactionHash": "0x9ac5ad8605865e185a1944642560789a69b80877f3fb915d73b99346ed7ed3a1"
-    },
-    "10001": {
-      "events": {},
-      "links": {},
-      "address": "0xFD676E452A2409A3305ddBCfD98Da84FBeD07906",
-      "transactionHash": "0xdc9c176c05ec054e6754440ca3afcfdc095dec109e6d524246ed3c2ca2c9b551"
-    },
-    "1089731529": {
-      "events": {},
-      "links": {},
-      "address": "0xB12aE09939415cbD697E215e27E9FbA5326Ce5e7",
-      "transactionHash": "0x33553d5b2c576cb27679737fcff5c61daf50edd39b09b006ef3217bdc7e2b19d"
-    },
-    "1767184108": {
-      "events": {},
-      "links": {},
-      "address": "0xFD676E452A2409A3305ddBCfD98Da84FBeD07906",
-      "transactionHash": "0xdc9c176c05ec054e6754440ca3afcfdc095dec109e6d524246ed3c2ca2c9b551"
+      "address": "0xFfA79B09eA7cfd4A3832Fd45F8C3F5bBcEF88690",
+      "transactionHash": "0x7af80a917ec76fa618dbc74c5c7db28e839c8d11cabc1b29a3f4752a729a9983"
     }
   },
   "VestingEscrowMinterBurnerWallet": {
     "3": {
       "events": {},
       "links": {},
-      "address": "0x8cBbd9a69376115Fd313B2C4D099CC429340D1e1",
-      "transactionHash": "0x7d2d3298a2bfefc352629cb290ee72467377b4a94a9f4dedb2b18b39006f0562"
-    },
-    "10001": {
+      "address": "0xD23e296a85ade79D96c97C725EBE496001C637Fe"
+    }
+  },
+  "WhitelistUpgradeable": {
+    "3": {
       "events": {},
       "links": {},
-      "address": "0xEb9903C89FBd2CEa889002bb6d02e553b3FCa952",
-      "transactionHash": "0x5aaf2c7280fb8d0f48849426213ee33bd241cd5e34f11b1de436f6dd980ccaee"
-    },
-    "1089731529": {
+      "address": "0xb6eb0023608A7c6dF04c4DE38cEDffF9af42B8Dd",
+      "transactionHash": "0x38bd4590d5f94acb50f394357913b3ea0500eeee575d8608b388254cf2a1cd5e"
+    }
+  },
+  "WhitelistValidator": {
+    "3": {
       "events": {},
       "links": {},
-      "address": "0x4bcfA58B731528f9c4D244b7Fadd1b85f7EE13E6",
-      "transactionHash": "0x921a86f96a5b9078c6b380f38bbdb9f283a451fd9d647143e96178c0a2322863"
-    },
-    "1767184108": {
-      "events": {},
-      "links": {},
-      "address": "0xEb9903C89FBd2CEa889002bb6d02e553b3FCa952",
-      "transactionHash": "0x5aaf2c7280fb8d0f48849426213ee33bd241cd5e34f11b1de436f6dd980ccaee"
+      "address": "0xBc484574614966D48DE719f464B615DC8dc22E8a"
     }
   }
 }

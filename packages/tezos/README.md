@@ -4,6 +4,13 @@
 
 Tezos controlled and permissioned asset.
 
+## Development
+
+<https://teztnets.xyz/>
+
+<https://smartpy.io/docs/>
+<https://smartpy.io/docs/cli>
+
 ## Access Control
 
 See the access control design doc [here](/docs/tezos/access-control-design.md) for explanation behind the access control.
@@ -24,17 +31,18 @@ See the access control design doc [here](/docs/tezos/access-control-design.md) f
 | Role                 | On Chain Value |
 | -------------------- | -------------- |
 | ADMIN_ROLE           | 0              |
-| ALLOWLIST_ADMIN_ROLE | 1              |
-| BLOCKLIST_ADMIN_ROLE | 2              |
+| WHITELIST_ADMIN_ROLE | 1              |
+| BLACKLIST_ADMIN_ROLE | 2              |
 
 ## Deployed Contracts
 
 ### Deployed on SmartPy Edonet
 
-| Contract                                                                                                         | Address                              |
-| ---------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| [GeneralTransferManager](https://smartpy.io/explorer.html?address=KT1DAp2GKchqQcXFZzMFptbyNLChKxQ6F3to)          | KT1DAp2GKchqQcXFZzMFptbyNLChKxQ6F3to |
-| [VestingEscrowMinterBurnerWallet](https://smartpy.io/explorer.html?address=KT1SUf8fDdXjGyUUFLzjUyoATn2wN2PKb26b) | KT1SUf8fDdXjGyUUFLzjUyoATn2wN2PKb26b |
+| Contract                        | Address                              |
+| ------------------------------- | ------------------------------------ |
+| Whitelist                       | KT1QqGNUxoBxcjKqELqiUNGgDab45juYy85b |
+| WhitelistValidator              | KT1HpwEVG1afoRFtdqf46MajMK8MWGm63vW2 |
+| VestingEscrowMinterBurnerWallet | KT1BLEW5kBVYWSPJzYrLPp3mSYSSPjzLhisN |
 
 ## Development
 

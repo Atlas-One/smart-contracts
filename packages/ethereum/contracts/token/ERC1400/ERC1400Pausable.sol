@@ -1,11 +1,21 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.6.0 <0.8.0;
+pragma solidity ^0.8.0;
 
 import "./ERC1400.sol";
-import "@openzeppelin/contracts/utils/Pausable.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
 
 abstract contract ERC1400Pausable is ERC1400, Pausable {
+    // keccak256("PAUSER_ROLE")
+    bytes32 public constant PAUSER_ROLE =
+        0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a;
+
+    constructor(address[] memory pausers) {
+        for (uint256 i = 0; i < pausers.length; i++) {
+            _setupRole(PAUSER_ROLE, pausers[i]);
+        }
+    }
+
     /**
      * @notice freezes transfers
      */
@@ -20,6 +30,13 @@ abstract contract ERC1400Pausable is ERC1400, Pausable {
     function resume() public {
         _onlyPauser(msg.sender);
         _unpause();
+    }
+
+    function _onlyPauser(address account) internal view {
+        require(
+            hasRole(PAUSER_ROLE, account) || hasRole(ADMIN_ROLE, account),
+            "54" // 0x54	transfers halted (contract paused)
+        );
     }
 
     // reduce contract size

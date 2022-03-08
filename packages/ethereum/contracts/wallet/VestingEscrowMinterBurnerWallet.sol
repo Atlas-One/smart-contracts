@@ -1,20 +1,20 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.6.0 <0.8.0;
+pragma solidity ^0.8.0;
 
 import "../interface/IERC1410.sol";
 
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts/access/IAccessControlEnumerable.sol";
 
-import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/EnumerableSetUpgradeable.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 /**
  * @title Wallet for core vesting escrow functionality
  */
 contract VestingEscrowMinterBurnerWallet {
-    using SafeMathUpgradeable for uint256;
-    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
+    using SafeMath for uint256;
+    using EnumerableSet for EnumerableSet.AddressSet;
 
     bytes32 private constant TOKEN_ADMIN_ROLE = 0x00;
 
@@ -30,8 +30,7 @@ contract VestingEscrowMinterBurnerWallet {
     // scheduleNames should be unique per token
     mapping(address => mapping(bytes32 => Schedule)) public schedules;
 
-    mapping(address => EnumerableSetUpgradeable.AddressSet)
-        internal _beneficiariesByToken;
+    mapping(address => EnumerableSet.AddressSet) internal _beneficiariesByToken;
 
     // Emit when new schedule is added
     event ScheduleAdded(
@@ -97,12 +96,29 @@ contract VestingEscrowMinterBurnerWallet {
         return _beneficiariesByToken[token].at(index);
     }
 
-    function _addBeneficiary(address _token, address _beneficiary) internal {
-        _beneficiariesByToken[_token].add(_beneficiary);
-    }
-
-    function _removeBeneficiary(address _token, address _beneficiary) internal {
-        _beneficiariesByToken[_token].remove(_beneficiary);
+    function vestingSummaryForToken(address token, address beneficiary)
+        public
+        view
+        returns (
+            uint256 tVesting,
+            uint256 tClaimed,
+            uint256 tRevoked
+        )
+    {
+        for (uint256 i = 0; i < scheduleNames[beneficiary].length; i++) {
+            Schedule memory schedule = schedules[beneficiary][
+                scheduleNames[beneficiary][i]
+            ];
+            if (schedule.token != token && !schedule.revoked) {
+                tVesting = tVesting.add(schedule.vestingAmount);
+                tClaimed = tClaimed.add(schedule.claimedAmount);
+            }
+            if (schedule.token != token && schedule.revoked) {
+                tRevoked = tRevoked.add(
+                    schedule.vestingAmount.sub(schedule.claimedAmount)
+                );
+            }
+        }
     }
 
     /**
@@ -262,7 +278,7 @@ contract VestingEscrowMinterBurnerWallet {
      * @param to Address of the new beneficiary
      * @param scheduleName Name of the template was used for schedule creation
      */
-    function changeBeneficiary(
+    function changeBeneficiaryForSchedule(
         address from,
         address to,
         bytes32 scheduleName
@@ -275,7 +291,9 @@ contract VestingEscrowMinterBurnerWallet {
      * @param from Address of the beneficiary for whom it is modified
      * @param to Address of the new beneficiary
      */
-    function changeBeneficiaryForAll(address from, address to) external {
+    function changeBeneficiaryForAllSchedules(address from, address to)
+        external
+    {
         for (uint256 i = 0; i < scheduleNames[from].length; i++) {
             _changeBeneficiary(from, to, scheduleNames[from][i]);
         }
@@ -375,10 +393,9 @@ contract VestingEscrowMinterBurnerWallet {
         schedules[beneficiary][scheduleName].revokedAt = block.timestamp;
         schedules[beneficiary][scheduleName].revokedBy = msg.sender;
 
-        uint256 redeemAmount =
-            schedules[beneficiary][scheduleName].vestingAmount.sub(
-                schedules[beneficiary][scheduleName].claimedAmount
-            );
+        uint256 redeemAmount = schedules[beneficiary][scheduleName]
+            .vestingAmount
+            .sub(schedules[beneficiary][scheduleName].claimedAmount);
 
         // Burn tokens
         IERC1410(token).redeemByPartition(
@@ -420,8 +437,7 @@ contract VestingEscrowMinterBurnerWallet {
             _totalVesting = _totalVesting.add(
                 schedules[beneficiary][
                     scheduleNamesPerToken[beneficiary][token][i]
-                ]
-                    .vestingAmount
+                ].vestingAmount
             );
         }
 
@@ -464,12 +480,19 @@ contract VestingEscrowMinterBurnerWallet {
             _totalClaimed = _totalClaimed.add(
                 schedules[beneficiary][
                     scheduleNamesPerToken[beneficiary][token][i]
-                ]
-                    .claimedAmount
+                ].claimedAmount
             );
         }
 
         return _totalClaimed;
+    }
+
+    function _addBeneficiary(address _token, address _beneficiary) internal {
+        _beneficiariesByToken[_token].add(_beneficiary);
+    }
+
+    function _removeBeneficiary(address _token, address _beneficiary) internal {
+        _beneficiariesByToken[_token].remove(_beneficiary);
     }
 
     function _claimableAmount(bytes32 scheduleName, address beneficiary)
@@ -530,9 +553,7 @@ contract VestingEscrowMinterBurnerWallet {
             address tokenAddress = schedules[beneficiary][scheduleName].token;
             schedules[beneficiary][scheduleName].claimedAmount = schedules[
                 beneficiary
-            ][scheduleName]
-                .claimedAmount
-                .add(amount);
+            ][scheduleName].claimedAmount.add(amount);
 
             IERC1410(tokenAddress).transferByPartition(
                 schedules[beneficiary][scheduleName].name,
@@ -557,7 +578,7 @@ contract VestingEscrowMinterBurnerWallet {
         returns (bool)
     {
         return
-            AccessControlUpgradeable(securityToken).hasRole(
+            IAccessControlEnumerable(securityToken).hasRole(
                 TOKEN_ADMIN_ROLE,
                 operator
             );

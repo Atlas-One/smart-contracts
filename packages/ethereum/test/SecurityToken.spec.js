@@ -1,7 +1,9 @@
 const { expectRevert } = require("@openzeppelin/test-helpers");
 const { deployProxy } = require("@openzeppelin/truffle-upgrades");
-const SecurityToken = artifacts.require("ERC1400WithoutIntrospection");
-const GeneralTransferManager = artifacts.require("GeneralTransferManager");
+
+const SecurityToken = artifacts.require("SecurityToken");
+const WhitelistUpgradeable = artifacts.require("WhitelistUpgradeable");
+const WhitelistValidator = artifacts.require("WhitelistValidator");
 
 const EMPTY_DATA = "0x";
 const ZERO_BYTE = "0x";
@@ -73,45 +75,37 @@ const assertBalance = async (_contract, _tokenHolder, _amount) => {
 };
 
 contract(
-  "ERC1400WithoutIntrospection",
+  "SecurityToken",
   function ([owner, operator, controller, tokenHolder, recipient, unknown]) {
     before(async function () {
-      this.gtm = await deployProxy(GeneralTransferManager, {
+      this.whitelist = await deployProxy(WhitelistUpgradeable, {
+        from: owner,
+      });
+      this.whitelistValidator = await deployProxy(WhitelistValidator, [this.whitelist.address], {
         from: owner,
       });
     });
 
     beforeEach(async function () {
       this.token = await SecurityToken.new(
-        "SecurityToken",
-        "TEST",
-        1,
-        partitions,
-        [],
-        [controller],
-        [],
-        [],
-        [],
-        [],
-        []
+        {
+          name: "SecurityToken",
+          symbol: "TEST",
+          granularity: 1,
+          decimals: 18,
+          defaultPartitions: partitions,
+          admins: [],
+          controllers: [controller],
+          validators: [],
+          burners: [],
+          minters: [],
+          pausers: [],
+          partitioners: []
+        }
       );
 
-      await this.token.grantRoles(this.gtm.address, [VALIDATOR_ROLE], {
+      await this.token.grantRoles(this.whitelistValidator.address, [VALIDATOR_ROLE], {
         from: owner,
-      });
-    });
-
-    // ISSUE 
-
-    describe("tokenHoldersCount", function () {
-      it("should have added to the token holders count", async  function () {
-        await this.token.issue(tokenHolder, issuanceAmount, ZERO_BYTES32, {
-          from: owner,
-        });
-        const tokenHoldersCount = await this.token.tokenHoldersCount();
-        assert.equal(tokenHoldersCount.toString(), "1");
-        const address = await this.token.tokenHolder(0);
-        assert.equal(address, tokenHolder);
       });
     });
 
@@ -266,24 +260,27 @@ contract(
       });
       describe("pause", function () {
         beforeEach(async function () {
-          this.gtm = await deployProxy(GeneralTransferManager, {
+          this.whitelistValidator = await deployProxy(WhitelistValidator, {
             from: owner,
           });
           this.token = await SecurityToken.new(
-            "SecurityToken",
-            "TEST",
-            1,
-            partitions,
-            [],
-            [controller],
-            [this.gtm.address],
-            [],
-            [],
-            [],
-            "0x0000000000000000000000000000000000000000"
+            {
+              name: "SecurityToken",
+              symbol: "TEST",
+              granularity: 1,
+              decimals: 18,
+              defaultPartitions: partitions,
+              admins: [],
+              controllers: [controller],
+              validators: [this.whitelistValidator.address],
+              burners: [],
+              minters: [],
+              pausers: [],
+              partitioners: []
+            }
           );
 
-          await this.gtm.addToAllowlist(tokenHolder, {
+          await this.whitelist.addToWhitelist(this.token.address, tokenHolder, {
             from: owner,
           });
           await this.token.issue(tokenHolder, issuanceAmount, ZERO_BYTES32, {
@@ -314,7 +311,7 @@ contract(
             );
           });
           it("controller should be able to transfer", async function () {
-            await this.gtm.addToAllowlist(recipient, {
+            await this.whitelist.addToWhitelist(this.token.address, recipient, {
               from: owner,
             });
             await this.token.controllerTransfer(
@@ -329,7 +326,7 @@ contract(
             );
           });
           it("account with ADMIN_ROLE should be able to transfer", async function () {
-            await this.gtm.addToAllowlist(recipient, {
+            await this.whitelist.addToWhitelist(this.token.address, recipient, {
               from: owner,
             });
             await this.token.transferFrom(tokenHolder, recipient, amount, {
@@ -345,9 +342,9 @@ contract(
       const redeemAmount = 50;
       const transferAmount = 300;
       beforeEach(async function () {
-        await this.token.hasRole(VALIDATOR_ROLE, this.gtm.address);
+        await this.token.hasRole(VALIDATOR_ROLE, this.whitelistValidator.address);
 
-        await this.gtm.addToAllowlist(tokenHolder, {
+        await this.whitelist.addToWhitelist(this.token.address, tokenHolder, {
           from: owner,
         });
 
@@ -374,7 +371,7 @@ contract(
             );
           });
           it("fails issuing when recipient is not allowlisted", async function () {
-            await this.gtm.removeFromAllowlist(tokenHolder, {
+            await this.whitelist.removeFromWhitelist(tokenHolder, {
               from: owner,
             });
             await expectRevert.unspecified(
@@ -402,7 +399,7 @@ contract(
             );
           });
           it("fails issuing when recipient is not allowlisted", async function () {
-            await this.gtm.removeFromAllowlist(tokenHolder, {
+            await this.whitelist.removeFromWhitelist(tokenHolder, {
               from: owner,
             });
             await expectRevert.unspecified(
@@ -477,7 +474,7 @@ contract(
         });
         describe("transferWithData", function () {
           it("transfers the requested amount when sender and recipient are allowlisted", async function () {
-            await this.gtm.addToAllowlist(recipient, {
+            await this.whitelist.addToWhitelist(this.token.address, recipient, {
               from: owner,
             });
             await assertBalance(this.token, tokenHolder, issuanceAmount);
@@ -498,10 +495,10 @@ contract(
             await assertBalance(this.token, recipient, transferAmount);
           });
           it("fails transferring when sender is not allowlisted", async function () {
-            await this.gtm.addToAllowlist(recipient, {
+            await this.whitelist.addToWhitelist(this.token.address, recipient, {
               from: owner,
             });
-            await this.gtm.removeFromAllowlist(tokenHolder, {
+            await this.whitelist.removeFromWhitelist(tokenHolder, {
               from: owner,
             });
             await assertBalance(this.token, tokenHolder, issuanceAmount);
@@ -521,7 +518,7 @@ contract(
           });
           it("fails transferring when recipient is not allowlisted", async function () {
             await assertBalance(this.token, tokenHolder, issuanceAmount);
-            await this.gtm.removeFromAllowlist(recipient, {
+            await this.whitelist.removeFromWhitelist(recipient, {
               from: owner,
             });
             await assertBalance(this.token, recipient, 0);
@@ -541,7 +538,7 @@ contract(
         });
         describe("transferFromWithData", function () {
           it("transfers the requested amount when sender and recipient are allowliste", async function () {
-            await this.gtm.addToAllowlist(recipient, {
+            await this.whitelist.addToWhitelist(this.token.address, recipient, {
               from: owner,
             });
 
@@ -567,7 +564,7 @@ contract(
         });
         describe("transferByPartition", function () {
           it("transfers the requested amount when sender and recipient are allowlisted", async function () {
-            await this.gtm.addToAllowlist(recipient, {
+            await this.whitelist.addToWhitelist(this.token.address, recipient, {
               from: owner,
             });
             await assertBalanceOf(
@@ -600,10 +597,10 @@ contract(
             );
           });
           it("fails transferring when sender is not allowlisted", async function () {
-            await this.gtm.addToAllowlist(recipient, {
+            await this.whitelist.addToWhitelist(this.token.address, recipient, {
               from: owner,
             });
-            await this.gtm.removeFromAllowlist(tokenHolder, {
+            await this.whitelist.removeFromWhitelist(tokenHolder, {
               from: owner,
             });
             await assertBalanceOf(
@@ -633,7 +630,7 @@ contract(
             await assertBalanceOf(this.token, recipient, partition1, 0);
           });
           it("fails transferring when recipient is not allowlisted", async function () {
-            await this.gtm.removeFromAllowlist(recipient, {
+            await this.whitelist.removeFromWhitelist(recipient, {
               from: owner,
             });
             await assertBalanceOf(
@@ -665,7 +662,7 @@ contract(
         });
         describe("operatorTransferByPartition", function () {
           it("transfers the requested amount when sender and recipient are allowlisted", async function () {
-            await this.gtm.addToAllowlist(recipient, {
+            await this.whitelist.addToWhitelist(this.token.address, recipient, {
               from: owner,
             });
             await assertBalanceOf(
@@ -735,7 +732,7 @@ contract(
       describe("ERC20 functions", function () {
         describe("transfer", function () {
           it("transfers the requested amount when sender and recipient are allowlisted", async function () {
-            await this.gtm.addToAllowlist(recipient, {
+            await this.whitelist.addToWhitelist(this.token.address, recipient, {
               from: owner,
             });
             await assertBalance(this.token, tokenHolder, issuanceAmount);
@@ -753,10 +750,10 @@ contract(
             await assertBalance(this.token, recipient, transferAmount);
           });
           it("fails transferring when sender and is not allowlisted", async function () {
-            await this.gtm.addToAllowlist(recipient, {
+            await this.whitelist.addToWhitelist(this.token.address, recipient, {
               from: owner,
             });
-            await this.gtm.removeFromAllowlist(tokenHolder, {
+            await this.whitelist.removeFromWhitelist(tokenHolder, {
               from: owner,
             });
             await assertBalance(this.token, tokenHolder, issuanceAmount);
@@ -772,7 +769,7 @@ contract(
             await assertBalance(this.token, recipient, 0);
           });
           it("fails transferring when recipient and is not allowlisted", async function () {
-            await this.gtm.removeFromAllowlist(recipient, {
+            await this.whitelist.removeFromWhitelist(recipient, {
               from: owner,
             });
             await assertBalance(this.token, tokenHolder, issuanceAmount);
@@ -790,7 +787,7 @@ contract(
         });
         describe("transferFrom", function () {
           it("transfers the requested amount when sender and recipient are allowlisted", async function () {
-            await this.gtm.addToAllowlist(recipient, {
+            await this.whitelist.addToWhitelist(this.token.address, recipient, {
               from: owner,
             });
             await assertBalance(this.token, tokenHolder, issuanceAmount);
@@ -814,7 +811,7 @@ contract(
             await assertBalance(this.token, recipient, transferAmount);
           });
           it("fails transferring when sender is not allowlisted", async function () {
-            await this.gtm.removeFromAllowlist(tokenHolder, {
+            await this.whitelist.removeFromWhitelist(tokenHolder, {
               from: owner,
             });
             await assertBalance(this.token, tokenHolder, issuanceAmount);
@@ -831,7 +828,7 @@ contract(
             await assertBalance(this.token, recipient, 0);
           });
           it("fails transferring when recipient is not allowlisted", async function () {
-            await this.gtm.removeFromAllowlist(recipient, {
+            await this.whitelist.removeFromWhitelist(recipient, {
               from: owner,
             });
             await assertBalance(this.token, tokenHolder, issuanceAmount);

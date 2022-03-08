@@ -2,8 +2,9 @@ const Web3 = require("web3");
 const { BN, time } = require("@openzeppelin/test-helpers");
 const { deployProxy } = require("@openzeppelin/truffle-upgrades");
 
-const GeneralTransferManager = artifacts.require("GeneralTransferManager");
-const ERC1400WithoutIntrospection = artifacts.require("ERC1400WithoutIntrospection");
+const WhitelistUpgradeable = artifacts.require("WhitelistUpgradeable");
+const WhitelistValidator = artifacts.require("WhitelistValidator");
+const SecurityToken = artifacts.require("SecurityToken");
 const VestingEscrowMinterBurnerWallet = artifacts.require(
   "VestingEscrowMinterBurnerWallet"
 );
@@ -17,42 +18,44 @@ contract(
   "VestingEscrowMinterBurnerWallet",
   function ([deployer, beneficiary, beneficiary2]) {
     beforeEach(async function () {
-      this.gtm = await deployProxy(GeneralTransferManager, {
+      this.whitelist = await deployProxy(WhitelistUpgradeable, {
+        from: deployer,
+      });
+      this.whitelistValidator = await deployProxy(WhitelistValidator, [this.whitelist.address], {
         from: deployer,
       });
       this.vestingWallet = await VestingEscrowMinterBurnerWallet.new({
         from: deployer,
       });
-      this.token = await ERC1400WithoutIntrospection.new(
-        "My Token",
-        "MTKN",
-        1,
-        [],
-        [],
-        [],
-        [],
-        [this.vestingWallet.address],
-        [this.vestingWallet.address],
-        [],
-        [this.vestingWallet.address],
+      this.token = await SecurityToken.new(
+        {
+          name: "My Token",
+          symbol: "MTKN",
+          granularity: 1,
+          decimals: 18,
+          defaultPartitions: [],
+          admins: [],
+          controllers: [],
+          validators: [],
+          burners: [this.vestingWallet.address],
+          minters: [this.vestingWallet.address],
+          pausers: [this.vestingWallet.address],
+          partitioners: [this.vestingWallet.address]
+        },
         {
           from: deployer,
         }
       );
 
-      // allow the vesting wallet to hold security tokens
-      await this.gtm.addToAllowlist(this.vestingWallet.address, {
+      await this.whitelist.addToWhitelist(this.token.address, beneficiary, {
         from: deployer,
       });
-      await this.gtm.addToAllowlist(beneficiary, {
-        from: deployer,
-      });
-      await this.gtm.addToAllowlist(beneficiary2, {
+      await this.whitelist.addToWhitelist(this.token.address, beneficiary2, {
         from: deployer,
       });
     });
 
-    describe.only("vest", function () {
+    describe("vest", function () {
       it("should mint/issue and add vesting schedule", async function () {
         await this.vestingWallet.vest(
           this.token.address,
@@ -68,11 +71,6 @@ contract(
           (await this.token.balanceOf(this.vestingWallet.address)).toString(),
           "100"
         );
-
-        const tokenHoldersCount = await this.token.tokenHoldersCount();
-        assert.equal(tokenHoldersCount.toString(), "1");
-        const address = await this.token.tokenHolder(0);
-        assert.equal(address, this.vestingWallet.address);
       });
     });
 

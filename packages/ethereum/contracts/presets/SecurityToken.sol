@@ -1,46 +1,47 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: args.MIT
 
-pragma solidity >=0.6.0 <0.8.0;
+pragma solidity ^0.8.0;
 
-import "../token/ERC1400/TokenHoldersList.sol";
 import "../token/ERC1400/ERC1400Batch.sol";
 import "../token/ERC1400/ERC1400Pausable.sol";
-import "../token/ERC1400/ERC1400OwnershipSnapshot.sol";
 import "../token/ERC1400/ERC1400_ERC20Compatible.sol";
 
-contract ERC1400WithoutIntrospection is
+struct SecurityTokenConstructorArgs {
+    string name;
+    string symbol;
+    uint256 granularity;
+    uint8 decimals;
+    bytes32[] defaultPartitions;
+    address[] admins;
+    address[] controllers;
+    address[] validators;
+    address[] burners;
+    address[] minters;
+    address[] pausers;
+    address[] partitioners;
+}
+
+contract SecurityToken is
     ERC1400_ERC20Compatible,
     ERC1400Pausable,
-    ERC1400Batch,
-    ERC1400OwnershipSnapshot,
-    TokenHoldersList
+    ERC1400Batch
 {
-    constructor(
-        string memory name,
-        string memory symbol,
-        uint256 granularity,
-        bytes32[] memory defaultPartitions,
-        address[] memory admins,
-        address[] memory controllers,
-        address[] memory validators,
-        address[] memory burners,
-        address[] memory minters,
-        address[] memory pausers,
-        address[] memory partitioners
-    )
-        public
+    constructor(SecurityTokenConstructorArgs memory args)
+        ERC1400Pausable(args.pausers)
         ERC1400_ERC20Compatible(
-            name,
-            symbol,
-            granularity,
-            defaultPartitions,
-            admins,
-            controllers,
-            validators,
-            burners,
-            minters,
-            pausers,
-            partitioners
+            ERC1400ConstructorArgs({
+                name: args.name,
+                symbol: args.symbol,
+                granularity: args.granularity,
+                decimals: args.decimals,
+                defaultPartitions: args.defaultPartitions,
+                admins: args.admins,
+                controllers: args.controllers,
+                validators: args.validators,
+                burners: args.burners,
+                minters: args.minters,
+                partitioners: args.partitioners
+            })
         )
     {}
 
@@ -78,11 +79,7 @@ contract ERC1400WithoutIntrospection is
         uint256 value,
         bytes memory data,
         bytes memory operatorData
-    )
-        internal
-        virtual
-        override(ERC1400, ERC1400Pausable, ERC1400OwnershipSnapshot)
-    {
+    ) internal virtual override(ERC1400, ERC1400Pausable) {
         super._beforeTokenTransfer(
             partition,
             operator,
@@ -102,11 +99,7 @@ contract ERC1400WithoutIntrospection is
         uint256 value,
         bytes memory data,
         bytes memory operatorData
-    )
-        internal
-        virtual
-        override(ERC1400, TokenHoldersList, ERC1400_ERC20Compatible)
-    {
+    ) internal virtual override(ERC1400, ERC1400_ERC20Compatible) {
         super._afterTokenTransfer(
             partition,
             operator,

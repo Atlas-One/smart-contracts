@@ -1,5 +1,22 @@
 const Ganache = require("ganache-core");
 const HDWalletProvider = require("@truffle/hdwallet-provider");
+const Web3 = require("web3");
+
+const privateKey = (process.env.PRIVATE_KEY || "").replace(/"/g, '');
+
+const infuraProvider = (network) => new Web3.providers.HttpProvider(
+  `https://${network}.infura.io/v3/bcafa70c5a3f4289b9084cda97a3a2c8`, {
+  headers: process.env.INFURA_PROJECT_SECRET ? [
+    {
+      name: "Authorization",
+      value:
+        "Basic " +
+        Buffer.from(":" + process.env.INFURA_PROJECT_SECRET).toString(
+          "base64"
+        ),
+    }
+  ] : []
+});
 
 module.exports = {
   contracts_directory: "./contracts",
@@ -21,66 +38,53 @@ module.exports = {
     //   network_id: "*",
     // },
     chainstack_prod: {
-      provider: !process.env.CHAINSTACK_HTTP_LINK
+      provider: !process.env.CHAINSTACK_HTTP_LINK || !privateKey
         ? Ganache.provider({
-            gasPrice: "0",
-          })
+          gasPrice: "0",
+        })
         : new HDWalletProvider({
-            privateKeys: [process.env.PRIVATE_KEY],
-            providerOrUrl: process.env.CHAINSTACK_HTTP_LINK,
-          }),
+          privateKeys: [privateKey],
+          providerOrUrl: process.env.CHAINSTACK_HTTP_LINK,
+        }),
       gasPrice: 0,
       type: "quorum", // needed for Truffle to support Quorum
       network_id: "10001",
     },
     chainstack_staging: {
-      provider: !process.env.CHAINSTACK_HTTP_LINK
+      provider: !process.env.CHAINSTACK_HTTP_LINK || !privateKey
         ? Ganache.provider({
-            gasPrice: "0",
-          })
+          gasPrice: "0",
+        })
         : new HDWalletProvider({
-            privateKeys: [process.env.PRIVATE_KEY],
-            providerOrUrl: process.env.CHAINSTACK_HTTP_LINK,
-          }),
+          privateKeys: [privateKey],
+          providerOrUrl: process.env.CHAINSTACK_HTTP_LINK,
+        }),
       gasPrice: 0,
       type: "quorum", // needed for Truffle to support Quorum
       network_id: "*",
     },
-    infura: {
-      provider: !process.env.INFURA_HTTP_LINK
+    ethereum_mainnet: {
+      provider: !privateKey
         ? Ganache.provider({
-            gasPrice: "0",
-          })
+          gasPrice: "0",
+        })
         : new HDWalletProvider({
-            privateKeys: [process.env.PRIVATE_KEY],
-            providerOrUrl: process.env.INFURA_HTTP_LINK,
-          }),
+          privateKeys: [privateKey],
+          providerOrUrl: infuraProvider("mainnet"),
+        }),
       network_id: "*",
     },
-    kaleido_stage: {
-      provider: !process.env.KALEIDO_HTTP_LINK
+    ropsten: {
+      provider: !privateKey
         ? Ganache.provider({
-            gasPrice: "0",
-          })
+          gasPrice: "0",
+        })
         : new HDWalletProvider({
-            privateKeys: [process.env.PRIVATE_KEY],
-            providerOrUrl: process.env.KALEIDO_HTTP_LINK,
-          }),
-      gasPrice: 0,
-      network_id: "1089731529",
-    },
-    kaleido_prod: {
-      provider: !process.env.KALEIDO_HTTP_LINK
-        ? Ganache.provider({
-            gasPrice: "0",
-          })
-        : new HDWalletProvider({
-            privateKeys: [process.env.PRIVATE_KEY],
-            providerOrUrl: process.env.KALEIDO_HTTP_LINK,
-          }),
-      gasPrice: 0,
-      network_id: "1767184108",
-    },
+          privateKeys: [privateKey],
+          providerOrUrl: infuraProvider("ropsten"),
+        }),
+      network_id: "*",
+    }
   },
   plugins: ["truffle-contract-size"],
   mocha: {
@@ -88,7 +92,7 @@ module.exports = {
   },
   compilers: {
     solc: {
-      version: "0.6.7",
+      version: "0.8.12",
       settings: {
         optimizer: {
           enabled: true,
