@@ -115,8 +115,9 @@ abstract contract ERC1400Allowable is ERC1400 {
         bytes memory operatorData
     ) internal virtual override {
         require(
-            (_isController(_msgSender()) || isWhitelisted(from)) &&
-                isWhitelisted(to),
+            (_isController(_msgSender()) ||
+                isWhitelisted(from) ||
+                from == address(0)) && (isWhitelisted(to) || to == address(0)),
             "58"
         );
 
