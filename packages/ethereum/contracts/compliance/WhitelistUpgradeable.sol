@@ -49,6 +49,10 @@ contract WhitelistUpgradeable is Initializable, AdministrableUpgradeable {
         view
         returns (bool)
     {
+        if (_blacklist.contains(account)) {
+            return false;
+        }
+
         return _tokenWhitelist[token].contains(account);
     }
 

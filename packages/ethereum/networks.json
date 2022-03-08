@@ -3,62 +3,30 @@
     "3": {
       "events": {},
       "links": {},
-      "address": "0x0729F1C8d169A5D5d49718e585d49D32D002AA30",
-      "transactionHash": "0xd3d6cee7967f40d7892fac9f23f5f98d2ee8bb0cd62f54142cb4b37c5abcc5f8"
-    },
-    "1646158834319": {
-      "events": {},
-      "links": {},
-      "address": "0xb137968D971D359A656Bb052f932188A2dA220E5",
-      "transactionHash": "0x608bdb61becfa11ddfe01fc928738bab778ca11ba26470693b88f5db530f4272"
-    },
-    "1646158907811": {
-      "events": {},
-      "links": {},
-      "address": "0x2081C508b6FF1612F0FF9eAef9B278FC810Ea7e2",
-      "transactionHash": "0xc35a5251050b719f34827ce5cae6cf37c2076ed81ec913c1a676e2fad2249363"
+      "address": "0xFfA79B09eA7cfd4A3832Fd45F8C3F5bBcEF88690",
+      "transactionHash": "0x7af80a917ec76fa618dbc74c5c7db28e839c8d11cabc1b29a3f4752a729a9983"
     }
   },
   "VestingEscrowMinterBurnerWallet": {
     "3": {
       "events": {},
       "links": {},
-      "address": "0xfC9A53AE47F0eE55b80b25d4FcA594d630a3b38F",
-      "transactionHash": "0x4573f6e7e9a4bca18e7fb54b6ed94dc2880444a4df52f1669c93dbaede7490ff"
-    },
-    "1646158907811": {
-      "events": {},
-      "links": {},
-      "address": "0xd6fECad2F20D970408c054a94D5BA7eE07106aBB",
-      "transactionHash": "0xb743b9d30169be315670eeb748fd92452497abcd91f6e04b40f6f20e8af01d53"
+      "address": "0xD23e296a85ade79D96c97C725EBE496001C637Fe"
     }
   },
-  "Whitelist": {
+  "WhitelistUpgradeable": {
     "3": {
       "events": {},
       "links": {},
-      "address": "0x135B774aEfe1b16C70aB682EE807e211181eeE6A",
-      "transactionHash": "0x94fb0f6da4be82e81817206e9f6248764c856424617a4b1dc3661ff6fecadc0e"
-    },
-    "1646158907811": {
-      "events": {},
-      "links": {},
-      "address": "0xFac8cd5A971b78CFe389AEdFF5fAE709E2Fb53E2",
-      "transactionHash": "0xd80f5a007a973f5e491b0efed6aa75ff8b1b6b00bd41c78d1b6afaf434edec20"
+      "address": "0xb6eb0023608A7c6dF04c4DE38cEDffF9af42B8Dd",
+      "transactionHash": "0x38bd4590d5f94acb50f394357913b3ea0500eeee575d8608b388254cf2a1cd5e"
     }
   },
   "WhitelistValidator": {
     "3": {
       "events": {},
       "links": {},
-      "address": "0xB4f1E0aDD0CC83051175f3db8CE0214fFa8aE959",
-      "transactionHash": "0x7f203b5105108e973819ac5099ffde75ddeeb2e43d67e3f4d4bcea27e2d118c4"
-    },
-    "1646158907811": {
-      "events": {},
-      "links": {},
-      "address": "0xE405b0a4424E06b3008c40cC1281954075081fF7",
-      "transactionHash": "0x498de189814a722a02804ae2896b1e49d9949dd7440b9b17d2e53e83f8bd0256"
+      "address": "0xBc484574614966D48DE719f464B615DC8dc22E8a"
     }
   }
 }

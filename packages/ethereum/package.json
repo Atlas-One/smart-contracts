@@ -25,7 +25,7 @@
     "truffle:compile": "yarn truffle compile",
     "truffle:contract-size": "yarn truffle:compile && truffle run contract-size",
     "solidity:prettify": "prettier --write 'contracts/**/*.sol'",
-    "migrate": "PRIVATE_KEY=$(aws secretsmanager get-secret-value --secret-id staging/wallet --query 'SecretString' | jq 'fromjson.ethereumPrivateKey') npx truffle migrate"
+    "migrate": "PRIVATE_KEY=$(aws secretsmanager get-secret-value --secret-id staging/wallet --query 'SecretString' | jq 'fromjson.ethereumPrivateKey') yarn truffle migrate"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.5.0",

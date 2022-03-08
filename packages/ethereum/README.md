@@ -35,9 +35,9 @@ The `.openzeppelin` folder keeps the upgradable contracts manifests. The file is
 
 | Contract                        | Address                                    |
 | ------------------------------- | ------------------------------------------ |
-| Whitelist                       | 0x135B774aEfe1b16C70aB682EE807e211181eeE6A |
-| WhitelistValidator              | 0xB4f1E0aDD0CC83051175f3db8CE0214fFa8aE959 |
-| VestingEscrowMinterBurnerWallet | 0xfC9A53AE47F0eE55b80b25d4FcA594d630a3b38F |
+| Whitelist                       | 0xb6eb0023608A7c6dF04c4DE38cEDffF9af42B8Dd |
+| WhitelistValidator              | 0xBc484574614966D48DE719f464B615DC8dc22E8a |
+| VestingEscrowMinterBurnerWallet | 0xD23e296a85ade79D96c97C725EBE496001C637Fe |
 
 ### Private Networks
 
