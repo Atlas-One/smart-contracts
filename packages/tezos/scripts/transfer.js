@@ -21,7 +21,7 @@ const account = accounts[network];
 
     await client.wallet.transfer({
         to: process.env.PUBLIC_ADDRESS.replace(/"/g, ''),
-        amount: "34620678761",
-        mutez: true
+        amount: "2000",
+        mutez: false
     }).send();
 })();

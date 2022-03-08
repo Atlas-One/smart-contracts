@@ -92,14 +92,12 @@ class Whitelist(AccessControl):
     def removeFromWhitelist(self, params):
         sp.verify(self.has_role(WHITELIST_ADMIN_ROLE, sp.sender) | self.has_role(ADMIN_ROLE, sp.sender))
 
-        self.data.token_whitelist[params.token].remove(params.address)
+        sp.if self.data.token_whitelist.contains(params.token):
+            self.data.token_whitelist[params.token].remove(params.address)
      
     @sp.entry_point
     def addToBlacklist(self, params):
         sp.verify(self.has_role(BLACKLIST_ADMIN_ROLE, sp.sender) | self.has_role(ADMIN_ROLE, sp.sender))
-
-        sp.if self.data.token_whitelist[params.token].contains(params.address):
-            self.data.token_whitelist[params.token].remove(params.address)
 
         self.data.blacklist.add(params.address)
     
@@ -126,7 +124,7 @@ class TestToken(sp.Contract):
         c = sp.contract(
             t = sp.TAddress, 
             address = self.data.registery, 
-            entry_point = "assertWhitelisted"
+            entry_point = "assertValid"
         ).open_some()
                     
         sp.transfer(

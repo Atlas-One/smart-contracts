@@ -38,10 +38,11 @@ See the access control design doc [here](/docs/tezos/access-control-design.md) f
 
 ### Deployed on SmartPy Edonet
 
-| Contract                                                                                                         | Address                              |
-| ---------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| [WhitelistValidator](https://smartpy.io/explorer.html?address=KT1DAp2GKchqQcXFZzMFptbyNLChKxQ6F3to)          | KT1DAp2GKchqQcXFZzMFptbyNLChKxQ6F3to |
-| [VestingEscrowMinterBurnerWallet](https://smartpy.io/explorer.html?address=KT1SUf8fDdXjGyUUFLzjUyoATn2wN2PKb26b) | KT1SUf8fDdXjGyUUFLzjUyoATn2wN2PKb26b |
+| Contract                        | Address                              |
+| ------------------------------- | ------------------------------------ |
+| Whitelist                       | KT1Vi9fVPiqH2yTuCRc3QLCGMbHoD3ePSnjb |
+| WhitelistValidator              | KT1MMQtZq66TSBKMM8FmuXKaKEFVYGYte4Ky |
+| VestingEscrowMinterBurnerWallet | KT1BLEW5kBVYWSPJzYrLPp3mSYSSPjzLhisN |
 
 ## Development
 

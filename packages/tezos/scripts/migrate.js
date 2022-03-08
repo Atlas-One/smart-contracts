@@ -7,10 +7,15 @@ const { importKey } = require("@taquito/signer");
 const { TezosToolkit, MichelsonMap } = require("@taquito/taquito");
 const fs = require("fs");
 
-const env = process.argv[3] || "";
-const network = process.argv[2] || "mondaynet";
+const env = process.argv[3] || "staging";
+const network = process.argv[2] || "hangzhounet";
 const rpc = config.networks[network];
-const account = accounts[network];
+const account = process.env.ACCOUNTS ? (({ tezosPublicAddress, tezosPrivateKey }) => {
+  return {
+    pkh: tezosPublicAddress,
+    secretKey: tezosPrivateKey,
+  }
+})(JSON.parse(process.env.ACCOUNTS.replace(/\\/g, "").replace(/"{/g, "{").replace(/}"/g, "}"))) : accounts[network];
 
 async function deploy(path, storage) {
   const key = `${env} ${path} ${rpc}`;
@@ -47,7 +52,7 @@ async function deploy(path, storage) {
 }
 
 (async () => {
-  const vesting_wallet_address = await deploy("wallet/VestingEscrowMinterBurnerWallet");
+  await deploy("wallet/VestingEscrowMinterBurnerWallet");
 
   // ADMIN_ROLE = 0
   // WHITELIST_ADMIN_ROLE = 1
@@ -67,11 +72,10 @@ async function deploy(path, storage) {
   });
 
   const whitelist_address = await deploy("compliance/Whitelist", {
-    whitelist: [vesting_wallet_address],
+    token_whitelist: new MichelsonMap(),
     blacklist: [],
     roles
   });
 
   await deploy("extension/WhitelistValidator", whitelist_address);
-  // await deploy("token/ST12");
 })();
