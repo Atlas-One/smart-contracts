@@ -5,7 +5,7 @@ const { InMemorySigner } = require("@taquito/signer");
 const accounts = require("./accounts.json");
 const config = require("../../scripts/config");
 
-const network = process.argv[2] || "mondaynet";
+const network = process.argv[2] || "ithacanet";
 const rpc = config.networks[network];
 const account = accounts[network];
 

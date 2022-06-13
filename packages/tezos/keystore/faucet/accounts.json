@@ -1,53 +1,27 @@
 {
-  "mondaynet": {
-    "pkh": "tz1QYU16vVenjYZWua5nA9AQpC2cLJgPBHyY",
+  "ithacanet": {
+    "pkh": "tz1ajuCTWDwmmv17tyZNRKZ74xoHmnwiG4Cj",
     "mnemonic": [
-      "purchase",
-      "neck",
-      "achieve",
-      "arctic",
-      "ridge",
-      "three",
-      "iron",
-      "note",
-      "disorder",
-      "either",
-      "hundred",
-      "over",
+      "warm",
       "faint",
-      "typical",
-      "limit"
+      "code",
+      "renew",
+      "dream",
+      "half",
+      "ramp",
+      "water",
+      "dynamic",
+      "remain",
+      "advice",
+      "biology",
+      "audit",
+      "sauce",
+      "maze"
     ],
-    "email": "omoroxxf.orllsvlv@teztnets.xyz",
-    "password": "qeENcm9YOQ",
-    "amount": "340385598857",
-    "activation_code": "53570966400f64384ab8521b540f38475dd45335",
-    "activated": true,
-    "secretKey": "edskRuXVVZMJG9AxXyiH4oZjRoFLumQnZasW6F6yQ9SGkT2EgAcxB367356tvbzjUkNusMgcWiMYZVPk24fVFpdg1Uhjx14jJe"
-  },
-  "hangzhounet": {
-    "pkh": "tz1c3Hat1vHEYzSbUvUdSaYe3r9g4d6pH3QM",
-    "mnemonic": [
-      "stadium",
-      "soup",
-      "eight",
-      "area",
-      "habit",
-      "lecture",
-      "margin",
-      "normal",
-      "later",
-      "below",
-      "empower",
-      "climb",
-      "never",
-      "pear",
-      "page"
-    ],
-    "email": "wgskeigb.otqvjhnx@teztnets.xyz",
-    "password": "Zho0N2rlcO",
-    "amount": "64620678761",
-    "activation_code": "d3f41e1de39ac33081e88f778314a1d2abd9cd95",
-    "secretKey": "edskS1hj532Ccgi5wAaZoZ5u6SmNwDDFnoFzNemDcitvC6MeZR1agMA1hU1LiN9qFZiffBDWKBsqpayd5XPoroSRz1hemSiGKC"
+    "email": "qkubnrvl.oagbyopb@teztnets.xyz",
+    "password": "hVK8ZQRzps",
+    "amount": "24776334996",
+    "activation_code": "9c299a0910a966b797f9fd1c5f9f6db6bb3b57b0",
+    "secretKey": "edskRf7pNN9PKKjqKsPwNXfop3o9dZczZgu3NwX8HbaLDPkxSuabawLrn8cVzuQRHNoYPf9cynv3gmHfGj7wzyZKGNvumzRi2v"
   }
 }
