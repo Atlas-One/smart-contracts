@@ -23,5 +23,30 @@
     "amount": "24776334996",
     "activation_code": "9c299a0910a966b797f9fd1c5f9f6db6bb3b57b0",
     "secretKey": "edskRf7pNN9PKKjqKsPwNXfop3o9dZczZgu3NwX8HbaLDPkxSuabawLrn8cVzuQRHNoYPf9cynv3gmHfGj7wzyZKGNvumzRi2v"
+  },
+  "jakartanet": {
+    "pkh": "tz1fKfavYfj7aGmc7tKGjKd7btxQtfhcMrum",
+    "mnemonic": [
+      "area",
+      "job",
+      "behind",
+      "comfort",
+      "grow",
+      "step",
+      "what",
+      "plug",
+      "top",
+      "medal",
+      "toast",
+      "pair",
+      "neglect",
+      "recycle",
+      "turn"
+    ],
+    "email": "lmgzzumk.otiyyouk@teztnets.xyz",
+    "password": "JsOonDvkX8",
+    "amount": "38881821871",
+    "activation_code": "8560dc6ed3ec321ab71a57401e86147fc660c892",
+    "secretKey": "edskRuPvrM8fiqBKjc8AkUu62o95nTiibzNL8ydPk5ZPKAQK48FoaYvyFpRJAa2Go5jZqsjUgBn2Q2p2f241Pf4DNRo8ux4S7h"
   }
 }
