@@ -451,14 +451,14 @@ class FA12_core(Ledger):
         self.data.ledger[sp.sender].approvals[params.spender] = params.value
     
     # (view (address :owner) nat)                   %getBalance
-    @sp.view(sp.TNat)
+    @sp.utils.view(sp.TNat)
     def getBalance(self, params):
         sp.set_type(params, sp.TAddress)
         
         sp.result(self.data.ledger[params].balance)
     
     # (view (address :owner, address :spender) nat) %getAllowance
-    @sp.view(sp.TNat)
+    @sp.utils.view(sp.TNat)
     def getAllowance(self, params):
         sp.set_type(
             params,
@@ -473,7 +473,7 @@ class FA12_core(Ledger):
         sp.result(self.data.ledger[params.owner].approvals[params.spender])
     
     # (view unit nat)                               %getTotalSupply
-    @sp.view(sp.TNat)
+    @sp.utils.view(sp.TNat)
     def getTotalSupply(self, params):
         sp.set_type(params, sp.TUnit)
         sp.result(self.data.total_supply)
@@ -490,7 +490,8 @@ class ST12(
     def __init__(
             self,
             config,
-            metadata,
+            contract_metadata,
+            token_metadata,
             administrators,
             validators=sp.set([], t=sp.TAddress),
             controllers=sp.set([], t=sp.TAddress),
@@ -505,7 +506,10 @@ class ST12(
             operable=True,
             issuable=True,
             controllable=True,
-            metadata=metadata,
+            # Contract metadata
+            metadata=contract_metadata,
+            # Token specific metadata
+            token_metadata=token_metadata,
             roles=make_roles(
                 administrators=administrators, 
                 validators=validators,
@@ -516,7 +520,7 @@ class ST12(
         )
     
     @sp.entry_point
-    def set_metdata(self, k, v):
+    def set_metadata(self, k, v):
         sp.verify(self.sender_has_role(ADMIN_ROLE))
         self.data.metadata[k] = v
 
@@ -540,11 +544,19 @@ def add_test(config, is_default=True):
         c1 = ST12(
             config = config,
             administrators = sp.set([admin.address]),
-            metadata = sp.map(l =  {
-                # Remember that michelson wants map already in ordered
-                "decimals" : sp.bytes_of_string("%d" % 18),
-                "name" : sp.bytes_of_string("Test Token"),
-                "symbol" : sp.bytes_of_string("Test")
+            contract_metadata = sp.big_map(l = {
+                "": sp.utils.bytes_of_string("tezos-storage:m"),
+                "m" : sp.utils.bytes_of_string("{\"name\":\"Test\",\"version\":\"security token v1.0\",\"description\":\"Test Digital Security Token\"}"),
+            }),
+            token_metadata = sp.big_map(l = {
+                sp.nat(0): sp.record(
+                    token_id = sp.nat(0),
+                    token_info = sp.map(l = {
+                        "decimals" : sp.utils.bytes_of_string("18"),
+                        "name" : sp.utils.bytes_of_string("Test"),
+                        "symbol" : sp.utils.bytes_of_string("TST"),
+                    })
+                )
             })
         )
 
@@ -661,29 +673,28 @@ def environment_config():
 # sp.for the browser version.
 if "templates" not in __name__:
     add_test(environment_config())
-    # if not global_parameter("only_environment_test", False):
-    #     add_test(FA12_config(debug_mode=True), is_default=not sp.in_browser)
-    #     add_test(FA12_config(readable=False), is_default=not sp.in_browser)
-    #     add_test(FA12_config(force_layouts=False), is_default=not sp.in_browser)
-    #     add_test(FA12_config(lazy_entry_points=True), is_default=not sp.in_browser)
-    #     add_test(
-    #         FA12_config(lazy_entry_points_multiple=True), is_default=not sp.in_browser
-    #     )
 
     sp.add_compilation_target(
         "ST12_compiled", 
         ST12(
             config = environment_config(),
+            contract_metadata = sp.big_map(l = {
+                "": sp.utils.bytes_of_string("tezos-storage:m"),
+                "m" : sp.utils.bytes_of_string("{\"name\":\"Test\",\"version\":\"security token v1.0\",\"description\":\"Test Digital Security Token\"}"),
+            }),
+            token_metadata = sp.big_map(l = {
+                sp.nat(0): sp.record(
+                    token_id = sp.nat(0),
+                    token_info = sp.map(l = {
+                        "decimals" : sp.utils.bytes_of_string("18"),
+                        "name" : sp.utils.bytes_of_string("Test"),
+                        "symbol" : sp.utils.bytes_of_string("TST"),
+                    })
+                )
+            }),
             administrators = sp.set([sp.address("tz1M9CMEtsXm3QxA7FmMU2Qh7xzsuGXVbcDr")]),
             validators = sp.set([sp.address("KT1QkFxZqfCok6LZUJ7zDn6gCDBS7kSao26P")]),
             burners = sp.set([sp.address("KT1S3M3Cn7XBLcNi54cfvMP15j9ew4W4eb1C")]),
             minters = sp.set([sp.address("KT1S3M3Cn7XBLcNi54cfvMP15j9ew4W4eb1C")]),
-            metadata = sp.big_map(l = {
-                "": sp.bytes_of_string("tezos-storage:m"),
-                "m" : sp.bytes_of_string("{\"name\":\"Test\",\"version\":\"security token v1.0\",\"description\":\"Test Digital Security Token\"}"),
-                "name" : sp.bytes_of_string("Test"),
-                "symbol" : sp.bytes_of_string("TST"),
-                "decimals" : sp.bytes_of_string("18"),
-            })
         )
     )

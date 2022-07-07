@@ -313,10 +313,35 @@ class VestingEscrowMinterBurnerWallet(sp.Contract):
                     token_address = schedule.token_address
                 )
             )
-        
+    
     @sp.entry_point
     def claim(self):
-        self.claimFor(sp.sender)
+        sp.verify(self.data.schedules.contains(sp.sender))
+        
+        sp.for schedule_name in self.data.schedules[sp.sender].keys():
+            schedule = self.data.schedules[sp.sender][schedule_name]
+            
+            vested_amount = self._vested(
+                sp.record(
+                    beneficiery= sp.sender,
+                    schedule_name= schedule_name
+                )
+            )
+            
+            claim_amount = sp.local('claim_amount', sp.as_nat(0))
+            
+            claim_amount.value = sp.as_nat(vested_amount - schedule.claimed_amount)
+            schedule.claimed_amount += claim_amount.value
+            
+            self._transfer(
+                sp.record(
+                    from_ = sp.self_address,
+                    to_ = sp.sender,
+                    amount = claim_amount.value,
+                    token_id = schedule.token_id,
+                    token_address = schedule.token_address
+                )
+            )
         
     @sp.entry_point
     def revokeSchedule(self, params):
@@ -446,9 +471,9 @@ def add_test(is_default=True):
                     token_address = fa2.address,
                     token_id = sp.some(0),
                     metadata = sp.some(sp.map({
-                        "decimals": sp.bytes_of_string("%d" % 18),
-                        "name": sp.bytes_of_string("Test"),
-                        "symbol": sp.bytes_of_string("TEST")
+                        "decimals": sp.utils.bytes_of_string("%d" % 18),
+                        "name": sp.utils.bytes_of_string("Test"),
+                        "symbol": sp.utils.bytes_of_string("TEST")
                     }))
                 )
             ])
