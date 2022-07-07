@@ -5,21 +5,18 @@ const { InMemorySigner } = require("@taquito/signer");
 const accounts = require("./accounts.json");
 const config = require("../../scripts/config");
 
-const network = process.argv[2] || "ithacanet";
-const rpc = config.networks[network];
-const account = accounts[network];
-
+const index = process.argv[2] || 0;
+const rpc = config.networks[index];
+const account = accounts[index];
 
 (async () => {
   const client = new TezosToolkit(rpc);
 
-  const signer = new InMemorySigner(
-    account.secretKey
-  );
+  const signer = new InMemorySigner(account.secretKey);
 
   client.setProvider({ signer });
 
   await client.tz
     .activate(account.pkh, account.activation_code)
-    .then((o) => o.confirmation())
+    .then((o) => o.confirmation());
 })();

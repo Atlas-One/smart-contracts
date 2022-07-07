@@ -9,8 +9,13 @@ function getMonday(d) {
 module.exports = {
   networks: {
     mainnet: "https://mainnet.smartpy.io",
-    ithacanet: "https://ithacanet.smartpy.io",
-    hangzhounet: "https://hangzhounet.smartpy.io",
-    mondaynet: `https://rpc.mondaynet-${getMonday(new Date()).toLocaleDateString("en-GB").split("/").reverse().join("-")}.teztnets.xyz`,
+    // ithacanet: "https://ithacanet.smartpy.io",
+    // hangzhounet: "https://hangzhounet.smartpy.io",
+    jakartanet: "https://jakartanet.smartpy.io",
+    mondaynet: `https://rpc.mondaynet-${getMonday(new Date())
+      .toLocaleDateString("en-GB")
+      .split("/")
+      .reverse()
+      .join("-")}.teztnets.xyz`,
   },
 };

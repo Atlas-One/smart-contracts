@@ -36,18 +36,21 @@ See the access control design doc [here](/docs/tezos/access-control-design.md) f
 
 ## Deployed Contracts
 
-### Deployed on SmartPy Edonet
+### Deployed on SmartPy Jakartanet
+
+Deployer: tz1REZKzqhR7sJxH5JTY8Y6zJeh93GKpLJHf
 
 | Contract                        | Address                              |
 | ------------------------------- | ------------------------------------ |
-| Whitelist                       | KT1QqGNUxoBxcjKqELqiUNGgDab45juYy85b |
-| WhitelistValidator              | KT1HpwEVG1afoRFtdqf46MajMK8MWGm63vW2 |
-| VestingEscrowMinterBurnerWallet | KT1BLEW5kBVYWSPJzYrLPp3mSYSSPjzLhisN |
+| Whitelist                       | KT1A5io8djC3x2XQDK7a8virqBLSsRd1gEm6 |
+| WhitelistValidator              | KT1NBUssF7tcZSgF3zm8N61wMoPHdb7domfV |
+| VestingEscrowMinterBurnerWallet | KT1Un2fTccdR23U88jRiEoRJWFdXxJReYtkX |
 
 ## Development
 
-You can use and explore the deployed smart ccontracts above on edonet.
-Explore the contracts using get request for the public date e.g. <https://edonet.smartpy.io/explorer/contract/KT1AiM4qXoQG7f2oNrag1fL1zKaNz2hX3w8a>. See the explorer documentations I found useful from <https://api.tzkt.io/#tag/Contracts>.
+You can use and explore the deployed smart ccontracts above on tzkt example <https://jakartanet.tzkt.io/KT1A5io8djC3x2XQDK7a8virqBLSsRd1gEm6>.
+
+See the explorer documentations I found useful from <https://api.tzkt.io/#tag/Contracts>.
 
 I found working on the smartpy web ide sufficient to test and write the logic.
 

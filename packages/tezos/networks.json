@@ -10,5 +10,29 @@
     "staging extension/WhitelistValidator https://hangzhounet.smartpy.io": {
         "contractAddress": "KT1HpwEVG1afoRFtdqf46MajMK8MWGm63vW2",
         "hash": "opKfBjRaM66ZpVbSHcJ7ZD76uWveqCUXQGYT8uBBqDYTuC7drMW"
+    },
+    "tz1fKfavYfj7aGmc7tKGjKd7btxQtfhcMrum staging wallet/VestingEscrowMinterBurnerWallet https://jakartanet.smartpy.io": {
+        "contractAddress": "KT1BDzpuyGCtLUsXzgjGo6t8xkqdXSewAQHb",
+        "hash": "onkDN1EqaUJFGS7Z9Szs3dvSRt9o58rC96CvGn9LYSoeuoFYVz3"
+    },
+    "tz1fKfavYfj7aGmc7tKGjKd7btxQtfhcMrum staging compliance/Whitelist https://jakartanet.smartpy.io": {
+        "contractAddress": "KT1XtP3pGMN1dRJbxAVHKicfV21zdCzWVaNN",
+        "hash": "ooWk1W1occomUMLaoXXFMA2Eaf9s7EHhUQgPvrQ1vTcGYsmkMa7"
+    },
+    "tz1fKfavYfj7aGmc7tKGjKd7btxQtfhcMrum staging extension/WhitelistValidator https://jakartanet.smartpy.io": {
+        "contractAddress": "KT1GA8smbopcsJP9q481BHBSKiMFCcfB3qmG",
+        "hash": "onrLgPNRXoQjitz8o5WTnUdnRr37cDL2QHyQw589scZySZL4GhN"
+    },
+    "tz1REZKzqhR7sJxH5JTY8Y6zJeh93GKpLJHf staging wallet/VestingEscrowMinterBurnerWallet https://jakartanet.smartpy.io": {
+        "contractAddress": "KT1Un2fTccdR23U88jRiEoRJWFdXxJReYtkX",
+        "hash": "ooH2ydcodEZfWxMrKd6cftWiqV7669n5p9jH1Ujs5VKDaXKJyXB"
+    },
+    "tz1REZKzqhR7sJxH5JTY8Y6zJeh93GKpLJHf staging compliance/Whitelist https://jakartanet.smartpy.io": {
+        "contractAddress": "KT1A5io8djC3x2XQDK7a8virqBLSsRd1gEm6",
+        "hash": "opAMeQFUzGhyZhMTJiN7c6T1bp4AzehiApTN7BjZJdM2wJWr7hm"
+    },
+    "tz1REZKzqhR7sJxH5JTY8Y6zJeh93GKpLJHf staging extension/WhitelistValidator https://jakartanet.smartpy.io": {
+        "contractAddress": "KT1NBUssF7tcZSgF3zm8N61wMoPHdb7domfV",
+        "hash": "ooRQZNUX5vuXZvFcZCZCb7nkhVhF17VaSQSEPC3kSmYo1NBxTXj"
     }
 }

@@ -10,7 +10,7 @@ const rpc = process.argv[2];
   const client = new TezosToolkit(rpc);
 
   await Promise.all(
-    Object.entries(accounts).map(async ([name, wallet]) => {
+    accounts.map(async (wallet) => {
       const signer = InMemorySigner.fromFundraiser(
         wallet.email,
         wallet.password,
@@ -19,13 +19,13 @@ const rpc = process.argv[2];
 
       client.setProvider({ signer });
 
-      accounts[name].secretKey = await signer.secretKey();
-
-      fs.writeFileSync(
-        __dirname + "/./accounts.json",
-        JSON.stringify(accounts, null, 2),
-        "utf-8"
-      );
+      wallet.secretKey = await signer.secretKey();
     })
+  );
+
+  fs.writeFileSync(
+    __dirname + "/./accounts.json",
+    JSON.stringify(accounts, null, 2),
+    "utf-8"
   );
 })();
