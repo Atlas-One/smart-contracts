@@ -57,6 +57,11 @@ I found working on the smartpy web ide sufficient to test and write the logic.
 - <https://smartpy.io/ide>
 - <https://smartpy.io/reference.html>
 
+### Test
+
+Run the command `yarn test` which will run the `test.sh` script.
+The test output folder is `smartpy-test-output`.
+
 ### Compiling
 
 To compile run `sh ./compile.sh`.
