@@ -284,7 +284,7 @@ class VestingEscrowMinterBurnerWallet(sp.Contract):
                 sp.mutez(0),
                 c
             )
-
+    
     @sp.entry_point
     def claimFor(self, beneficiery):
         sp.verify(self.data.schedules.contains(beneficiery))
