@@ -1,3 +1,6 @@
+# This protocol is not being used at this moment
+# Still work in progress
+
 import smartpy as sp
 
 
